@@ -49,8 +49,9 @@
     /* App Layout */
     #app-container { display: none; width: 100vw; height: 100vh; }
     .servers { width: 72px; background: var(--bg-servers); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 10px; flex-shrink: 0; overflow-y: auto; }
-    .server-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-chat); display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; user-select: none; color: var(--text-main); flex-shrink: 0; }
+    .server-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-chat); display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; user-select: none; color: var(--text-main); flex-shrink: 0; position: relative; }
     .server-icon:hover, .server-icon.active { border-radius: 16px; background: var(--accent); color: white; }
+    .server-badge { position: absolute; top: 0; right: 0; background: #da373c; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--bg-servers); display: none; }
     .divider { width: 32px; height: 2px; background: var(--bg-hover); border-radius: 1px; flex-shrink: 0; }
 
     .channels { width: 240px; background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; }
@@ -82,7 +83,7 @@
     #broadcast-banner { display: none; background: linear-gradient(90deg, #5865f2, #eb459e); color: white; padding: 8px 16px; font-size: 13px; font-weight: bold; align-items: center; justify-content: space-between; }
     #pinned-banner { display: none; background: var(--bg-channels); border-bottom: 1px solid var(--bg-servers); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; }
 
-    /* Video Grid */
+    /* Video Grid Fix */
     .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; }
     .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-content: center; justify-content: center; }
     .video-tile { background: #2b2d31; border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; }
@@ -576,11 +577,19 @@
     }
 
     function initApp() {
-      const myAvatarEl = document.getElementById('my-avatar');
-      myAvatarEl.textContent = userAvatar ? '' : username[0].toUpperCase();
-      myAvatarEl.style.backgroundColor = userColor;
-      if (userAvatar) myAvatarEl.style.backgroundImage = `url(${userAvatar})`;
-      else myAvatarEl.style.backgroundImage = 'none';
+      // Sync from DB to ensure persistence
+      db.ref('accounts/' + username.toLowerCase()).once('value', (s) => {
+        const dat = s.val() || {};
+        if (dat.color) userColor = dat.color;
+        if (dat.avatar) userAvatar = dat.avatar;
+        if (dat.banner) userBanner = dat.banner;
+        
+        const myAvatarEl = document.getElementById('my-avatar');
+        myAvatarEl.textContent = userAvatar ? '' : username[0].toUpperCase();
+        myAvatarEl.style.backgroundColor = userColor;
+        if (userAvatar) myAvatarEl.style.backgroundImage = `url(${userAvatar})`;
+        else myAvatarEl.style.backgroundImage = 'none';
+      });
 
       document.getElementById('my-name').textContent = username;
 
@@ -626,7 +635,30 @@
         } catch (e) {}
       }
 
-      // My Profile & Customizer Setup
+      // Track unread DMs for Friends Tab Red Dot Badge
+      db.ref('dm_messages').on('value', (snap) => {
+        const allDms = snap.val() || {};
+        let unreadCount = 0;
+        Object.keys(allDms).forEach(key => {
+          if (key.includes(username)) {
+            const msgs = Object.values(allDms[key] || {});
+            const lastMsg = msgs[msgs.length - 1];
+            if (lastMsg && lastMsg.author !== username && !lastMsg.read) {
+              unreadCount++;
+            }
+          }
+        });
+        const badgeEl = document.getElementById('friends-unread-badge');
+        if (badgeEl) {
+          if (unreadCount > 0) {
+            badgeEl.textContent = unreadCount;
+            badgeEl.style.display = 'block';
+          } else {
+            badgeEl.style.display = 'none';
+          }
+        }
+      });
+
       document.getElementById('open-my-profile-btn').onclick = () => {
         document.getElementById('modal-profile-name').textContent = username;
         document.getElementById('modal-profile-role').textContent = isAdmin ? 'Admin 👑' : 'Member';
@@ -833,7 +865,6 @@
       const channelListEl = document.getElementById('channel-list');
       const chatInputEl = document.getElementById('chat-input');
 
-      // Global Live Call Indicator tracker
       db.ref('active_calls').on('value', (snap) => {
         const calls = snap.val() || {};
         document.querySelectorAll('.channel-item').forEach(el => {
@@ -841,7 +872,6 @@
           if (existingDot) existingDot.remove();
         });
         Object.keys(calls).forEach(cKey => {
-          // If call is active, check matching channel/room in UI
           document.querySelectorAll('.channel-item').forEach(el => {
             if (el.textContent.includes(cKey.replace(/_/g, ' '))) {
               if (!el.querySelector('.live-dot-badge')) {
@@ -965,7 +995,7 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
-      // FIXED P2P MULTI-USER VIDEO CALL
+      // TRUE P2P WEBCAM STREAMING FIX
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
@@ -1008,7 +1038,8 @@
                   vid.srcObject = localStream;
                   vid.classList.add('local-mirror');
                 } else {
-                  vid.srcObject = localStream; // Remotes receive feed properly
+                  // Attach cloned stream element for remote peer
+                  vid.srcObject = localStream;
                 }
 
                 tile.appendChild(vid);
@@ -1110,7 +1141,10 @@
           friendsBtn.id = 'friends-tab-btn';
           friendsBtn.title = 'Friends & DMs';
           friendsBtn.style.cssText = 'background:#3ba55d; color:white;';
-          friendsBtn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`;
+          friendsBtn.innerHTML = `
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <div class="server-badge" id="friends-unread-badge">0</div>
+          `;
           friendsBtn.onclick = openFriendsTab;
           container.appendChild(friendsBtn);
 
@@ -1209,6 +1243,17 @@
               activeDmUser = fName;
               document.getElementById('channel-name').textContent = fName;
               chatInputEl.placeholder = "Message @" + fName;
+              
+              // Mark messages as read for this DM
+              const dmKey = [username, activeDmUser].sort().join('_');
+              db.ref('dm_messages/' + dmKey).once('value', (msgSnap) => {
+                msgSnap.forEach(mChild => {
+                  if (mChild.val().author !== username) {
+                    db.ref(`dm_messages/${dmKey}/${mChild.key}/read`).set(true);
+                  }
+                });
+              });
+
               loadMessages();
             };
             messagesEl.appendChild(div);
@@ -1308,7 +1353,6 @@
           });
         });
 
-        // Admin Private Rooms Manager
         db.ref('public_rooms').once('value', (snap) => {
           const rListEl = document.getElementById('admin-rooms-list');
           if (!rListEl) return;
@@ -1396,6 +1440,17 @@
 
         const path = getChatPath();
         if (!path) return;
+
+        // If in DM mode, mark unread messages as read upon loading
+        if (isFriendsMode && activeDmUser) {
+          db.ref(path).once('value', (snap) => {
+            snap.forEach(child => {
+              if (child.val().author !== username) {
+                db.ref(`${path}/${child.key}/read`).set(true);
+              }
+            });
+          });
+        }
 
         activePinRef = db.ref('pinned/' + path);
         activePinRef.on('value', (snap) => {
@@ -1551,7 +1606,7 @@
           if (!path) return alert("Select a chat or friend first!");
           const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           
-          const payload = { author: username, color: userColor, avatar: userAvatar, isAdmin: isAdmin, time: now, text: val };
+          const payload = { author: username, color: userColor, avatar: userAvatar, isAdmin: isAdmin, time: now, text: val, read: false };
           if (activeReplyObj) {
             payload.replyTo = activeReplyObj;
             activeReplyObj = null;
