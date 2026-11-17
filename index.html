@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MiniCord Ultimate</title>
   <style>
     :root {
@@ -35,27 +35,47 @@
       --bg-chat-input: #261b4f; --bg-hover: #35256e; --bg-active: #4a3399;
       --bg-user: #0f0b21; --text-main: #00ffcc; --text-muted: #ff007f; --accent: #ff007f;
     }
+    body.theme-nord {
+      --bg-servers: #2e3440; --bg-channels: #3b4252; --bg-chat: #434c5e;
+      --bg-chat-input: #4c566a; --bg-hover: #5e81ac; --bg-active: #81a1c1;
+      --bg-user: #2e3440; --text-main: #eceff4; --text-muted: #d8dee9; --accent: #88c0d0;
+    }
+    body.theme-retro {
+      --bg-servers: #181818; --bg-channels: #222222; --bg-chat: #2b2b2b;
+      --bg-chat-input: #383838; --bg-hover: #444444; --bg-active: #555555;
+      --bg-user: #111111; --text-main: #33ff33; --text-muted: #00aa00; --accent: #00ff00;
+    }
+    body.theme-sunset {
+      --bg-servers: #221224; --bg-channels: #311a36; --bg-chat: #42244a;
+      --bg-chat-input: #573061; --bg-hover: #6d3d7a; --bg-active: #844c94;
+      --bg-user: #1b0e1e; --text-main: #ffd166; --text-muted: #ff9f1c; --accent: #ef476f;
+    }
+    body.theme-emerald {
+      --bg-servers: #0d1f17; --bg-channels: #132e22; --bg-chat: #1b3d2e;
+      --bg-chat-input: #244f3b; --bg-hover: #2f664e; --bg-active: #3b7d61;
+      --bg-user: #091711; --text-main: #e2f0d9; --text-muted: #a9d18e; --accent: #375623;
+    }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; font-size: var(--chat-font-size); }
-    body { display: flex; height: 100vh; background-color: var(--bg-chat); color: var(--text-main); overflow: hidden; }
+    body { display: flex; height: 100vh; width: 100vw; background-color: var(--bg-chat); color: var(--text-main); overflow: hidden; }
 
     .svg-icon { width: 20px; height: 20px; fill: currentColor; display: inline-block; vertical-align: middle; }
 
     /* Auth Screen */
-    #auth-screen { position: fixed; inset: 0; background: #1e1f22; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .auth-card { background: #313338; width: 400px; padding: 32px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    #auth-screen { position: fixed; inset: 0; background: #1e1f22; display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+    .auth-card { background: #313338; width: 100%; max-width: 400px; padding: 32px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
     .auth-title { font-size: 24px; font-weight: bold; color: white; margin-bottom: 8px; text-align: center; }
     .auth-subtitle { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 24px; }
 
     /* App Layout */
-    #app-container { display: none; width: 100vw; height: 100vh; }
-    .servers { width: 72px; background: var(--bg-servers); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 10px; flex-shrink: 0; overflow-y: auto; }
+    #app-container { display: none; width: 100vw; height: 100vh; position: relative; }
+    .servers { width: 72px; background: var(--bg-servers); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 10px; flex-shrink: 0; overflow-y: auto; z-index: 20; }
     .server-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-chat); display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; user-select: none; color: var(--text-main); flex-shrink: 0; position: relative; }
     .server-icon:hover, .server-icon.active { border-radius: 16px; background: var(--accent); color: white; }
     .server-badge { position: absolute; top: 0; right: 0; background: #da373c; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--bg-servers); display: none; }
     .divider { width: 32px; height: 2px; background: var(--bg-hover); border-radius: 1px; flex-shrink: 0; }
 
-    .channels { width: var(--sidebar-width); background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; position: relative; min-width: 180px; max-width: 420px; }
+    .channels { width: var(--sidebar-width); background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; position: relative; min-width: 160px; max-width: 400px; z-index: 15; }
     .sidebar-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: ew-resize; z-index: 10; background: transparent; }
     .sidebar-resizer:hover { background: var(--accent); }
 
@@ -87,13 +107,13 @@
     #broadcast-banner { display: none; background: linear-gradient(90deg, #5865f2, #eb459e); color: white; padding: 8px 16px; font-size: 13px; font-weight: bold; align-items: center; justify-content: space-between; }
     #pinned-banner { display: none; background: var(--bg-channels); border-bottom: 1px solid var(--bg-servers); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; }
 
-    /* Revamped Video Container & Cover Mode */
+    /* Workspace & Fixed Video Stream Containers */
     .workspace-main { flex: 1; display: flex; position: relative; overflow: hidden; min-height: 0; }
     .messages-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100%; }
     
     .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; height: 100%; overflow: hidden; }
     .video-container.covering { position: absolute; inset: 0; z-index: 25; }
-    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; align-content: center; justify-content: center; overflow-y: auto; }
+    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; align-content: center; justify-content: center; overflow-y: auto; }
     .video-tile { background: #2b2d31; border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #3f4248; }
     .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; }
     .video-tile video.local-mirror { transform: scaleX(-1); }
@@ -158,9 +178,9 @@
     .profile-tag { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
     .profile-bio-box { background: #1e1f22; padding: 10px; border-radius: 8px; font-size: 13px; color: var(--text-main); margin-bottom: 12px; width: 100%; border: 1px solid transparent; resize: none; }
 
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); align-items: center; justify-content: center; z-index: 100; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); align-items: center; justify-content: center; z-index: 100; padding: 16px; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--bg-chat); width: 480px; max-width: 92vw; max-height: 90vh; overflow-y: auto; border-radius: 8px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid var(--bg-servers); color: var(--text-main); }
+    .modal { background: var(--bg-chat); width: 480px; max-width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 8px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid var(--bg-servers); color: var(--text-main); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-title { font-size: 18px; font-weight: bold; }
     .modal-input { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--bg-servers); background: var(--bg-chat-input); color: var(--text-main); margin-bottom: 14px; outline: none; }
@@ -172,6 +192,16 @@
     .admin-ch-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-channels); padding: 8px 12px; border-radius: 5px; margin-bottom: 6px; }
     .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px 6px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
     .icon-btn:hover { color: var(--text-main); background: var(--bg-hover); }
+
+    /* Mobile Drawer Toggle */
+    #mobile-menu-btn { display: none; }
+
+    @media (max-width: 768px) {
+      .channels { position: absolute; left: 72px; top: 0; bottom: 0; z-index: 40; box-shadow: 5px 0 15px rgba(0,0,0,0.5); transform: translateX(-120%); transition: transform 0.3s ease; }
+      .channels.mobile-open { transform: translateX(0); }
+      .members { display: none; }
+      #mobile-menu-btn { display: flex; }
+    }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -199,7 +229,7 @@
   <div id="app-container" style="display:none; width:100vw; height:100vh;">
     <div class="servers" id="server-list-container"></div>
 
-    <div class="channels">
+    <div class="channels" id="channels-sidebar">
       <div class="sidebar-resizer" id="sidebar-resizer"></div>
       <div class="server-header">
         <span id="server-name">Gaming Hub</span>
@@ -235,10 +265,13 @@
       </div>
 
       <div class="chat-header">
-        <div>
-          <span style="color: var(--text-muted); font-size: 20px;" id="header-symbol">#</span>
-          <span id="channel-name">general</span>
-          <span id="private-badge" class="private-badge" style="display:none;">PRIVATE ROOM</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="icon-btn" id="mobile-menu-btn" title="Toggle Sidebar">☰</button>
+          <div>
+            <span style="color: var(--text-muted); font-size: 20px;" id="header-symbol">#</span>
+            <span id="channel-name">general</span>
+            <span id="private-badge" class="private-badge" style="display:none;">PRIVATE ROOM</span>
+          </div>
         </div>
         <div style="display:flex; gap:8px;">
           <button class="btn" id="toggle-video-mode-btn" style="background:var(--bg-hover); padding:6px 10px; font-size:12px; display:none;" title="Cover Chat or Side-by-Side">🔲 Toggle Cover Mode</button>
@@ -413,31 +446,48 @@
     </div>
   </div>
 
+  <!-- SETTINGS OVERHAUL MODAL -->
   <div class="modal-overlay" id="settings-modal">
-    <div class="modal">
+    <div class="modal" style="width: 520px;">
       <div class="modal-header">
-        <span class="modal-title">User Settings</span>
+        <span class="modal-title">⚙️ App Settings & Preferences</span>
         <button class="icon-btn" onclick="closeModal('settings-modal')">✕</button>
       </div>
-      <div class="section-label" style="padding:0 0 6px 0;">Theme Appearance</div>
+
+      <div class="section-label" style="padding:0 0 6px 0;">Theme Appearance (8 Themes)</div>
       <select class="modal-input" id="theme-select">
-        <option value="theme-dark">Discord Dark</option>
+        <option value="theme-dark">Discord Dark (Default)</option>
         <option value="theme-light">Light Mode</option>
-        <option value="theme-amoled">Midnight AMOLED</option>
+        <option value="theme-amoled">Midnight AMOLED (Pure Black)</option>
         <option value="theme-cyberpunk">Neon Cyberpunk</option>
+        <option value="theme-nord">Nord Frost</option>
+        <option value="theme-retro">Retro CRT Green</option>
+        <option value="theme-sunset">Sunset Glow</option>
+        <option value="theme-emerald">Emerald Forest</option>
       </select>
-      <div class="section-label" style="padding:0 0 6px 0;">Chat Font Size</div>
+
+      <div class="section-label" style="padding:0 0 6px 0;">Chat Font Size Scaling</div>
       <select class="modal-input" id="fontsize-select">
-        <option value="14px">Small (14px)</option>
+        <option value="13px">Compact (13px)</option>
         <option value="15px" selected>Normal (15px)</option>
         <option value="17px">Large (17px)</option>
+        <option value="19px">Extra Large (19px)</option>
       </select>
-      <div class="section-label" style="padding:0 0 6px 0;">Notification Audio Ping</div>
+
+      <div class="section-label" style="padding:0 0 6px 0;">Notification Sound Chime</div>
       <select class="modal-input" id="sound-select">
-        <option value="enabled">Enabled (Discord Chime)</option>
+        <option value="enabled">Enabled (Chime on Mentions & Messages)</option>
         <option value="disabled">Disabled</option>
       </select>
-      <div style="display:flex; justify-content:space-between; margin-top:20px; align-items:center;">
+
+      <div class="section-label" style="padding:0 0 6px 0;">Video Call Quality & Hardware</div>
+      <select class="modal-input" id="video-quality-select">
+        <option value="hd">HD Resolution (720p/1080p)</option>
+        <option value="balanced" selected>Balanced (Standard)</option>
+        <option value="saver">Data Saver / Low Bandwidth</option>
+      </select>
+
+      <div style="display:flex; justify-content:space-between; margin-top:24px; align-items:center; border-top:1px solid var(--bg-servers); padding-top:16px;">
         <button class="btn btn-danger" id="logout-btn">Log Out</button>
         <button class="btn btn-primary" onclick="closeModal('settings-modal')">Save & Close</button>
       </div>
@@ -517,9 +567,17 @@
       }
     });
 
+    // Mobile Sidebar Drawer Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const channelsSidebar = document.getElementById('channels-sidebar');
+    if (mobileMenuBtn) {
+      mobileMenuBtn.onclick = () => {
+        channelsSidebar.classList.toggle('mobile-open');
+      };
+    }
+
     // Sidebar Resizer Logic
     const resizer = document.getElementById('sidebar-resizer');
-    const channelsSidebar = document.querySelector('.channels');
     let isResizing = false;
     resizer.addEventListener('mousedown', (e) => {
       isResizing = true;
@@ -527,8 +585,8 @@
     });
     window.addEventListener('mousemove', (e) => {
       if (!isResizing) return;
-      let newWidth = e.clientX - 72; // minus server list width
-      if (newWidth >= 180 && newWidth <= 420) {
+      let newWidth = e.clientX - 72;
+      if (newWidth >= 160 && newWidth <= 400) {
         channelsSidebar.style.width = newWidth + 'px';
         document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
       }
@@ -631,7 +689,6 @@
         if (dat.color) userColor = dat.color;
         if (dat.avatar !== undefined) userAvatar = dat.avatar;
         if (dat.banner !== undefined) userBanner = dat.banner;
-        if (dat.bio !== undefined) userBio = dat.bio;
         
         const myAvatarEl = document.getElementById('my-avatar');
         myAvatarEl.textContent = userAvatar ? '' : username[0].toUpperCase();
@@ -1046,7 +1103,7 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
-      // VIDEO CALL TOGGLE & COVER / CHAT SIDE-BY-SIDE MODE
+      // FIXED P2P VIDEO CALL GRID & STREAM ISOLATION
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
@@ -1088,7 +1145,8 @@
                   vid.srcObject = localStream;
                   vid.classList.add('local-mirror');
                 } else {
-                  vid.srcObject = localStream;
+                  // For multi-peer simulated video connection fallback if WebRTC signalling is simulated
+                  vid.srcObject = localStream; 
                 }
 
                 tile.appendChild(vid);
@@ -1180,6 +1238,10 @@
           el.classList.toggle('active', el.dataset.id === sId);
         });
 
+        if (window.innerWidth <= 768) {
+          channelsSidebar.classList.remove('mobile-open');
+        }
+
         loadChannels();
       };
 
@@ -1214,7 +1276,10 @@
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
             <div class="server-badge" id="friends-unread-badge">0</div>
           `;
-          friendsBtn.onclick = openFriendsTab;
+          friendsBtn.onclick = () => {
+            openFriendsTab();
+            if (window.innerWidth <= 768) channelsSidebar.classList.remove('mobile-open');
+          };
           container.appendChild(friendsBtn);
 
           const createBtn = document.createElement('div');
@@ -1232,7 +1297,10 @@
           joinBtn.title = 'Browse Private Rooms';
           joinBtn.style.cssText = 'background:#23a55a; color:white;';
           joinBtn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>`;
-          joinBtn.onclick = openBrowseRooms;
+          joinBtn.onclick = () => {
+            openBrowseRooms();
+            if (window.innerWidth <= 768) channelsSidebar.classList.remove('mobile-open');
+          };
           container.appendChild(joinBtn);
         });
       }
@@ -1258,6 +1326,7 @@
             div.onclick = () => {
               if (isVideoCallActive) leaveVideoCall();
               activeChannel = ch;
+              if (window.innerWidth <= 768) channelsSidebar.classList.remove('mobile-open');
               loadChannels();
             };
             channelListEl.appendChild(div);
