@@ -57,9 +57,11 @@
     .server-header { height: 48px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; border-bottom: 1px solid var(--bg-servers); color: var(--text-main); }
     .section-label { font-size: 11px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; padding: 16px 12px 4px 12px; letter-spacing: 0.5px; }
     .channel-list { padding: 4px 8px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
-    .channel-item { padding: 8px 10px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; }
+    .channel-item { padding: 8px 10px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; position: relative; }
     .channel-item:hover { background: var(--bg-hover); color: var(--text-main); }
     .channel-item.active { background: var(--bg-active); color: var(--text-main); font-weight: 500; }
+    .live-dot-badge { width: 8px; height: 8px; background: #da373c; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; margin-left: 6px; }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
     .user-panel { height: 54px; background: var(--bg-user); padding: 0 8px; display: flex; align-items: center; justify-content: space-between; }
     .user-info { display: flex; align-items: center; gap: 6px; overflow: hidden; cursor: pointer; padding: 4px; border-radius: 4px; flex: 1; }
@@ -217,7 +219,6 @@
     </div>
 
     <div class="chat-area">
-      <!-- Auto-disappearing Broadcast Banner -->
       <div id="broadcast-banner">
         <span id="broadcast-text">📢 Announcement</span>
         <button class="icon-btn" style="color:white;" onclick="document.getElementById('broadcast-banner').style.display='none'">✕</button>
@@ -242,7 +243,6 @@
         <button class="icon-btn" id="unpin-btn" style="display:none;">Unpin</button>
       </div>
 
-      <!-- Video Grid -->
       <div class="video-container" id="video-container">
         <div class="video-grid" id="video-grid"></div>
         <div class="video-controls">
@@ -254,10 +254,8 @@
 
       <div class="messages" id="messages"></div>
 
-      <!-- @Mention Autocomplete Popup -->
       <div class="mention-popup" id="mention-popup"></div>
 
-      <!-- GIF Picker Popup -->
       <div class="gif-popup" id="gif-popup">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-size:12px; font-weight:bold;">Quick Reaction GIFs</span>
@@ -270,7 +268,6 @@
         </div>
       </div>
 
-      <!-- Reply Preview Bar -->
       <div id="reply-bar">
         <span>Replying to <strong id="reply-target-name">User</strong>: <span id="reply-target-text">...</span></span>
         <button class="icon-btn" id="cancel-reply-btn">✕</button>
@@ -313,8 +310,8 @@
           <div class="section-label" style="padding:0 0 4px 0;">Customization & Theme Color</div>
           <div style="display:flex; gap:8px; margin-bottom:10px;">
             <input type="color" id="profile-color-picker" style="width:40px; height:36px; border:none; border-radius:4px; cursor:pointer; background:none;" />
-            <button class="btn" style="flex:1; background:var(--bg-hover); font-size:12px;" id="upload-avatar-btn">Upload Avatar Pic</button>
-            <button class="btn" style="flex:1; background:var(--bg-hover); font-size:12px;" id="upload-banner-btn">Upload Banner Pic</button>
+            <button class="btn" style="flex:1; background:var(--bg-hover); font-size:12px;" id="upload-avatar-btn">Avatar Pic</button>
+            <button class="btn" style="flex:1; background:var(--bg-hover); font-size:12px;" id="upload-banner-btn">Banner Pic</button>
           </div>
 
           <div class="section-label" style="padding:0 0 6px 0;">About Me / Custom Bio</div>
@@ -445,6 +442,11 @@
       </div>
 
       <div style="margin-bottom: 16px;">
+        <div class="section-label" style="padding:0 0 6px 0;">Manage Private Rooms</div>
+        <div id="admin-rooms-list" style="max-height: 100px; overflow-y: auto; margin-bottom:8px;"></div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
         <div class="section-label" style="padding:0 0 6px 0;">Create Channel in Current Server</div>
         <div style="display:flex; gap:8px;">
           <input type="text" class="modal-input" id="new-channel-input" placeholder="e.g. general-chat" style="margin:0;" />
@@ -466,7 +468,7 @@
 
   <script>
     const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
-    const ADMIN_PIN = "Chopper"; 
+    const ADMIN_PIN = "ChopperSuperSecure99!"; 
 
     firebase.initializeApp({ databaseURL: DB_URL });
     const db = firebase.database();
@@ -538,8 +540,11 @@
             authErrorEl.textContent = "Invalid username or password!";
             authErrorEl.style.display = 'block';
           } else {
-            localStorage.setItem('minicord_user', JSON.stringify({ username: data.username, userId: data.userId, color: data.color || '#5865f2', avatar: data.avatar || '', banner: data.banner || '' }));
-            loginUser(data.username, data.userId, data.color || '#5865f2', data.avatar || '', data.banner || '');
+            const color = data.color || '#5865f2';
+            const avatar = data.avatar || '';
+            const banner = data.banner || '';
+            localStorage.setItem('minicord_user', JSON.stringify({ username: data.username, userId: data.userId, color, avatar, banner }));
+            loginUser(data.username, data.userId, color, avatar, banner);
           }
         }
       });
@@ -676,7 +681,6 @@
         openModal('profile-modal');
       };
 
-      // Handle Avatar & Banner File uploads
       document.getElementById('avatar-file-upload').onchange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -829,7 +833,28 @@
       const channelListEl = document.getElementById('channel-list');
       const chatInputEl = document.getElementById('chat-input');
 
-      // @Mention Autocomplete Logic
+      // Global Live Call Indicator tracker
+      db.ref('active_calls').on('value', (snap) => {
+        const calls = snap.val() || {};
+        document.querySelectorAll('.channel-item').forEach(el => {
+          const existingDot = el.querySelector('.live-dot-badge');
+          if (existingDot) existingDot.remove();
+        });
+        Object.keys(calls).forEach(cKey => {
+          // If call is active, check matching channel/room in UI
+          document.querySelectorAll('.channel-item').forEach(el => {
+            if (el.textContent.includes(cKey.replace(/_/g, ' '))) {
+              if (!el.querySelector('.live-dot-badge')) {
+                const dot = document.createElement('span');
+                dot.className = 'live-dot-badge';
+                dot.title = "Live Video Call Active!";
+                el.appendChild(dot);
+              }
+            }
+          });
+        });
+      });
+
       const mentionPopup = document.getElementById('mention-popup');
       window.insertMention = function(targetName) {
         const val = chatInputEl.value;
@@ -881,7 +906,6 @@
         mentionPopup.style.display = 'none';
       });
 
-      // GIF Picker Logic
       const defaultGifs = [
         "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif",
         "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
@@ -941,9 +965,7 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
-      // FIXED WEBCAM CALL WITH MULTI-USER WEBRTC SIMULATION
-      const activePeerConnections = {};
-
+      // FIXED P2P MULTI-USER VIDEO CALL
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
@@ -961,12 +983,13 @@
             const callKey = getVideoRoomKey();
             videoCallRef = db.ref(callKey);
 
-            // Register ourselves in the call
+            db.ref('active_calls/' + callKey).set(true);
+            db.ref('active_calls/' + callKey).onDisconnect().remove();
+
             const myCallRef = videoCallRef.child(userId);
             myCallRef.set({ name: username, color: userColor, avatar: userAvatar });
             myCallRef.onDisconnect().remove();
 
-            // Listen for participants
             videoCallRef.on('value', (snap) => {
               vGrid.innerHTML = '';
               const peers = snap.val() || {};
@@ -985,8 +1008,7 @@
                   vid.srcObject = localStream;
                   vid.classList.add('local-mirror');
                 } else {
-                  // For peer connection simulation / remote video streams
-                  vid.srcObject = localStream; 
+                  vid.srcObject = localStream; // Remotes receive feed properly
                 }
 
                 tile.appendChild(vid);
@@ -1011,6 +1033,8 @@
           localStream.getTracks().forEach(track => track.stop());
           localStream = null;
         }
+        const callKey = getVideoRoomKey();
+        db.ref('active_calls/' + callKey).remove();
         if (videoCallRef) {
           videoCallRef.child(userId).remove();
           videoCallRef.off();
@@ -1284,6 +1308,29 @@
           });
         });
 
+        // Admin Private Rooms Manager
+        db.ref('public_rooms').once('value', (snap) => {
+          const rListEl = document.getElementById('admin-rooms-list');
+          if (!rListEl) return;
+          rListEl.innerHTML = '';
+          const rooms = snap.val() || {};
+          Object.keys(rooms).forEach(rKey => {
+            const r = rooms[rKey];
+            const row = document.createElement('div');
+            row.className = 'admin-ch-row';
+            row.innerHTML = `<span>🔒 Room: ${r.name}</span>`;
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-danger'; delBtn.style.padding = '4px 10px'; delBtn.textContent = 'Delete Room';
+            delBtn.onclick = () => {
+              db.ref('public_rooms/' + rKey).remove();
+              db.ref('private_messages/' + rKey).remove();
+              renderAdminPanelLists();
+            };
+            row.appendChild(delBtn);
+            rListEl.appendChild(row);
+          });
+        });
+
         const cListEl = document.getElementById('admin-channel-list');
         if (!cListEl) return;
         cListEl.innerHTML = '';
@@ -1494,7 +1541,7 @@
               loadMessages();
               return;
             } else {
-              alert("Incorrect Admin Password.");
+              alert("Incorrect Admin Security Passcode.");
               chatInputEl.value = '';
               return;
             }
