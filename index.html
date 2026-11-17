@@ -55,7 +55,7 @@
     .server-badge { position: absolute; top: 0; right: 0; background: #da373c; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--bg-servers); display: none; }
     .divider { width: 32px; height: 2px; background: var(--bg-hover); border-radius: 1px; flex-shrink: 0; }
 
-    .channels { width: var(--sidebar-width); background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; position: relative; min-width: 180px; max-width: 400px; }
+    .channels { width: var(--sidebar-width); background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; position: relative; min-width: 180px; max-width: 420px; }
     .sidebar-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: ew-resize; z-index: 10; background: transparent; }
     .sidebar-resizer:hover { background: var(--accent); }
 
@@ -87,15 +87,19 @@
     #broadcast-banner { display: none; background: linear-gradient(90deg, #5865f2, #eb459e); color: white; padding: 8px 16px; font-size: 13px; font-weight: bold; align-items: center; justify-content: space-between; }
     #pinned-banner { display: none; background: var(--bg-channels); border-bottom: 1px solid var(--bg-servers); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; }
 
-    /* Revamped Video Grid */
-    .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; }
-    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; align-content: center; justify-content: center; overflow-y: auto; }
+    /* Revamped Video Container & Cover Mode */
+    .workspace-main { flex: 1; display: flex; position: relative; overflow: hidden; min-height: 0; }
+    .messages-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100%; }
+    
+    .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; height: 100%; overflow: hidden; }
+    .video-container.covering { position: absolute; inset: 0; z-index: 25; }
+    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; align-content: center; justify-content: center; overflow-y: auto; }
     .video-tile { background: #2b2d31; border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #3f4248; }
     .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; }
     .video-tile video.local-mirror { transform: scaleX(-1); }
     .video-name { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 6px; font-size: 13px; z-index: 2; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-    .video-controls { height: 72px; background: #1e1f22; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
-    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.2s; font-size: 18px; }
+    .video-controls { height: 64px; background: #1e1f22; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.2s; font-size: 16px; }
     .v-btn:hover { background: #35373c; transform: scale(1.05); }
     .v-btn.danger { background: #da373c; }
 
@@ -237,6 +241,7 @@
           <span id="private-badge" class="private-badge" style="display:none;">PRIVATE ROOM</span>
         </div>
         <div style="display:flex; gap:8px;">
+          <button class="btn" id="toggle-video-mode-btn" style="background:var(--bg-hover); padding:6px 10px; font-size:12px; display:none;" title="Cover Chat or Side-by-Side">🔲 Toggle Cover Mode</button>
           <button class="btn btn-primary" id="toggle-video-call-btn" style="padding:6px 12px; font-size:13px; display:flex; align-items:center; gap:6px;">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
             Video Call
@@ -249,16 +254,20 @@
         <button class="icon-btn" id="unpin-btn" style="display:none;">Unpin</button>
       </div>
 
-      <div class="video-container" id="video-container">
-        <div class="video-grid" id="video-grid"></div>
-        <div class="video-controls">
-          <button class="v-btn" id="mute-mic-btn" title="Mute Microphone">🎤</button>
-          <button class="v-btn" id="toggle-cam-btn" title="Turn Camera Off">📹</button>
-          <button class="v-btn danger" id="leave-call-btn" title="Disconnect Call">📞</button>
+      <div class="workspace-main">
+        <div class="messages-wrapper" id="messages-wrapper">
+          <div class="messages" id="messages"></div>
+        </div>
+
+        <div class="video-container" id="video-container">
+          <div class="video-grid" id="video-grid"></div>
+          <div class="video-controls">
+            <button class="v-btn" id="mute-mic-btn" title="Mute Microphone">🎤</button>
+            <button class="v-btn" id="toggle-cam-btn" title="Turn Camera Off">📹</button>
+            <button class="v-btn danger" id="leave-call-btn" title="Disconnect Call">📞</button>
+          </div>
         </div>
       </div>
-
-      <div class="messages" id="messages"></div>
 
       <div class="mention-popup" id="mention-popup"></div>
 
@@ -616,17 +625,21 @@
     }
 
     function initApp() {
-      db.ref('accounts/' + username.toLowerCase()).once('value', (s) => {
+      // True server-side profile persistence sync
+      db.ref('accounts/' + username.toLowerCase()).on('value', (s) => {
         const dat = s.val() || {};
         if (dat.color) userColor = dat.color;
-        if (dat.avatar) userAvatar = dat.avatar;
-        if (dat.banner) userBanner = dat.banner;
+        if (dat.avatar !== undefined) userAvatar = dat.avatar;
+        if (dat.banner !== undefined) userBanner = dat.banner;
+        if (dat.bio !== undefined) userBio = dat.bio;
         
         const myAvatarEl = document.getElementById('my-avatar');
         myAvatarEl.textContent = userAvatar ? '' : username[0].toUpperCase();
         myAvatarEl.style.backgroundColor = userColor;
         if (userAvatar) myAvatarEl.style.backgroundImage = `url(${userAvatar})`;
         else myAvatarEl.style.backgroundImage = 'none';
+        
+        updatePresence();
       });
 
       document.getElementById('my-name').textContent = username;
@@ -891,6 +904,7 @@
       let isVideoCallActive = false;
       let localStream = null;
       let activeReplyObj = null;
+      let isCoverMode = false;
 
       let activeChannelRef = null;
       let activeMsgRef = null;
@@ -1032,20 +1046,19 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
-      // REVAMPED P2P VIDEO CALL GRID
+      // VIDEO CALL TOGGLE & COVER / CHAT SIDE-BY-SIDE MODE
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
         const vGrid = document.getElementById('video-grid');
+        const toggleModeBtn = document.getElementById('toggle-video-mode-btn');
 
         if (isVideoCallActive) {
           try {
             localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             vContainer.style.display = 'flex';
-            messagesEl.style.display = 'none';
-            document.getElementById('chat-input-wrapper').style.display = 'none';
-            document.getElementById('typing-bar').style.display = 'none';
-            document.getElementById('toggle-video-call-btn').textContent = "Return to Chat";
+            toggleModeBtn.style.display = 'block';
+            document.getElementById('toggle-video-call-btn').textContent = "Disconnect Call";
 
             const callKey = getVideoRoomKey();
             videoCallRef = db.ref(callKey);
@@ -1096,6 +1109,23 @@
         }
       };
 
+      document.getElementById('toggle-video-mode-btn').onclick = () => {
+        isCoverMode = !isCoverMode;
+        const vContainer = document.getElementById('video-container');
+        const mWrapper = document.getElementById('messages-wrapper');
+        const toggleBtn = document.getElementById('toggle-video-mode-btn');
+
+        if (isCoverMode) {
+          vContainer.classList.add('covering');
+          mWrapper.style.display = 'none';
+          toggleBtn.textContent = "💬 Show Chat Alongside";
+        } else {
+          vContainer.classList.remove('covering');
+          mWrapper.style.display = 'flex';
+          toggleBtn.textContent = "🔲 Toggle Cover Mode";
+        }
+      };
+
       function leaveVideoCall() {
         if (localStream) {
           localStream.getTracks().forEach(track => track.stop());
@@ -1109,10 +1139,12 @@
           videoCallRef = null;
         }
         isVideoCallActive = false;
-        document.getElementById('video-container').style.display = 'none';
-        messagesEl.style.display = 'flex';
-        document.getElementById('chat-input-wrapper').style.display = 'flex';
-        document.getElementById('typing-bar').style.display = 'block';
+        isCoverMode = false;
+        const vContainer = document.getElementById('video-container');
+        vContainer.style.display = 'none';
+        vContainer.classList.remove('covering');
+        document.getElementById('messages-wrapper').style.display = 'flex';
+        document.getElementById('toggle-video-mode-btn').style.display = 'none';
         document.getElementById('toggle-video-call-btn').innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg> Video Call`;
       }
 
