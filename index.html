@@ -94,30 +94,49 @@
     .messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
     .message { display: flex; gap: 14px; position: relative; padding: 6px 8px; border-radius: 4px; }
     .message:hover { background: var(--bg-hover); }
-    .message.mentioned { background: rgba(88, 101, 242, 0.15); border-left: 4px solid var(--accent); }
+    .message.mentioned { background: rgba(240, 178, 50, 0.14); border-left: 4px solid #f0b232; }
     .msg-author { font-weight: bold; color: var(--text-main); margin-right: 8px; cursor: pointer; }
     .msg-author:hover { text-decoration: underline; }
+    .mention-pill { background: rgba(88, 101, 242, 0.3); color: #dee0fc; padding: 0 4px; border-radius: 3px; font-weight: 600; cursor: pointer; }
+    .mention-pill:hover { background: var(--accent); color: white; }
+    .reply-preview { font-size: 12px; color: var(--text-muted); border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 4px; opacity: 0.85; }
     .admin-tag { background: var(--accent); color: white; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
     .msg-time { font-size: 11px; color: var(--text-muted); }
-    .chat-img { max-width: 300px; max-height: 250px; border-radius: 6px; margin-top: 6px; display: block; object-fit: cover; }
+    .chat-img { max-width: 300px; max-height: 240px; border-radius: 6px; margin-top: 6px; display: block; object-fit: cover; }
     
-    .msg-actions { display: none; position: absolute; right: 10px; top: -10px; background: var(--bg-channels); border: 1px solid var(--bg-servers); border-radius: 6px; padding: 2px 4px; gap: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+    .msg-actions { display: none; position: absolute; right: 10px; top: -12px; background: var(--bg-channels); border: 1px solid var(--bg-servers); border-radius: 6px; padding: 2px 4px; gap: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 5; }
     .message:hover .msg-actions { display: flex; }
     .act-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px 5px; font-size: 12px; border-radius: 4px; }
     .act-btn:hover { background: var(--bg-hover); color: var(--text-main); }
     .reactions-bar { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
     .reaction-pill { background: var(--bg-channels); border: 1px solid var(--bg-active); border-radius: 12px; padding: 1px 7px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
+    /* @Mention Autocomplete & Reply Bar */
+    .mention-popup { display: none; position: absolute; bottom: 72px; left: 16px; width: 260px; max-height: 200px; overflow-y: auto; background: var(--bg-channels); border: 1px solid var(--bg-servers); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); z-index: 50; padding: 6px; }
+    .mention-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+    .mention-item:hover, .mention-item.selected { background: var(--accent); color: white; }
+
+    #reply-bar { display: none; background: var(--bg-channels); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; border-top: 1px solid var(--bg-servers); }
+
+    /* GIF Picker Popup */
+    .gif-popup { display: none; position: absolute; bottom: 72px; right: 16px; width: 320px; background: var(--bg-channels); border: 1px solid var(--bg-servers); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); z-index: 50; padding: 10px; }
+    .gif-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px; max-height: 200px; overflow-y: auto; }
+    .gif-thumb { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
+    .gif-thumb:hover { border-color: var(--accent); }
+
     .typing-bar { height: 22px; padding: 0 18px; font-size: 11px; color: var(--text-muted); font-style: italic; }
     .input-wrapper { padding: 0 16px 20px 16px; display: flex; gap: 8px; align-items: center; }
     .chat-input { flex: 1; padding: 12px 16px; border-radius: 8px; border: none; background: var(--bg-chat-input); color: var(--text-main); outline: none; }
     .input-btn-group { display: flex; gap: 6px; }
-    .emoji-btn { background: var(--bg-chat-input); border: none; border-radius: 8px; width: 42px; cursor: pointer; font-size: 18px; }
+    .emoji-btn { background: var(--bg-chat-input); border: none; border-radius: 8px; width: 42px; cursor: pointer; font-size: 16px; color: var(--text-main); font-weight: bold; }
+    .emoji-btn:hover { background: var(--bg-hover); }
 
     .members { width: 220px; background: var(--bg-channels); padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; border-left: 1px solid var(--bg-servers); flex-shrink: 0; overflow-y: auto; }
-    .member-item { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: 4px; cursor: pointer; }
+    .member-item { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; border-radius: 4px; cursor: pointer; }
     .member-item:hover { background: var(--bg-hover); }
     .member-name { font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ping-mini-btn { opacity: 0; background: var(--accent); color: white; border: none; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; }
+    .member-item:hover .ping-mini-btn { opacity: 1; }
 
     /* Modals */
     .profile-card { background: #111214; width: 340px; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.6); border: 1px solid #22252a; }
@@ -234,12 +253,37 @@
       </div>
 
       <div class="messages" id="messages"></div>
+
+      <!-- @Mention Autocomplete Popup -->
+      <div class="mention-popup" id="mention-popup"></div>
+
+      <!-- GIF Picker Popup -->
+      <div class="gif-popup" id="gif-popup">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:12px; font-weight:bold;">Quick Reaction GIFs</span>
+          <button class="icon-btn" onclick="document.getElementById('gif-popup').style.display='none'">✕</button>
+        </div>
+        <div class="gif-grid" id="gif-grid"></div>
+        <div style="margin-top:8px; display:flex; gap:4px;">
+          <input type="text" id="custom-gif-url" placeholder="Or paste GIF link..." style="flex:1; padding:6px; border-radius:4px; border:none; background:var(--bg-chat-input); color:var(--text-main); font-size:12px;" />
+          <button class="btn btn-primary" id="send-custom-gif" style="padding:4px 8px; font-size:12px;">Send</button>
+        </div>
+      </div>
+
+      <!-- Reply Preview Bar -->
+      <div id="reply-bar">
+        <span>Replying to <strong id="reply-target-name">User</strong>: <span id="reply-target-text">...</span></span>
+        <button class="icon-btn" id="cancel-reply-btn">✕</button>
+      </div>
+
       <div class="typing-bar" id="typing-bar"></div>
       <div class="input-wrapper" id="chat-input-wrapper">
-        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type @username to mention)" />
+        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type @ to ping someone)" autocomplete="off" />
         <div class="input-btn-group">
           <input type="file" id="file-upload" style="display:none;" accept="image/*,video/*" />
-          <button class="icon-btn" id="attach-btn" title="Upload Image or GIF" style="background:var(--bg-chat-input); height:42px; width:42px; border-radius:8px;">📁</button>
+          <button class="emoji-btn" id="quick-at-btn" title="Ping Someone (@)">@</button>
+          <button class="emoji-btn" id="gif-btn" title="Send a GIF" style="font-size:12px;">GIF</button>
+          <button class="icon-btn" id="attach-btn" title="Upload Image" style="background:var(--bg-chat-input); height:42px; width:42px; border-radius:8px;">📁</button>
           <button class="emoji-btn" id="emoji-btn" title="Quick Emoji" style="height:42px;">🔥</button>
         </div>
       </div>
@@ -267,8 +311,9 @@
           <textarea class="profile-bio-box" id="modal-profile-bio" rows="2"></textarea>
           <button class="btn btn-primary" id="save-bio-btn" style="width:100%; margin-bottom:10px; display:none;">Save Bio</button>
 
-          <div id="profile-action-container" style="margin-bottom:12px;">
-            <button class="btn btn-success" id="profile-add-friend-btn" style="width:100%;">Add Friend</button>
+          <div id="profile-action-container" style="margin-bottom:12px; display:flex; gap:8px;">
+            <button class="btn btn-success" id="profile-add-friend-btn" style="flex:1;">Add Friend</button>
+            <button class="btn btn-primary" id="profile-ping-btn" style="flex:1;">Ping @User</button>
           </div>
           <div id="status-override-box">
             <div class="section-label" style="padding:0 0 6px 0;">Status Override</div>
@@ -418,10 +463,15 @@
     window.closeModal = (id) => document.getElementById(id).classList.remove('open');
     function openModal(id) { document.getElementById(id).classList.add('open'); }
 
-    // Close modals on ESC key
+    // Reset tab title on focus
+    window.addEventListener('focus', () => { document.title = "MiniCord Ultimate"; });
+
+    // Close modals & popups on ESC key
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+        document.getElementById('mention-popup').style.display = 'none';
+        document.getElementById('gif-popup').style.display = 'none';
       }
     });
 
@@ -495,6 +545,7 @@
     let userId = "";
     let isAdmin = false;
     let currentStatus = 'online';
+    let onlineUsersList = [];
 
     function loginUser(name, id, color) {
       username = name;
@@ -510,6 +561,16 @@
       document.getElementById('my-avatar').textContent = username[0].toUpperCase();
       document.getElementById('my-avatar').style.backgroundColor = userColor;
 
+      // Seed default servers if database is empty
+      db.ref('servers').once('value', (snap) => {
+        if (!snap.exists()) {
+          db.ref('servers').set({
+            gaming: { title: 'Gaming Hub', channels: { general: true, clips: true } },
+            dev: { title: 'Dev Squad', channels: { general: true, showcase: true } }
+          });
+        }
+      });
+
       let broadcastTimeout;
       db.ref('global_broadcast').on('value', (snap) => {
         const val = snap.val();
@@ -518,7 +579,6 @@
           document.getElementById('broadcast-text').textContent = '📢 ' + val.text;
           banner.style.display = 'flex';
           clearTimeout(broadcastTimeout);
-          // Auto-disappears after 10 seconds
           broadcastTimeout = setTimeout(() => { banner.style.display = 'none'; }, 10000);
         } else {
           banner.style.display = 'none';
@@ -585,22 +645,27 @@
         });
         
         const actionContainer = document.getElementById('profile-action-container');
-        actionContainer.style.display = 'block';
+        actionContainer.style.display = 'flex';
         const addBtn = document.getElementById('profile-add-friend-btn');
         addBtn.textContent = "Add Friend";
         addBtn.className = "btn btn-success";
+
+        document.getElementById('profile-ping-btn').onclick = () => {
+          closeModal('profile-modal');
+          insertMention(targetName);
+        };
         
         db.ref('friends/' + userId).once('value', (snap) => {
           let alreadyFriends = false;
           snap.forEach(child => { if (child.val() === targetName) alreadyFriends = true; });
           if (alreadyFriends) {
-            addBtn.textContent = "Already Friends ✓";
+            addBtn.textContent = "Friends ✓";
             addBtn.className = "btn btn-primary";
             addBtn.onclick = null;
           } else {
             addBtn.onclick = () => {
               db.ref('friends/' + userId).push(targetName);
-              addBtn.textContent = "Friend Added! ✓";
+              addBtn.textContent = "Added! ✓";
               addBtn.className = "btn btn-primary";
             };
           }
@@ -630,20 +695,27 @@
 
       db.ref('online').on('value', (snap) => {
         const users = snap.val() || {};
-        const list = Object.values(users);
-        document.getElementById('online-count').textContent = 'ONLINE — ' + list.length;
+        onlineUsersList = Object.values(users);
+        document.getElementById('online-count').textContent = 'ONLINE — ' + onlineUsersList.length;
         const memberListEl = document.getElementById('member-list');
         memberListEl.innerHTML = '';
-        list.forEach(u => {
+        onlineUsersList.forEach(u => {
           const div = document.createElement('div');
           div.className = 'member-item';
           div.innerHTML = `
-            <div class="avatar-container" style="width:28px; height:28px;">
-              <div class="avatar" style="background:${u.color}; width:28px; height:28px; font-size:12px;">${u.name[0].toUpperCase()}</div>
-              <div class="status-dot status-${u.status || 'online'}" style="width:8px; height:8px;"></div>
+            <div style="display:flex; align-items:center; gap:8px; overflow:hidden; flex:1;">
+              <div class="avatar-container" style="width:28px; height:28px;">
+                <div class="avatar" style="background:${u.color}; width:28px; height:28px; font-size:12px;">${u.name[0].toUpperCase()}</div>
+                <div class="status-dot status-${u.status || 'online'}" style="width:8px; height:8px;"></div>
+              </div>
+              <div class="member-name">${escapeHTML(u.name)}${u.isAdmin ? ' 👑' : ''}</div>
             </div>
-            <div class="member-name">${escapeHTML(u.name)}${u.isAdmin ? ' 👑' : ''}</div>
+            <button class="ping-mini-btn" title="Ping @${escapeHTML(u.name)}">@</button>
           `;
+          div.querySelector('.ping-mini-btn').onclick = (e) => {
+            e.stopPropagation();
+            insertMention(u.name);
+          };
           div.onclick = () => openPeerProfile(u.name, u.color, u.isAdmin);
           memberListEl.appendChild(div);
         });
@@ -658,15 +730,122 @@
       let activeDmUser = null;
       let isVideoCallActive = false;
       let localStream = null;
+      let activeReplyObj = null;
 
-      let activeChannelRef = null, activeChannelCb = null;
-      let activeMsgRef = null, activeMsgCb = null;
-      let activeTypingRef = null, activeTypingCb = null;
-      let activePinRef = null, activePinCb = null;
+      let activeChannelRef = null;
+      let activeMsgRef = null;
+      let activeTypingRef = null;
+      let activePinRef = null;
 
       const messagesEl = document.getElementById('messages');
       const channelListEl = document.getElementById('channel-list');
       const chatInputEl = document.getElementById('chat-input');
+
+      // @Mention Autocomplete Logic
+      const mentionPopup = document.getElementById('mention-popup');
+      window.insertMention = function(targetName) {
+        const val = chatInputEl.value;
+        const lastAt = val.lastIndexOf('@');
+        if (lastAt !== -1 && !val.slice(lastAt).includes(' ')) {
+          chatInputEl.value = val.slice(0, lastAt) + '@' + targetName + ' ';
+        } else {
+          chatInputEl.value = (val ? val + ' ' : '') + '@' + targetName + ' ';
+        }
+        mentionPopup.style.display = 'none';
+        chatInputEl.focus();
+      };
+
+      document.getElementById('quick-at-btn').onclick = () => {
+        chatInputEl.value += '@';
+        chatInputEl.focus();
+        chatInputEl.dispatchEvent(new Event('input'));
+      };
+
+      chatInputEl.addEventListener('input', () => {
+        const val = chatInputEl.value;
+        const lastAt = val.lastIndexOf('@');
+        if (lastAt !== -1) {
+          const query = val.slice(lastAt + 1);
+          if (!query.includes(' ')) {
+            const matches = [
+              { name: 'everyone', color: '#f0b232', isEveryone: true },
+              ...onlineUsersList
+            ].filter(u => u.name.toLowerCase().startsWith(query.toLowerCase()));
+
+            if (matches.length > 0) {
+              mentionPopup.innerHTML = '';
+              matches.forEach(m => {
+                const item = document.createElement('div');
+                item.className = 'mention-item';
+                item.innerHTML = `
+                  <div class="avatar" style="background:${m.color || '#5865f2'}; width:22px; height:22px; font-size:11px;">${m.isEveryone ? '📢' : m.name[0].toUpperCase()}</div>
+                  <span>@${escapeHTML(m.name)}</span>
+                `;
+                item.onclick = () => insertMention(m.name);
+                mentionPopup.appendChild(item);
+              });
+              mentionPopup.style.display = 'block';
+              return;
+            }
+          }
+        }
+        mentionPopup.style.display = 'none';
+      });
+
+      // GIF Picker Logic
+      const defaultGifs = [
+        "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif",
+        "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+        "https://media.giphy.com/media/111ebonMs90YLu/giphy.gif",
+        "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif",
+        "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif",
+        "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
+      ];
+      const gifGrid = document.getElementById('gif-grid');
+      defaultGifs.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = 'gif-thumb';
+        img.onclick = () => {
+          sendImageOrGif(url, 'GIF');
+          document.getElementById('gif-popup').style.display = 'none';
+        };
+        gifGrid.appendChild(img);
+      });
+
+      document.getElementById('gif-btn').onclick = () => {
+        const gp = document.getElementById('gif-popup');
+        gp.style.display = gp.style.display === 'block' ? 'none' : 'block';
+      };
+
+      document.getElementById('send-custom-gif').onclick = () => {
+        const url = document.getElementById('custom-gif-url').value.trim();
+        if (!url) return;
+        sendImageOrGif(url, 'GIF');
+        document.getElementById('custom-gif-url').value = '';
+        document.getElementById('gif-popup').style.display = 'none';
+      };
+
+      function sendImageOrGif(imgUrl, label) {
+        const path = getChatPath();
+        if (!path) return alert("Select a channel or DM first!");
+        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        db.ref(path).push({ author: username, color: userColor, isAdmin: isAdmin, time: now, text: label, image: imgUrl });
+      }
+
+      // Reply Controls
+      window.startReply = (author, text) => {
+        activeReplyObj = { author, text };
+        document.getElementById('reply-target-name').textContent = author;
+        document.getElementById('reply-target-text').textContent = text.slice(0, 45) + (text.length > 45 ? '...' : '');
+        document.getElementById('reply-bar').style.display = 'flex';
+        chatInputEl.focus();
+      };
+
+      document.getElementById('cancel-reply-btn').onclick = () => {
+        activeReplyObj = null;
+        document.getElementById('reply-bar').style.display = 'none';
+      };
 
       function getVideoRoomKey() {
         if (isFriendsMode && activeDmUser) return 'call_dm_' + [username, activeDmUser].sort().join('_');
@@ -755,65 +934,87 @@
 
       document.getElementById('leave-call-btn').onclick = leaveVideoCall;
 
-      // Fixed Server Loading & Switching
+      // FIXED SERVER SWITCHING
+      window.switchServer = function(sId, sTitle) {
+        if (isVideoCallActive) leaveVideoCall();
+        isPrivateMode = false;
+        isFriendsMode = false;
+        activeServer = sId;
+        activeChannel = 'general';
+
+        document.getElementById('private-badge').style.display = 'none';
+        document.getElementById('sidebar-label').textContent = 'Text Channels';
+        document.getElementById('header-symbol').textContent = '#';
+        document.getElementById('server-name').textContent = sTitle || sId;
+
+        document.querySelectorAll('.server-icon').forEach(el => {
+          el.classList.toggle('active', el.dataset.id === sId);
+        });
+
+        loadChannels();
+      };
+
       function loadServersList() {
         db.ref('servers').on('value', (snap) => {
           const servers = snap.val() || { gaming: { title: 'Gaming Hub' }, dev: { title: 'Dev Squad' } };
           const container = document.getElementById('server-list-container');
-          
-          const bottomHTML = `
-            <div class="divider"></div>
-            <div class="server-icon" id="friends-tab-btn" title="Friends & DMs" style="background:#3ba55d; color:white;">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-            </div>
-            <div class="server-icon" id="create-room-btn" title="Create Private Room" style="background:#5865f2; color:white;">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            </div>
-            <div class="server-icon" id="join-room-btn" title="Browse Private Rooms" style="background:#23a55a; color:white;">
-              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-            </div>
-          `;
-
           container.innerHTML = '';
+
           Object.keys(servers).forEach(sId => {
             const sObj = servers[sId];
+            const sTitle = sObj.title || sId;
             const div = document.createElement('div');
-            div.className = 'server-icon ' + (sId === activeServer ? 'active' : '');
+            div.className = 'server-icon ' + (!isPrivateMode && !isFriendsMode && sId === activeServer ? 'active' : '');
             div.dataset.id = sId;
-            div.title = sObj.title || sId;
-            div.textContent = (sObj.title || sId)[0].toUpperCase();
-            div.onclick = () => {
-              if (isVideoCallActive) leaveVideoCall();
-              isPrivateMode = false; isFriendsMode = false;
-              document.getElementById('private-badge').style.display = 'none';
-              document.getElementById('sidebar-label').textContent = 'Text Channels';
-              document.getElementById('header-symbol').textContent = '#';
-              document.querySelectorAll('.server-icon').forEach(b => b.classList.remove('active'));
-              div.classList.add('active');
-              activeServer = sId;
-              document.getElementById('server-name').textContent = sObj.title || sId;
-              loadChannels();
-            };
+            div.title = sTitle;
+            div.textContent = sTitle[0].toUpperCase();
+            div.onclick = () => switchServer(sId, sTitle);
             container.appendChild(div);
           });
-          container.innerHTML += bottomHTML;
-          rebindUtilityButtons();
+
+          const divider = document.createElement('div');
+          divider.className = 'divider';
+          container.appendChild(divider);
+
+          const friendsBtn = document.createElement('div');
+          friendsBtn.className = 'server-icon ' + (isFriendsMode ? 'active' : '');
+          friendsBtn.id = 'friends-tab-btn';
+          friendsBtn.title = 'Friends & DMs';
+          friendsBtn.style.cssText = 'background:#3ba55d; color:white;';
+          friendsBtn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`;
+          friendsBtn.onclick = openFriendsTab;
+          container.appendChild(friendsBtn);
+
+          const createBtn = document.createElement('div');
+          createBtn.className = 'server-icon';
+          createBtn.id = 'create-room-btn';
+          createBtn.title = 'Create Private Room';
+          createBtn.style.cssText = 'background:#5865f2; color:white;';
+          createBtn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>`;
+          createBtn.onclick = () => openModal('create-room-modal');
+          container.appendChild(createBtn);
+
+          const joinBtn = document.createElement('div');
+          joinBtn.className = 'server-icon ' + (isPrivateMode ? 'active' : '');
+          joinBtn.id = 'join-room-btn';
+          joinBtn.title = 'Browse Private Rooms';
+          joinBtn.style.cssText = 'background:#23a55a; color:white;';
+          joinBtn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>`;
+          joinBtn.onclick = openBrowseRooms;
+          container.appendChild(joinBtn);
         });
       }
 
-      function rebindUtilityButtons() {
-        document.getElementById('friends-tab-btn').onclick = openFriendsTab;
-        document.getElementById('create-room-btn').onclick = () => openModal('create-room-modal');
-        document.getElementById('join-room-btn').onclick = openBrowseRooms;
-      }
-
       function loadChannels() {
-        if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
+        if (activeChannelRef) activeChannelRef.off();
         activeChannelRef = db.ref('servers/' + activeServer + '/channels');
-        activeChannelCb = (snapshot) => {
+        activeChannelRef.on('value', (snapshot) => {
           if (isPrivateMode || isFriendsMode) return;
           let data = snapshot.val();
-          if (!data) { data = { general: true }; db.ref('servers/' + activeServer + '/channels/general').set(true); }
+          if (!data) {
+            data = { general: true };
+            db.ref('servers/' + activeServer + '/channels/general').set(true);
+          }
           currentChannelsList = Object.keys(data);
           if (!currentChannelsList.includes(activeChannel)) activeChannel = currentChannelsList[0];
 
@@ -822,15 +1023,18 @@
             const div = document.createElement('div');
             div.className = 'channel-item ' + (ch === activeChannel ? 'active' : '');
             div.textContent = '# ' + ch;
-            div.onclick = () => { if (isVideoCallActive) leaveVideoCall(); activeChannel = ch; loadChannels(); };
+            div.onclick = () => {
+              if (isVideoCallActive) leaveVideoCall();
+              activeChannel = ch;
+              loadChannels();
+            };
             channelListEl.appendChild(div);
           });
           document.getElementById('channel-name').textContent = activeChannel;
-          chatInputEl.placeholder = "Message #" + activeChannel;
+          chatInputEl.placeholder = "Message #" + activeChannel + " (Type @ to ping someone)";
           renderAdminPanelLists();
           loadMessages();
-        };
-        activeChannelRef.on('value', activeChannelCb);
+        });
       }
 
       function openFriendsTab() {
@@ -843,7 +1047,7 @@
         document.getElementById('private-badge').style.display = 'none';
         document.getElementById('header-symbol').textContent = '@';
 
-        if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
+        if (activeChannelRef) activeChannelRef.off();
         channelListEl.innerHTML = `<div class="channel-item active">👋 Friends List</div><div class="channel-item" id="add-friend-btn" style="color:#23a55a;">+ Add Friend</div>`;
         document.getElementById('add-friend-btn').onclick = () => {
           const f = prompt("Enter friend's exact username:");
@@ -928,7 +1132,7 @@
       function enterPrivateRoom(roomObj) {
         if (isVideoCallActive) leaveVideoCall();
         isPrivateMode = true; isFriendsMode = false; activePrivateRoom = roomObj;
-        if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
+        if (activeChannelRef) activeChannelRef.off();
         document.querySelectorAll('.server-icon').forEach(b => b.classList.remove('active'));
         document.getElementById('join-room-btn').classList.add('active');
         document.getElementById('server-name').textContent = "Private Rooms";
@@ -1034,15 +1238,15 @@
 
       let isInitialLoad = true;
       function loadMessages() {
-        if (activeMsgRef && activeMsgCb) activeMsgRef.off('value', activeMsgCb);
-        if (activeTypingRef && activeTypingCb) activeTypingRef.off('value', activeTypingCb);
-        if (activePinRef && activePinCb) activePinRef.off('value', activePinCb);
+        if (activeMsgRef) activeMsgRef.off();
+        if (activeTypingRef) activeTypingRef.off();
+        if (activePinRef) activePinRef.off();
 
         const path = getChatPath();
         if (!path) return;
 
         activePinRef = db.ref('pinned/' + path);
-        activePinCb = (snap) => {
+        activePinRef.on('value', (snap) => {
           const pin = snap.val();
           const pBanner = document.getElementById('pinned-banner');
           if (pin && pin.text) {
@@ -1054,12 +1258,11 @@
           } else {
             pBanner.style.display = 'none';
           }
-        };
-        activePinRef.on('value', activePinCb);
+        });
 
         isInitialLoad = true;
         activeMsgRef = db.ref(path);
-        activeMsgCb = (snapshot) => {
+        activeMsgRef.on('value', (snapshot) => {
           messagesEl.innerHTML = '';
           let messageCount = 0;
           snapshot.forEach(child => {
@@ -1068,7 +1271,7 @@
             const msgKey = child.key;
             const div = document.createElement('div');
             
-            const isMentioned = msg.text && msg.text.includes('@' + username);
+            const isMentioned = msg.text && (msg.text.includes('@' + username) || msg.text.includes('@everyone'));
             div.className = 'message ' + (isMentioned ? 'mentioned' : '');
             
             let reactionsHTML = '';
@@ -1082,14 +1285,29 @@
               reactionsHTML += '</div>';
             }
 
-            let contentHTML = escapeHTML(msg.text || '');
+            // Format @mentions into clickable badges
+            let formattedText = escapeHTML(msg.text || '').replace(/@([a-zA-Z0-9_-]+)/g, (match, p1) => {
+              return `<span class="mention-pill" onclick="insertMention('${p1}')">@${p1}</span>`;
+            });
+
+            if (msg.edited) {
+              formattedText += ` <span style="font-size:10px; color:var(--text-muted);">(edited)</span>`;
+            }
+
+            let contentHTML = formattedText;
             if (msg.image) {
               contentHTML += `<img src="${msg.image}" class="chat-img" />`;
+            }
+
+            let replyHTML = '';
+            if (msg.replyTo) {
+              replyHTML = `<div class="reply-preview">↩️ <strong>${escapeHTML(msg.replyTo.author)}</strong>: ${escapeHTML(msg.replyTo.text)}</div>`;
             }
 
             div.innerHTML = `
               <div class="avatar" style="background:${msg.color || '#5865f2'}; width:32px; height:32px;">${(msg.author || '?')[0].toUpperCase()}</div>
               <div style="flex:1; min-width:0; word-wrap:break-word;">
+                ${replyHTML}
                 <div>
                   <span class="msg-author" onclick="openPeerProfile('${msg.author}', '${msg.color || '#5865f2'}', ${!!msg.isAdmin})">${escapeHTML(msg.author || 'Unknown')}</span>
                   ${msg.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
@@ -1099,35 +1317,44 @@
                 ${reactionsHTML}
               </div>
               <div class="msg-actions">
+                <button class="act-btn" title="Reply" onclick="startReply('${escapeHTML(msg.author)}', '${escapeHTML(msg.text || 'Media')}')">↩️</button>
                 <button class="act-btn" onclick="reactMsg('${path}', '${msgKey}', '👍')">👍</button>
                 <button class="act-btn" onclick="reactMsg('${path}', '${msgKey}', '❤️')">❤️</button>
                 <button class="act-btn" onclick="reactMsg('${path}', '${msgKey}', '🔥')">🔥</button>
-                ${isAdmin ? `<button class="act-btn" onclick="pinMsg('${path}', '${escapeHTML(msg.author)}', '${escapeHTML(msg.text)}')">📌</button>` : ''}
-                ${isAdmin ? `<button class="act-btn" style="color:#da373c;" onclick="delMsg('${path}', '${msgKey}')">🗑️</button>` : ''}
+                ${msg.author === username ? `<button class="act-btn" title="Edit" onclick="editMsg('${path}', '${msgKey}', '${escapeHTML(msg.text || '')}')">✏️</button>` : ''}
+                ${isAdmin ? `<button class="act-btn" title="Pin" onclick="pinMsg('${path}', '${escapeHTML(msg.author)}', '${escapeHTML(msg.text || 'Media')}')">📌</button>` : ''}
+                ${(isAdmin || msg.author === username) ? `<button class="act-btn" title="Delete" style="color:#da373c;" onclick="delMsg('${path}', '${msgKey}')">🗑️</button>` : ''}
               </div>
             `;
             messagesEl.appendChild(div);
 
-            if (isMentioned && !isInitialLoad) playNotificationSound();
+            if (isMentioned && !isInitialLoad) {
+              playNotificationSound();
+              if (!document.hasFocus()) document.title = "(1) MiniCord Ultimate";
+            }
           });
 
           if (!isInitialLoad && messageCount > 0) playNotificationSound();
           isInitialLoad = false;
           messagesEl.scrollTop = messagesEl.scrollHeight;
-        };
-        activeMsgRef.on('value', activeMsgCb);
+        });
 
         activeTypingRef = db.ref(getTypingPath());
-        activeTypingCb = (snap) => {
+        activeTypingRef.on('value', (snap) => {
           const typers = Object.entries(snap.val() || {}).filter(([id]) => id !== userId).map(([, name]) => name);
           document.getElementById('typing-bar').textContent = typers.length ? typers.join(', ') + ' is typing...' : '';
-        };
-        activeTypingRef.on('value', activeTypingCb);
+        });
       }
 
       window.reactMsg = (path, key, emoji) => {
         const ref = db.ref(`${path}/${key}/reactions/${emoji}`);
         ref.transaction(curr => (curr || 0) + 1);
+      };
+      window.editMsg = (path, key, oldText) => {
+        const updated = prompt("Edit your message:", oldText);
+        if (updated !== null && updated.trim() !== '') {
+          db.ref(`${path}/${key}`).update({ text: updated.trim(), edited: true });
+        }
       };
       window.pinMsg = (path, author, text) => db.ref('pinned/' + path).set({ author, text });
       window.delMsg = (path, key) => db.ref(path + '/' + key).remove();
@@ -1146,6 +1373,7 @@
       chatInputEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && chatInputEl.value.trim()) {
           const val = chatInputEl.value.trim();
+          mentionPopup.style.display = 'none';
 
           if (val.startsWith('/admin')) {
             const parts = val.split(' ');
@@ -1169,13 +1397,20 @@
           const path = getChatPath();
           if (!path) return alert("Select a chat or friend first!");
           const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          db.ref(path).push({ author: username, color: userColor, isAdmin: isAdmin, time: now, text: val });
+          
+          const payload = { author: username, color: userColor, isAdmin: isAdmin, time: now, text: val };
+          if (activeReplyObj) {
+            payload.replyTo = activeReplyObj;
+            activeReplyObj = null;
+            document.getElementById('reply-bar').style.display = 'none';
+          }
+
+          db.ref(path).push(payload);
           db.ref(getTypingPath() + '/' + userId).remove();
           chatInputEl.value = '';
         }
       });
 
-      // File & Image / GIF Uploader
       const fileInput = document.getElementById('file-upload');
       document.getElementById('attach-btn').onclick = () => fileInput.click();
       fileInput.onchange = (e) => {
@@ -1183,10 +1418,7 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (uploadEvent) => {
-          const path = getChatPath();
-          if (!path) return;
-          const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          db.ref(path).push({ author: username, color: userColor, isAdmin: isAdmin, time: now, text: `Shared file: ${file.name}`, image: uploadEvent.target.result });
+          sendImageOrGif(uploadEvent.target.result, `Shared file: ${file.name}`);
         };
         reader.readAsDataURL(file);
       };
