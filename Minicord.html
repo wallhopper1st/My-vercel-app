@@ -236,7 +236,7 @@
       <div class="messages" id="messages"></div>
       <div class="typing-bar" id="typing-bar"></div>
       <div class="input-wrapper" id="chat-input-wrapper">
-        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type /admin for Admin Panel)" />
+        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type /admin 1234 for Admin Panel)" />
         <div class="input-btn-group">
           <button class="icon-btn" id="attach-btn" title="Upload File / Image URL" style="background:var(--bg-chat-input); height:42px; width:42px; border-radius:8px;">📎</button>
           <button class="emoji-btn" id="emoji-btn" title="Quick Emoji" style="height:42px;">🔥</button>
@@ -400,7 +400,7 @@
   <script>
     // ==========================================
     const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
-    const ADMIN_PIN = "Chopper"; 
+    const ADMIN_PIN = "1234"; 
     // ==========================================
 
     firebase.initializeApp({ databaseURL: DB_URL });
