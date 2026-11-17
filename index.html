@@ -76,6 +76,7 @@
     .chat-header { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--bg-servers); font-weight: bold; color: var(--text-main); }
     .private-badge { background: #f0b232; color: #1e1f22; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: 800; }
 
+    /* Broadcast Banner */
     #broadcast-banner { display: none; background: linear-gradient(90deg, #5865f2, #eb459e); color: white; padding: 8px 16px; font-size: 13px; font-weight: bold; align-items: center; justify-content: space-between; }
     #pinned-banner { display: none; background: var(--bg-channels); border-bottom: 1px solid var(--bg-servers); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; }
 
@@ -98,6 +99,7 @@
     .msg-author:hover { text-decoration: underline; }
     .admin-tag { background: var(--accent); color: white; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
     .msg-time { font-size: 11px; color: var(--text-muted); }
+    .chat-img { max-width: 300px; max-height: 250px; border-radius: 6px; margin-top: 6px; display: block; object-fit: cover; }
     
     .msg-actions { display: none; position: absolute; right: 10px; top: -10px; background: var(--bg-channels); border: 1px solid var(--bg-servers); border-radius: 6px; padding: 2px 4px; gap: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
     .message:hover .msg-actions { display: flex; }
@@ -187,7 +189,6 @@
           </div>
         </div>
         <div style="display:flex; gap:2px;">
-          <!-- Admin Panel Button (Appears automatically upon unlocking admin) -->
           <button class="icon-btn" id="open-admin-panel-btn" title="Admin Panel" style="display:none; color:#f0b232;">👑</button>
           <button class="icon-btn" id="open-settings-btn" title="Settings">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
@@ -197,6 +198,7 @@
     </div>
 
     <div class="chat-area">
+      <!-- Auto-disappearing Broadcast Banner -->
       <div id="broadcast-banner">
         <span id="broadcast-text">📢 Announcement</span>
         <button class="icon-btn" style="color:white;" onclick="document.getElementById('broadcast-banner').style.display='none'">✕</button>
@@ -221,7 +223,7 @@
         <button class="icon-btn" id="unpin-btn" style="display:none;">Unpin</button>
       </div>
 
-      <!-- Working Video Grid -->
+      <!-- Video Grid -->
       <div class="video-container" id="video-container">
         <div class="video-grid" id="video-grid"></div>
         <div class="video-controls">
@@ -234,9 +236,10 @@
       <div class="messages" id="messages"></div>
       <div class="typing-bar" id="typing-bar"></div>
       <div class="input-wrapper" id="chat-input-wrapper">
-        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type @username to ping)" />
+        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type @username to mention)" />
         <div class="input-btn-group">
-          <button class="icon-btn" id="attach-btn" title="Upload File / Image URL" style="background:var(--bg-chat-input); height:42px; width:42px; border-radius:8px;">📎</button>
+          <input type="file" id="file-upload" style="display:none;" accept="image/*,video/*" />
+          <button class="icon-btn" id="attach-btn" title="Upload Image or GIF" style="background:var(--bg-chat-input); height:42px; width:42px; border-radius:8px;">📁</button>
           <button class="emoji-btn" id="emoji-btn" title="Quick Emoji" style="height:42px;">🔥</button>
         </div>
       </div>
@@ -357,7 +360,6 @@
     </div>
   </div>
 
-  <!-- BETTER ADMIN PANEL MODAL -->
   <div class="modal-overlay" id="admin-modal">
     <div class="modal">
       <div class="modal-header">
@@ -368,7 +370,7 @@
       <div style="margin-bottom: 16px;">
         <div class="section-label" style="padding:0 0 6px 0;">Global Server Announcement Banner</div>
         <div style="display:flex; gap:8px;">
-          <input type="text" class="modal-input" id="broadcast-input" placeholder="Type announcement for all connected users..." style="margin:0;" />
+          <input type="text" class="modal-input" id="broadcast-input" placeholder="Type announcement..." style="margin:0;" />
           <button class="btn btn-success" id="send-broadcast-btn">Broadcast</button>
         </div>
       </div>
@@ -400,7 +402,7 @@
       </div>
 
       <div style="border-top: 1px solid var(--bg-servers); padding-top: 12px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="color:var(--text-muted);">Quick Action: Wipe channel chat history</span>
+        <span style="color:var(--text-muted);">Quick Action: Wipe channel chat</span>
         <button class="btn btn-danger" id="wipe-chat-btn">Wipe Chat</button>
       </div>
     </div>
@@ -415,6 +417,13 @@
 
     window.closeModal = (id) => document.getElementById(id).classList.remove('open');
     function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+    // Close modals on ESC key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+      }
+    });
 
     let isSignUpMode = false;
     const authSwitchBtn = document.getElementById('auth-switch-mode');
@@ -501,11 +510,18 @@
       document.getElementById('my-avatar').textContent = username[0].toUpperCase();
       document.getElementById('my-avatar').style.backgroundColor = userColor;
 
+      let broadcastTimeout;
       db.ref('global_broadcast').on('value', (snap) => {
         const val = snap.val();
+        const banner = document.getElementById('broadcast-banner');
         if (val && val.text) {
           document.getElementById('broadcast-text').textContent = '📢 ' + val.text;
-          document.getElementById('broadcast-banner').style.display = 'flex';
+          banner.style.display = 'flex';
+          clearTimeout(broadcastTimeout);
+          // Auto-disappears after 10 seconds
+          broadcastTimeout = setTimeout(() => { banner.style.display = 'none'; }, 10000);
+        } else {
+          banner.style.display = 'none';
         }
       });
 
@@ -658,7 +674,6 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
-      // Fixed Video Call Streaming
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
@@ -740,6 +755,7 @@
 
       document.getElementById('leave-call-btn').onclick = leaveVideoCall;
 
+      // Fixed Server Loading & Switching
       function loadServersList() {
         db.ref('servers').on('value', (snap) => {
           const servers = snap.val() || { gaming: { title: 'Gaming Hub' }, dev: { title: 'Dev Squad' } };
@@ -925,7 +941,6 @@
         loadMessages();
       }
 
-      // Admin Button Trigger & Dashboard
       document.getElementById('open-admin-panel-btn').onclick = () => {
         if (isAdmin) { renderAdminPanelLists(); openModal('admin-modal'); }
       };
@@ -1067,6 +1082,11 @@
               reactionsHTML += '</div>';
             }
 
+            let contentHTML = escapeHTML(msg.text || '');
+            if (msg.image) {
+              contentHTML += `<img src="${msg.image}" class="chat-img" />`;
+            }
+
             div.innerHTML = `
               <div class="avatar" style="background:${msg.color || '#5865f2'}; width:32px; height:32px;">${(msg.author || '?')[0].toUpperCase()}</div>
               <div style="flex:1; min-width:0; word-wrap:break-word;">
@@ -1075,7 +1095,7 @@
                   ${msg.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
                   <span class="msg-time">${msg.time || ''}</span>
                 </div>
-                <div style="margin-top:4px; line-height:1.4;">${escapeHTML(msg.text || '')}</div>
+                <div style="margin-top:4px; line-height:1.4;">${contentHTML}</div>
                 ${reactionsHTML}
               </div>
               <div class="msg-actions">
@@ -1155,14 +1175,20 @@
         }
       });
 
-      document.getElementById('attach-btn').onclick = () => {
-        const url = prompt("Enter Image/File URL to share:");
-        if (url && url.trim()) {
+      // File & Image / GIF Uploader
+      const fileInput = document.getElementById('file-upload');
+      document.getElementById('attach-btn').onclick = () => fileInput.click();
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (uploadEvent) => {
           const path = getChatPath();
           if (!path) return;
           const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          db.ref(path).push({ author: username, color: userColor, isAdmin: isAdmin, time: now, text: `[Attachment]: ${url.trim()}` });
-        }
+          db.ref(path).push({ author: username, color: userColor, isAdmin: isAdmin, time: now, text: `Shared file: ${file.name}`, image: uploadEvent.target.result });
+        };
+        reader.readAsDataURL(file);
       };
 
       document.getElementById('emoji-btn').onclick = () => {
