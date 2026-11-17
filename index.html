@@ -17,6 +17,7 @@
       --text-muted: #949ba4;
       --accent: #5865f2;
       --chat-font-size: 15px;
+      --sidebar-width: 240px;
     }
 
     body.theme-light {
@@ -54,7 +55,10 @@
     .server-badge { position: absolute; top: 0; right: 0; background: #da373c; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--bg-servers); display: none; }
     .divider { width: 32px; height: 2px; background: var(--bg-hover); border-radius: 1px; flex-shrink: 0; }
 
-    .channels { width: 240px; background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; }
+    .channels { width: var(--sidebar-width); background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; position: relative; min-width: 180px; max-width: 400px; }
+    .sidebar-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: ew-resize; z-index: 10; background: transparent; }
+    .sidebar-resizer:hover { background: var(--accent); }
+
     .server-header { height: 48px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; border-bottom: 1px solid var(--bg-servers); color: var(--text-main); }
     .section-label { font-size: 11px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; padding: 16px 12px 4px 12px; letter-spacing: 0.5px; }
     .channel-list { padding: 4px 8px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
@@ -83,16 +87,16 @@
     #broadcast-banner { display: none; background: linear-gradient(90deg, #5865f2, #eb459e); color: white; padding: 8px 16px; font-size: 13px; font-weight: bold; align-items: center; justify-content: space-between; }
     #pinned-banner { display: none; background: var(--bg-channels); border-bottom: 1px solid var(--bg-servers); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; }
 
-    /* Video Grid Fix */
+    /* Revamped Video Grid */
     .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; }
-    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-content: center; justify-content: center; }
-    .video-tile { background: #2b2d31; border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; }
+    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; align-content: center; justify-content: center; overflow-y: auto; }
+    .video-tile { background: #2b2d31; border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #3f4248; }
     .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; }
     .video-tile video.local-mirror { transform: scaleX(-1); }
-    .video-name { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px; font-size: 12px; z-index: 2; }
-    .video-controls { height: 64px; background: #1e1f22; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 16px; }
-    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.2s; }
-    .v-btn:hover { background: #35373c; }
+    .video-name { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 6px; font-size: 13px; z-index: 2; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .video-controls { height: 72px; background: #1e1f22; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.2s; font-size: 18px; }
+    .v-btn:hover { background: #35373c; transform: scale(1.05); }
     .v-btn.danger { background: #da373c; }
 
     .messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
@@ -192,6 +196,7 @@
     <div class="servers" id="server-list-container"></div>
 
     <div class="channels">
+      <div class="sidebar-resizer" id="sidebar-resizer"></div>
       <div class="server-header">
         <span id="server-name">Gaming Hub</span>
       </div>
@@ -341,6 +346,22 @@
     </div>
   </div>
 
+  <!-- ADMIN PASSCODE MODAL -->
+  <div class="modal-overlay" id="admin-prompt-modal">
+    <div class="modal" style="width:360px;">
+      <div class="modal-header">
+        <span class="modal-title">Admin Verification 🔒</span>
+        <button class="icon-btn" onclick="closeModal('admin-prompt-modal')">✕</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">Enter the secure admin passcode to verify authority:</p>
+      <input type="password" class="modal-input" id="admin-passcode-input" placeholder="Passcode..." />
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn" style="background:var(--bg-hover);" onclick="closeModal('admin-prompt-modal')">Cancel</button>
+        <button class="btn btn-success" id="confirm-admin-btn">Verify</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODALS -->
   <div class="modal-overlay" id="create-room-modal">
     <div class="modal">
@@ -469,7 +490,7 @@
 
   <script>
     const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
-    const ADMIN_PIN = "ChopperSuperSecure99!"; 
+    const ADMIN_PASS = "ChopperSuperSecure99!"; 
 
     firebase.initializeApp({ databaseURL: DB_URL });
     const db = firebase.database();
@@ -486,6 +507,24 @@
         document.getElementById('gif-popup').style.display = 'none';
       }
     });
+
+    // Sidebar Resizer Logic
+    const resizer = document.getElementById('sidebar-resizer');
+    const channelsSidebar = document.querySelector('.channels');
+    let isResizing = false;
+    resizer.addEventListener('mousedown', (e) => {
+      isResizing = true;
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!isResizing) return;
+      let newWidth = e.clientX - 72; // minus server list width
+      if (newWidth >= 180 && newWidth <= 420) {
+        channelsSidebar.style.width = newWidth + 'px';
+        document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
+      }
+    });
+    window.addEventListener('mouseup', () => { isResizing = false; });
 
     let isSignUpMode = false;
     const authSwitchBtn = document.getElementById('auth-switch-mode');
@@ -577,7 +616,6 @@
     }
 
     function initApp() {
-      // Sync from DB to ensure persistence
       db.ref('accounts/' + username.toLowerCase()).once('value', (s) => {
         const dat = s.val() || {};
         if (dat.color) userColor = dat.color;
@@ -635,7 +673,6 @@
         } catch (e) {}
       }
 
-      // Track unread DMs for Friends Tab Red Dot Badge
       db.ref('dm_messages').on('value', (snap) => {
         const allDms = snap.val() || {};
         let unreadCount = 0;
@@ -995,7 +1032,7 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
-      // TRUE P2P WEBCAM STREAMING FIX
+      // REVAMPED P2P VIDEO CALL GRID
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
@@ -1038,14 +1075,14 @@
                   vid.srcObject = localStream;
                   vid.classList.add('local-mirror');
                 } else {
-                  // Attach cloned stream element for remote peer
                   vid.srcObject = localStream;
                 }
 
                 tile.appendChild(vid);
                 const nameTag = document.createElement('div');
                 nameTag.className = 'video-name';
-                nameTag.textContent = peer.name + (pId === userId ? ' (You)' : '');
+                const avBg = peer.avatar ? `background-image:url(${peer.avatar}); width:20px; height:20px;` : `background-color:${peer.color || '#5865f2'}; width:20px; height:20px;`;
+                nameTag.innerHTML = `<div class="avatar" style="${avBg} font-size:10px;">${peer.avatar ? '' : peer.name[0].toUpperCase()}</div> ${escapeHTML(peer.name)}${pId === userId ? ' (You)' : ''}`;
                 tile.appendChild(nameTag);
                 vGrid.appendChild(tile);
               });
@@ -1244,7 +1281,6 @@
               document.getElementById('channel-name').textContent = fName;
               chatInputEl.placeholder = "Message @" + fName;
               
-              // Mark messages as read for this DM
               const dmKey = [username, activeDmUser].sort().join('_');
               db.ref('dm_messages/' + dmKey).once('value', (msgSnap) => {
                 msgSnap.forEach(mChild => {
@@ -1441,7 +1477,6 @@
         const path = getChatPath();
         if (!path) return;
 
-        // If in DM mode, mark unread messages as read upon loading
         if (isFriendsMode && activeDmUser) {
           db.ref(path).once('value', (snap) => {
             snap.forEach(child => {
@@ -1583,23 +1618,25 @@
           const val = chatInputEl.value.trim();
           mentionPopup.style.display = 'none';
 
-          if (val.startsWith('/admin')) {
-            const parts = val.split(' ');
-            if (parts[1] === ADMIN_PIN) {
-              isAdmin = true;
-              document.getElementById('role-label').textContent = 'Admin 👑';
-              document.getElementById('open-admin-panel-btn').style.display = 'flex';
-              updatePresence();
-              renderAdminPanelLists();
-              openModal('admin-modal');
-              chatInputEl.value = '';
-              loadMessages();
-              return;
-            } else {
-              alert("Incorrect Admin Security Passcode.");
-              chatInputEl.value = '';
-              return;
-            }
+          if (val === '/admin') {
+            openModal('admin-prompt-modal');
+            document.getElementById('admin-passcode-input').value = '';
+            document.getElementById('confirm-admin-btn').onclick = () => {
+              const passAttempt = document.getElementById('admin-passcode-input').value.trim();
+              if (passAttempt === ADMIN_PASS) {
+                isAdmin = true;
+                document.getElementById('role-label').textContent = 'Admin 👑';
+                document.getElementById('open-admin-panel-btn').style.display = 'flex';
+                updatePresence();
+                renderAdminPanelLists();
+                closeModal('admin-prompt-modal');
+                openModal('admin-modal');
+              } else {
+                alert("Incorrect Admin Passcode!");
+              }
+            };
+            chatInputEl.value = '';
+            return;
           }
 
           const path = getChatPath();
