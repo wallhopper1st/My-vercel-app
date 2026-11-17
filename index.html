@@ -76,17 +76,14 @@
     .chat-header { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--bg-servers); font-weight: bold; color: var(--text-main); }
     .private-badge { background: #f0b232; color: #1e1f22; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: 800; }
 
-    /* Global Broadcast Banner */
     #broadcast-banner { display: none; background: linear-gradient(90deg, #5865f2, #eb459e); color: white; padding: 8px 16px; font-size: 13px; font-weight: bold; align-items: center; justify-content: space-between; }
-    
-    /* Pinned Banner */
     #pinned-banner { display: none; background: var(--bg-channels); border-bottom: 1px solid var(--bg-servers); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; }
 
     /* Video Grid */
     .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; }
     .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-content: center; justify-content: center; }
     .video-tile { background: #2b2d31; border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; }
-    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; }
+    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; transform: scaleX(-1); }
     .video-name { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px; font-size: 12px; z-index: 2; }
     .video-controls { height: 64px; background: #1e1f22; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 16px; }
     .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.2s; }
@@ -96,6 +93,7 @@
     .messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
     .message { display: flex; gap: 14px; position: relative; padding: 6px 8px; border-radius: 4px; }
     .message:hover { background: var(--bg-hover); }
+    .message.mentioned { background: rgba(88, 101, 242, 0.15); border-left: 4px solid var(--accent); }
     .msg-author { font-weight: bold; color: var(--text-main); margin-right: 8px; cursor: pointer; }
     .msg-author:hover { text-decoration: underline; }
     .admin-tag { background: var(--accent); color: white; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
@@ -130,7 +128,7 @@
 
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); align-items: center; justify-content: center; z-index: 100; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--bg-chat); width: 460px; max-width: 92vw; max-height: 90vh; overflow-y: auto; border-radius: 8px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid var(--bg-servers); color: var(--text-main); }
+    .modal { background: var(--bg-chat); width: 480px; max-width: 92vw; max-height: 90vh; overflow-y: auto; border-radius: 8px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid var(--bg-servers); color: var(--text-main); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-title { font-size: 18px; font-weight: bold; }
     .modal-input { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--bg-servers); background: var(--bg-chat-input); color: var(--text-main); margin-bottom: 14px; outline: none; }
@@ -144,13 +142,11 @@
     .icon-btn:hover { color: var(--text-main); background: var(--bg-hover); }
   </style>
 
-  <!-- Firebase v10 Compat Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body class="theme-dark">
 
-  <!-- AUTHENTICATION SCREEN (Username + Password) -->
   <div id="auth-screen">
     <div class="auth-card">
       <div class="auth-title" id="auth-title">Welcome to MiniCord</div>
@@ -168,12 +164,9 @@
     </div>
   </div>
 
-  <!-- MAIN APP CONTAINER -->
   <div id="app-container" style="display:none; width:100vw; height:100vh;">
-    <!-- 1. Server Icons -->
     <div class="servers" id="server-list-container"></div>
 
-    <!-- 2. Channels Sidebar -->
     <div class="channels">
       <div class="server-header">
         <span id="server-name">Gaming Hub</span>
@@ -194,7 +187,8 @@
           </div>
         </div>
         <div style="display:flex; gap:2px;">
-          <button class="icon-btn" id="open-admin-panel-btn" title="Admin Panel" style="display:none;">👑</button>
+          <!-- Admin Panel Button (Appears automatically upon unlocking admin) -->
+          <button class="icon-btn" id="open-admin-panel-btn" title="Admin Panel" style="display:none; color:#f0b232;">👑</button>
           <button class="icon-btn" id="open-settings-btn" title="Settings">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
           </button>
@@ -202,7 +196,6 @@
       </div>
     </div>
 
-    <!-- 3. Main Chat & Multiplayer Video Call Area -->
     <div class="chat-area">
       <div id="broadcast-banner">
         <span id="broadcast-text">📢 Announcement</span>
@@ -228,7 +221,7 @@
         <button class="icon-btn" id="unpin-btn" style="display:none;">Unpin</button>
       </div>
 
-      <!-- Multiplayer Video Grid -->
+      <!-- Working Video Grid -->
       <div class="video-container" id="video-container">
         <div class="video-grid" id="video-grid"></div>
         <div class="video-controls">
@@ -238,11 +231,10 @@
         </div>
       </div>
 
-      <!-- Standard Text Chat -->
       <div class="messages" id="messages"></div>
       <div class="typing-bar" id="typing-bar"></div>
       <div class="input-wrapper" id="chat-input-wrapper">
-        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general" />
+        <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type @username to ping)" />
         <div class="input-btn-group">
           <button class="icon-btn" id="attach-btn" title="Upload File / Image URL" style="background:var(--bg-chat-input); height:42px; width:42px; border-radius:8px;">📎</button>
           <button class="emoji-btn" id="emoji-btn" title="Quick Emoji" style="height:42px;">🔥</button>
@@ -250,14 +242,13 @@
       </div>
     </div>
 
-    <!-- 4. Online Players List -->
     <div class="members">
       <div class="section-label" style="padding:0;" id="online-count">ONLINE — 0</div>
       <div id="member-list" style="display:flex; flex-direction:column; gap:6px;"></div>
     </div>
   </div>
 
-  <!-- PROFILE POPOVER MODAL -->
+  <!-- PROFILE MODAL -->
   <div class="modal-overlay" id="profile-modal">
     <div style="background:none; border:none; padding:0;" class="modal">
       <div class="profile-card">
@@ -270,7 +261,7 @@
           <div class="profile-username" id="modal-profile-name">Username</div>
           <div class="profile-tag" id="modal-profile-role">Member</div>
           <div class="section-label" style="padding:0 0 6px 0;">About Me</div>
-          <textarea class="profile-bio-box" id="modal-profile-bio" rows="2">Building awesome things with MiniCord Ultimate! 🚀</textarea>
+          <textarea class="profile-bio-box" id="modal-profile-bio" rows="2"></textarea>
           <button class="btn btn-primary" id="save-bio-btn" style="width:100%; margin-bottom:10px; display:none;">Save Bio</button>
 
           <div id="profile-action-container" style="margin-bottom:12px;">
@@ -366,33 +357,33 @@
     </div>
   </div>
 
-  <!-- EXPANDED ADMIN PANEL -->
+  <!-- BETTER ADMIN PANEL MODAL -->
   <div class="modal-overlay" id="admin-modal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Admin Panel 👑</span>
+        <span class="modal-title">Admin Dashboard 👑</span>
         <button class="icon-btn" onclick="closeModal('admin-modal')">✕</button>
       </div>
 
       <div style="margin-bottom: 16px;">
-        <div class="section-label" style="padding:0 0 6px 0;">Global Server Announcement</div>
+        <div class="section-label" style="padding:0 0 6px 0;">Global Server Announcement Banner</div>
         <div style="display:flex; gap:8px;">
-          <input type="text" class="modal-input" id="broadcast-input" placeholder="Send banner to all online users..." style="margin:0;" />
-          <button class="btn btn-success" id="send-broadcast-btn">Send</button>
+          <input type="text" class="modal-input" id="broadcast-input" placeholder="Type announcement for all connected users..." style="margin:0;" />
+          <button class="btn btn-success" id="send-broadcast-btn">Broadcast</button>
         </div>
       </div>
       
       <div style="margin-bottom: 16px;">
         <div class="section-label" style="padding:0 0 6px 0;">Create Custom Server</div>
         <div style="display:flex; gap:8px;">
-          <input type="text" class="modal-input" id="new-server-name" placeholder="Server Name (e.g. Music Club)" style="margin:0;" />
+          <input type="text" class="modal-input" id="new-server-name" placeholder="Server Name (e.g. Art Lounge)" style="margin:0;" />
           <button class="btn btn-primary" id="create-server-submit">Create</button>
         </div>
       </div>
 
       <div style="margin-bottom: 16px;">
-        <div class="section-label" style="padding:0 0 6px 0;">Manage & Delete Servers</div>
-        <div id="admin-server-list" style="max-height: 110px; overflow-y: auto; margin-bottom:8px;"></div>
+        <div class="section-label" style="padding:0 0 6px 0;">Manage Servers</div>
+        <div id="admin-server-list" style="max-height: 100px; overflow-y: auto; margin-bottom:8px;"></div>
       </div>
 
       <div style="margin-bottom: 16px;">
@@ -405,21 +396,19 @@
       
       <div style="margin-bottom: 16px;">
         <div class="section-label" style="padding:0 0 6px 0;">Manage Channels</div>
-        <div id="admin-channel-list" style="max-height: 110px; overflow-y: auto;"></div>
+        <div id="admin-channel-list" style="max-height: 100px; overflow-y: auto;"></div>
       </div>
 
       <div style="border-top: 1px solid var(--bg-servers); padding-top: 12px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="color:var(--text-muted);">Wipe current channel chat:</span>
+        <span style="color:var(--text-muted);">Quick Action: Wipe channel chat history</span>
         <button class="btn btn-danger" id="wipe-chat-btn">Wipe Chat</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ==========================================
     const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
     const ADMIN_PIN = "Chopper"; 
-    // ==========================================
 
     firebase.initializeApp({ databaseURL: DB_URL });
     const db = firebase.database();
@@ -427,7 +416,6 @@
     window.closeModal = (id) => document.getElementById(id).classList.remove('open');
     function openModal(id) { document.getElementById(id).classList.add('open'); }
 
-    // AUTHENTICATION LOGIC (Username + Password localStorage persistence)
     let isSignUpMode = false;
     const authSwitchBtn = document.getElementById('auth-switch-mode');
     const authSubmitBtn = document.getElementById('auth-submit-btn');
@@ -513,7 +501,6 @@
       document.getElementById('my-avatar').textContent = username[0].toUpperCase();
       document.getElementById('my-avatar').style.backgroundColor = userColor;
 
-      // Global Broadcast Listener
       db.ref('global_broadcast').on('value', (snap) => {
         const val = snap.val();
         if (val && val.text) {
@@ -671,6 +658,7 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
+      // Fixed Video Call Streaming
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
@@ -702,7 +690,7 @@
                   vid.muted = true;
                   vid.srcObject = localStream;
                 } else {
-                  vid.srcObject = localStream; 
+                  vid.srcObject = localStream;
                 }
                 tile.appendChild(vid);
                 const nameTag = document.createElement('div');
@@ -752,7 +740,6 @@
 
       document.getElementById('leave-call-btn').onclick = leaveVideoCall;
 
-      // Dynamic Server Loading (Cross-version compatible)
       function loadServersList() {
         db.ref('servers').on('value', (snap) => {
           const servers = snap.val() || { gaming: { title: 'Gaming Hub' }, dev: { title: 'Dev Squad' } };
@@ -830,7 +817,6 @@
         activeChannelRef.on('value', activeChannelCb);
       }
 
-      // Friends Tab
       function openFriendsTab() {
         if (isVideoCallActive) leaveVideoCall();
         isFriendsMode = true; isPrivateMode = false;
@@ -881,7 +867,6 @@
         });
       }
 
-      // Room creation & browsing
       document.getElementById('confirm-create-room').onclick = () => {
         const name = document.getElementById('new-room-name').value.trim();
         const pass = document.getElementById('new-room-pass').value.trim();
@@ -940,7 +925,7 @@
         loadMessages();
       }
 
-      // Admin Panel Controls
+      // Admin Button Trigger & Dashboard
       document.getElementById('open-admin-panel-btn').onclick = () => {
         if (isAdmin) { renderAdminPanelLists(); openModal('admin-modal'); }
       };
@@ -1016,7 +1001,6 @@
         if (confirm("Wipe messages in this channel?")) { db.ref(getChatPath()).remove(); closeModal('admin-modal'); }
       };
 
-      // Chat Paths & Messages (Cross-version compatible schema)
       function getChatPath() {
         if (isFriendsMode) {
           if (!activeDmUser) return null;
@@ -1042,7 +1026,6 @@
         const path = getChatPath();
         if (!path) return;
 
-        // Pinned Message Listener
         activePinRef = db.ref('pinned/' + path);
         activePinCb = (snap) => {
           const pin = snap.val();
@@ -1069,9 +1052,10 @@
             const msg = child.val();
             const msgKey = child.key;
             const div = document.createElement('div');
-            div.className = 'message';
             
-            // Render reactions if present
+            const isMentioned = msg.text && msg.text.includes('@' + username);
+            div.className = 'message ' + (isMentioned ? 'mentioned' : '');
+            
             let reactionsHTML = '';
             if (msg.reactions) {
               reactionsHTML = '<div class="reactions-bar">';
@@ -1103,6 +1087,8 @@
               </div>
             `;
             messagesEl.appendChild(div);
+
+            if (isMentioned && !isInitialLoad) playNotificationSound();
           });
 
           if (!isInitialLoad && messageCount > 0) playNotificationSound();
@@ -1141,7 +1127,6 @@
         if (e.key === 'Enter' && chatInputEl.value.trim()) {
           const val = chatInputEl.value.trim();
 
-          // Secret Admin Command Check: /admin Chopper
           if (val.startsWith('/admin')) {
             const parts = val.split(' ');
             if (parts[1] === ADMIN_PIN) {
