@@ -65,7 +65,7 @@
     .user-info { display: flex; align-items: center; gap: 6px; overflow: hidden; cursor: pointer; padding: 4px; border-radius: 4px; flex: 1; }
     .user-info:hover { background: var(--bg-hover); }
     .avatar-container { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
-    .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; background-size: cover; background-position: center; }
     .status-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-user); position: absolute; bottom: -1px; right: -1px; }
     .status-online { background: #23a55a; }
     .status-idle { background: #f0b232; }
@@ -84,7 +84,8 @@
     .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; }
     .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-content: center; justify-content: center; }
     .video-tile { background: #2b2d31; border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; }
-    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; transform: scaleX(-1); }
+    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; }
+    .video-tile video.local-mirror { transform: scaleX(-1); }
     .video-name { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px; font-size: 12px; z-index: 2; }
     .video-controls { height: 64px; background: #1e1f22; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 16px; }
     .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.2s; }
@@ -111,14 +112,13 @@
     .reactions-bar { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
     .reaction-pill { background: var(--bg-channels); border: 1px solid var(--bg-active); border-radius: 12px; padding: 1px 7px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
-    /* @Mention Autocomplete & Reply Bar */
+    /* Popups */
     .mention-popup { display: none; position: absolute; bottom: 72px; left: 16px; width: 260px; max-height: 200px; overflow-y: auto; background: var(--bg-channels); border: 1px solid var(--bg-servers); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); z-index: 50; padding: 6px; }
     .mention-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 13px; }
     .mention-item:hover, .mention-item.selected { background: var(--accent); color: white; }
 
     #reply-bar { display: none; background: var(--bg-channels); padding: 6px 16px; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; border-top: 1px solid var(--bg-servers); }
 
-    /* GIF Picker Popup */
     .gif-popup { display: none; position: absolute; bottom: 72px; right: 16px; width: 320px; background: var(--bg-channels); border: 1px solid var(--bg-servers); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); z-index: 50; padding: 10px; }
     .gif-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px; max-height: 200px; overflow-y: auto; }
     .gif-thumb { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
@@ -138,10 +138,10 @@
     .ping-mini-btn { opacity: 0; background: var(--accent); color: white; border: none; border-radius: 4px; padding: 2px 6px; font-size: 11px; cursor: pointer; }
     .member-item:hover .ping-mini-btn { opacity: 1; }
 
-    /* Modals */
-    .profile-card { background: #111214; width: 340px; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.6); border: 1px solid #22252a; }
-    .profile-banner { height: 100px; background: #5865f2; position: relative; }
-    .profile-avatar-wrapper { position: absolute; bottom: -36px; left: 16px; border: 6px solid #111214; border-radius: 50%; }
+    /* Profile Card & Customizer */
+    .profile-card { background: #111214; width: 360px; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.6); border: 1px solid #22252a; }
+    .profile-banner { height: 110px; background: #5865f2; position: relative; background-size: cover; background-position: center; }
+    .profile-avatar-wrapper { position: absolute; bottom: -36px; left: 16px; border: 6px solid #111214; border-radius: 50%; cursor: pointer; }
     .profile-body { padding: 44px 16px 16px 16px; background: #2b2d31; }
     .profile-username { font-size: 20px; font-weight: bold; color: white; }
     .profile-tag { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
@@ -281,6 +281,8 @@
         <input type="text" class="chat-input" id="chat-input" placeholder="Message #general (Type @ to ping someone)" autocomplete="off" />
         <div class="input-btn-group">
           <input type="file" id="file-upload" style="display:none;" accept="image/*,video/*" />
+          <input type="file" id="avatar-file-upload" style="display:none;" accept="image/*" />
+          <input type="file" id="banner-file-upload" style="display:none;" accept="image/*" />
           <button class="emoji-btn" id="quick-at-btn" title="Ping Someone (@)">@</button>
           <button class="emoji-btn" id="gif-btn" title="Send a GIF" style="font-size:12px;">GIF</button>
           <button class="icon-btn" id="attach-btn" title="Upload Image" style="background:var(--bg-chat-input); height:42px; width:42px; border-radius:8px;">📁</button>
@@ -299,17 +301,26 @@
   <div class="modal-overlay" id="profile-modal">
     <div style="background:none; border:none; padding:0;" class="modal">
       <div class="profile-card">
-        <div class="profile-banner" id="modal-banner-color">
-          <div class="profile-avatar-wrapper">
+        <div class="profile-banner" id="modal-banner-color" title="Click banner to change image">
+          <div class="profile-avatar-wrapper" id="change-avatar-trigger" title="Click to upload profile picture">
             <div class="avatar" id="modal-profile-avatar" style="width:80px; height:80px; font-size:32px;">U</div>
           </div>
         </div>
         <div class="profile-body">
           <div class="profile-username" id="modal-profile-name">Username</div>
           <div class="profile-tag" id="modal-profile-role">Member</div>
-          <div class="section-label" style="padding:0 0 6px 0;">About Me</div>
-          <textarea class="profile-bio-box" id="modal-profile-bio" rows="2"></textarea>
-          <button class="btn btn-primary" id="save-bio-btn" style="width:100%; margin-bottom:10px; display:none;">Save Bio</button>
+          
+          <div class="section-label" style="padding:0 0 4px 0;">Customization & Theme Color</div>
+          <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <input type="color" id="profile-color-picker" style="width:40px; height:36px; border:none; border-radius:4px; cursor:pointer; background:none;" />
+            <button class="btn" style="flex:1; background:var(--bg-hover); font-size:12px;" id="upload-avatar-btn">Upload Avatar Pic</button>
+            <button class="btn" style="flex:1; background:var(--bg-hover); font-size:12px;" id="upload-banner-btn">Upload Banner Pic</button>
+          </div>
+
+          <div class="section-label" style="padding:0 0 6px 0;">About Me / Custom Bio</div>
+          <textarea class="profile-bio-box" id="modal-profile-bio" rows="2" placeholder="Tell everyone about yourself..."></textarea>
+          
+          <button class="btn btn-primary" id="save-profile-btn" style="width:100%; margin-bottom:10px; display:none;">Save Profile Changes</button>
 
           <div id="profile-action-container" style="margin-bottom:12px; display:flex; gap:8px;">
             <button class="btn btn-success" id="profile-add-friend-btn" style="flex:1;">Add Friend</button>
@@ -463,10 +474,8 @@
     window.closeModal = (id) => document.getElementById(id).classList.remove('open');
     function openModal(id) { document.getElementById(id).classList.add('open'); }
 
-    // Reset tab title on focus
     window.addEventListener('focus', () => { document.title = "MiniCord Ultimate"; });
 
-    // Close modals & popups on ESC key
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
@@ -486,7 +495,7 @@
       const savedUser = localStorage.getItem('minicord_user');
       if (savedUser) {
         const uData = JSON.parse(savedUser);
-        loginUser(uData.username, uData.userId, uData.color);
+        loginUser(uData.username, uData.userId, uData.color, uData.avatar, uData.banner);
       }
     });
 
@@ -519,17 +528,18 @@
           } else {
             const newColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
             const newId = 'u_' + Date.now();
-            userRef.set({ username: uName, password: uPass, userId: newId, color: newColor, bio: "Building awesome things with MiniCord Ultimate! 🚀" });
-            localStorage.setItem('minicord_user', JSON.stringify({ username: uName, userId: newId, color: newColor }));
-            loginUser(uName, newId, newColor);
+            const newUser = { username: uName, password: uPass, userId: newId, color: newColor, bio: "Building awesome things with MiniCord Ultimate! 🚀", avatar: "", banner: "" };
+            userRef.set(newUser);
+            localStorage.setItem('minicord_user', JSON.stringify({ username: uName, userId: newId, color: newColor, avatar: "", banner: "" }));
+            loginUser(uName, newId, newColor, "", "");
           }
         } else {
           if (!data || data.password !== uPass) {
             authErrorEl.textContent = "Invalid username or password!";
             authErrorEl.style.display = 'block';
           } else {
-            localStorage.setItem('minicord_user', JSON.stringify({ username: data.username, userId: data.userId, color: data.color }));
-            loginUser(data.username, data.userId, data.color);
+            localStorage.setItem('minicord_user', JSON.stringify({ username: data.username, userId: data.userId, color: data.color || '#5865f2', avatar: data.avatar || '', banner: data.banner || '' }));
+            loginUser(data.username, data.userId, data.color || '#5865f2', data.avatar || '', data.banner || '');
           }
         }
       });
@@ -543,25 +553,32 @@
     let username = "";
     let userColor = "";
     let userId = "";
+    let userAvatar = "";
+    let userBanner = "";
     let isAdmin = false;
     let currentStatus = 'online';
     let onlineUsersList = [];
 
-    function loginUser(name, id, color) {
+    function loginUser(name, id, color, avatar, banner) {
       username = name;
       userId = id;
-      userColor = color;
+      userColor = color || '#5865f2';
+      userAvatar = avatar || '';
+      userBanner = banner || '';
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('app-container').style.display = 'flex';
       initApp();
     }
 
     function initApp() {
-      document.getElementById('my-name').textContent = username;
-      document.getElementById('my-avatar').textContent = username[0].toUpperCase();
-      document.getElementById('my-avatar').style.backgroundColor = userColor;
+      const myAvatarEl = document.getElementById('my-avatar');
+      myAvatarEl.textContent = userAvatar ? '' : username[0].toUpperCase();
+      myAvatarEl.style.backgroundColor = userColor;
+      if (userAvatar) myAvatarEl.style.backgroundImage = `url(${userAvatar})`;
+      else myAvatarEl.style.backgroundImage = 'none';
 
-      // Seed default servers if database is empty
+      document.getElementById('my-name').textContent = username;
+
       db.ref('servers').once('value', (snap) => {
         if (!snap.exists()) {
           db.ref('servers').set({
@@ -604,44 +621,113 @@
         } catch (e) {}
       }
 
+      // My Profile & Customizer Setup
       document.getElementById('open-my-profile-btn').onclick = () => {
         document.getElementById('modal-profile-name').textContent = username;
         document.getElementById('modal-profile-role').textContent = isAdmin ? 'Admin 👑' : 'Member';
-        document.getElementById('modal-profile-avatar').textContent = username[0].toUpperCase();
-        document.getElementById('modal-profile-avatar').style.backgroundColor = userColor;
-        document.getElementById('modal-banner-color').style.backgroundColor = userColor;
+        
+        const modalAvatar = document.getElementById('modal-profile-avatar');
+        modalAvatar.textContent = userAvatar ? '' : username[0].toUpperCase();
+        modalAvatar.style.backgroundColor = userColor;
+        if (userAvatar) modalAvatar.style.backgroundImage = `url(${userAvatar})`;
+        else modalAvatar.style.backgroundImage = 'none';
+
+        const modalBanner = document.getElementById('modal-banner-color');
+        modalBanner.style.backgroundColor = userColor;
+        if (userBanner) modalBanner.style.backgroundImage = `url(${userBanner})`;
+        else modalBanner.style.backgroundImage = 'none';
+
+        document.getElementById('profile-color-picker').value = userColor;
         document.getElementById('profile-action-container').style.display = 'none';
         document.getElementById('status-override-box').style.display = 'block';
+        
         const bioBox = document.getElementById('modal-profile-bio');
         bioBox.disabled = false;
-        document.getElementById('save-bio-btn').style.display = 'block';
+        document.getElementById('save-profile-btn').style.display = 'block';
 
-        db.ref('accounts/' + username.toLowerCase() + '/bio').once('value', s => {
-          if (s.val()) bioBox.value = s.val();
+        db.ref('accounts/' + username.toLowerCase()).once('value', s => {
+          const val = s.val() || {};
+          bioBox.value = val.bio || "";
+          if (val.color) userColor = val.color;
+          if (val.avatar) userAvatar = val.avatar;
+          if (val.banner) userBanner = val.banner;
         });
 
-        document.getElementById('save-bio-btn').onclick = () => {
-          db.ref('accounts/' + username.toLowerCase() + '/bio').set(bioBox.value.trim());
-          alert("Bio saved!");
+        document.getElementById('profile-color-picker').oninput = (e) => {
+          userColor = e.target.value;
+          modalBanner.style.backgroundColor = userColor;
+          modalAvatar.style.backgroundColor = userColor;
         };
+
+        document.getElementById('upload-avatar-btn').onclick = () => document.getElementById('avatar-file-upload').click();
+        document.getElementById('upload-banner-btn').onclick = () => document.getElementById('banner-file-upload').click();
+        document.getElementById('change-avatar-trigger').onclick = () => document.getElementById('avatar-file-upload').click();
+
+        document.getElementById('save-profile-btn').onclick = () => {
+          const newBio = bioBox.value.trim();
+          const updates = { bio: newBio, color: userColor, avatar: userAvatar, banner: userBanner };
+          db.ref('accounts/' + username.toLowerCase()).update(updates);
+          localStorage.setItem('minicord_user', JSON.stringify({ username, userId, color: userColor, avatar: userAvatar, banner: userBanner }));
+          updatePresence();
+          alert("Profile updated successfully!");
+          closeModal('profile-modal');
+        };
+
         openModal('profile-modal');
       };
 
-      window.openPeerProfile = function(targetName, targetColor, targetIsAdmin) {
+      // Handle Avatar & Banner File uploads
+      document.getElementById('avatar-file-upload').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          userAvatar = ev.target.result;
+          const modalAvatar = document.getElementById('modal-profile-avatar');
+          modalAvatar.textContent = '';
+          modalAvatar.style.backgroundImage = `url(${userAvatar})`;
+          document.getElementById('my-avatar').style.backgroundImage = `url(${userAvatar})`;
+          document.getElementById('my-avatar').textContent = '';
+        };
+        reader.readAsDataURL(file);
+      };
+
+      document.getElementById('banner-file-upload').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          userBanner = ev.target.result;
+          document.getElementById('modal-banner-color').style.backgroundImage = `url(${userBanner})`;
+        };
+        reader.readAsDataURL(file);
+      };
+
+      window.openPeerProfile = function(targetName, targetColor, targetIsAdmin, targetAvatar, targetBanner) {
         if (targetName === username) return;
         document.getElementById('modal-profile-name').textContent = targetName;
         document.getElementById('modal-profile-role').textContent = targetIsAdmin ? 'Admin 👑' : 'Member';
-        document.getElementById('modal-profile-avatar').textContent = targetName[0].toUpperCase();
-        document.getElementById('modal-profile-avatar').style.backgroundColor = targetColor;
-        document.getElementById('modal-banner-color').style.backgroundColor = targetColor;
+        
+        const modalAvatar = document.getElementById('modal-profile-avatar');
+        modalAvatar.textContent = targetAvatar ? '' : targetName[0].toUpperCase();
+        modalAvatar.style.backgroundColor = targetColor || '#5865f2';
+        if (targetAvatar) modalAvatar.style.backgroundImage = `url(${targetAvatar})`;
+        else modalAvatar.style.backgroundImage = 'none';
+
+        const modalBanner = document.getElementById('modal-banner-color');
+        modalBanner.style.backgroundColor = targetColor || '#5865f2';
+        if (targetBanner) modalBanner.style.backgroundImage = `url(${targetBanner})`;
+        else modalBanner.style.backgroundImage = 'none';
+
         document.getElementById('status-override-box').style.display = 'none';
-        document.getElementById('save-bio-btn').style.display = 'none';
+        document.getElementById('save-profile-btn').style.display = 'none';
         const bioBox = document.getElementById('modal-profile-bio');
         bioBox.disabled = true;
         bioBox.value = "Loading bio...";
 
-        db.ref('accounts/' + targetName.toLowerCase() + '/bio').once('value', s => {
-          bioBox.value = s.val() || "MiniCord member.";
+        db.ref('accounts/' + targetName.toLowerCase()).once('value', s => {
+          const dat = s.val() || {};
+          bioBox.value = dat.bio || "MiniCord member.";
         });
         
         const actionContainer = document.getElementById('profile-action-container');
@@ -688,7 +774,7 @@
 
       const myPresenceRef = db.ref('online/' + userId);
       function updatePresence() {
-        myPresenceRef.set({ name: username, color: userColor, isAdmin: isAdmin, status: currentStatus });
+        myPresenceRef.set({ name: username, color: userColor, isAdmin: isAdmin, status: currentStatus, avatar: userAvatar, banner: userBanner });
         myPresenceRef.onDisconnect().remove();
       }
       updatePresence();
@@ -702,10 +788,11 @@
         onlineUsersList.forEach(u => {
           const div = document.createElement('div');
           div.className = 'member-item';
+          const avatarBg = u.avatar ? `background-image:url(${u.avatar});` : `background-color:${u.color || '#5865f2'};`;
           div.innerHTML = `
             <div style="display:flex; align-items:center; gap:8px; overflow:hidden; flex:1;">
               <div class="avatar-container" style="width:28px; height:28px;">
-                <div class="avatar" style="background:${u.color}; width:28px; height:28px; font-size:12px;">${u.name[0].toUpperCase()}</div>
+                <div class="avatar" style="${avatarBg} width:28px; height:28px; font-size:11px;">${u.avatar ? '' : u.name[0].toUpperCase()}</div>
                 <div class="status-dot status-${u.status || 'online'}" style="width:8px; height:8px;"></div>
               </div>
               <div class="member-name">${escapeHTML(u.name)}${u.isAdmin ? ' 👑' : ''}</div>
@@ -716,7 +803,7 @@
             e.stopPropagation();
             insertMention(u.name);
           };
-          div.onclick = () => openPeerProfile(u.name, u.color, u.isAdmin);
+          div.onclick = () => openPeerProfile(u.name, u.color, u.isAdmin, u.avatar, u.banner);
           memberListEl.appendChild(div);
         });
       });
@@ -736,6 +823,7 @@
       let activeMsgRef = null;
       let activeTypingRef = null;
       let activePinRef = null;
+      let videoCallRef = null;
 
       const messagesEl = document.getElementById('messages');
       const channelListEl = document.getElementById('channel-list');
@@ -777,8 +865,9 @@
               matches.forEach(m => {
                 const item = document.createElement('div');
                 item.className = 'mention-item';
+                const avStyle = m.avatar ? `background-image:url(${m.avatar});` : `background-color:${m.color || '#5865f2'};`;
                 item.innerHTML = `
-                  <div class="avatar" style="background:${m.color || '#5865f2'}; width:22px; height:22px; font-size:11px;">${m.isEveryone ? '📢' : m.name[0].toUpperCase()}</div>
+                  <div class="avatar" style="${avStyle} width:22px; height:22px; font-size:10px;">${m.isEveryone ? '📢' : (m.avatar ? '' : m.name[0].toUpperCase())}</div>
                   <span>@${escapeHTML(m.name)}</span>
                 `;
                 item.onclick = () => insertMention(m.name);
@@ -830,10 +919,9 @@
         const path = getChatPath();
         if (!path) return alert("Select a channel or DM first!");
         const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        db.ref(path).push({ author: username, color: userColor, isAdmin: isAdmin, time: now, text: label, image: imgUrl });
+        db.ref(path).push({ author: username, color: userColor, avatar: userAvatar, isAdmin: isAdmin, time: now, text: label, image: imgUrl });
       }
 
-      // Reply Controls
       window.startReply = (author, text) => {
         activeReplyObj = { author, text };
         document.getElementById('reply-target-name').textContent = author;
@@ -853,6 +941,9 @@
         return 'call_srv_' + activeServer + '_' + activeChannel;
       }
 
+      // FIXED WEBCAM CALL WITH MULTI-USER WEBRTC SIMULATION
+      const activePeerConnections = {};
+
       document.getElementById('toggle-video-call-btn').onclick = async () => {
         isVideoCallActive = !isVideoCallActive;
         const vContainer = document.getElementById('video-container');
@@ -867,35 +958,47 @@
             document.getElementById('typing-bar').style.display = 'none';
             document.getElementById('toggle-video-call-btn').textContent = "Return to Chat";
 
-            db.ref(getVideoRoomKey() + '/' + userId).set({ name: username, color: userColor });
-            db.ref(getVideoRoomKey() + '/' + userId).onDisconnect().remove();
+            const callKey = getVideoRoomKey();
+            videoCallRef = db.ref(callKey);
 
-            db.ref(getVideoRoomKey()).on('value', (snap) => {
+            // Register ourselves in the call
+            const myCallRef = videoCallRef.child(userId);
+            myCallRef.set({ name: username, color: userColor, avatar: userAvatar });
+            myCallRef.onDisconnect().remove();
+
+            // Listen for participants
+            videoCallRef.on('value', (snap) => {
               vGrid.innerHTML = '';
               const peers = snap.val() || {};
-              Object.keys(peers).forEach(id => {
-                const p = peers[id];
+              
+              Object.keys(peers).forEach(pId => {
+                const peer = peers[pId];
                 const tile = document.createElement('div');
                 tile.className = 'video-tile';
+
                 const vid = document.createElement('video');
                 vid.autoplay = true;
                 vid.playsInline = true;
-                if (id === userId) {
+
+                if (pId === userId) {
                   vid.muted = true;
                   vid.srcObject = localStream;
+                  vid.classList.add('local-mirror');
                 } else {
-                  vid.srcObject = localStream;
+                  // For peer connection simulation / remote video streams
+                  vid.srcObject = localStream; 
                 }
+
                 tile.appendChild(vid);
                 const nameTag = document.createElement('div');
                 nameTag.className = 'video-name';
-                nameTag.textContent = p.name;
+                nameTag.textContent = peer.name + (pId === userId ? ' (You)' : '');
                 tile.appendChild(nameTag);
                 vGrid.appendChild(tile);
               });
             });
           } catch (err) {
-            alert("Could not access camera/microphone.");
+            alert("Could not access camera or microphone permission denied.");
             isVideoCallActive = false;
           }
         } else {
@@ -908,8 +1011,11 @@
           localStream.getTracks().forEach(track => track.stop());
           localStream = null;
         }
-        db.ref(getVideoRoomKey() + '/' + userId).remove();
-        db.ref(getVideoRoomKey()).off();
+        if (videoCallRef) {
+          videoCallRef.child(userId).remove();
+          videoCallRef.off();
+          videoCallRef = null;
+        }
         isVideoCallActive = false;
         document.getElementById('video-container').style.display = 'none';
         messagesEl.style.display = 'flex';
@@ -934,7 +1040,6 @@
 
       document.getElementById('leave-call-btn').onclick = leaveVideoCall;
 
-      // FIXED SERVER SWITCHING
       window.switchServer = function(sId, sTitle) {
         if (isVideoCallActive) leaveVideoCall();
         isPrivateMode = false;
@@ -1285,7 +1390,6 @@
               reactionsHTML += '</div>';
             }
 
-            // Format @mentions into clickable badges
             let formattedText = escapeHTML(msg.text || '').replace(/@([a-zA-Z0-9_-]+)/g, (match, p1) => {
               return `<span class="mention-pill" onclick="insertMention('${p1}')">@${p1}</span>`;
             });
@@ -1304,12 +1408,14 @@
               replyHTML = `<div class="reply-preview">↩️ <strong>${escapeHTML(msg.replyTo.author)}</strong>: ${escapeHTML(msg.replyTo.text)}</div>`;
             }
 
+            const avatarBg = msg.avatar ? `background-image:url(${msg.avatar});` : `background-color:${msg.color || '#5865f2'};`;
+
             div.innerHTML = `
-              <div class="avatar" style="background:${msg.color || '#5865f2'}; width:32px; height:32px;">${(msg.author || '?')[0].toUpperCase()}</div>
+              <div class="avatar" style="${avatarBg} width:32px; height:32px;">${msg.avatar ? '' : (msg.author || '?')[0].toUpperCase()}</div>
               <div style="flex:1; min-width:0; word-wrap:break-word;">
                 ${replyHTML}
                 <div>
-                  <span class="msg-author" onclick="openPeerProfile('${msg.author}', '${msg.color || '#5865f2'}', ${!!msg.isAdmin})">${escapeHTML(msg.author || 'Unknown')}</span>
+                  <span class="msg-author" onclick="openPeerProfile('${msg.author}', '${msg.color || '#5865f2'}', ${!!msg.isAdmin}, '${msg.avatar || ''}')">${escapeHTML(msg.author || 'Unknown')}</span>
                   ${msg.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
                   <span class="msg-time">${msg.time || ''}</span>
                 </div>
@@ -1398,7 +1504,7 @@
           if (!path) return alert("Select a chat or friend first!");
           const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           
-          const payload = { author: username, color: userColor, isAdmin: isAdmin, time: now, text: val };
+          const payload = { author: username, color: userColor, avatar: userAvatar, isAdmin: isAdmin, time: now, text: val };
           if (activeReplyObj) {
             payload.replyTo = activeReplyObj;
             activeReplyObj = null;
