@@ -469,7 +469,6 @@
           if (data) {
             authErrorEl.textContent = "Username already taken!";
             authErrorEl.style.display = 'block';
-          } else {
             const newColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
             const newId = 'u_' + Date.now();
             userRef.set({ username: uName, password: uPass, userId: newId, color: newColor });
