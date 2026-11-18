@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg-servers: #1e1f22;
-      --bg-channels: #2b2d31;
+      --bg-channels: #2b2d31a;
       --bg-chat: #313338;
       --bg-chat-input: #383a40;
       --bg-hover: #35373c;
@@ -98,6 +98,7 @@
     .channel-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
     .channel-hash { color: var(--text-muted); font-size: 18px; font-weight: 400; line-height: 1; }
     .channel-item.active .channel-hash { color: var(--text-main); }
+    .ping-badge { background: var(--red); color: white; font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; }
 
     .voice-users-sublist { padding-left: 26px; display: flex; flex-direction: column; gap: 4px; margin: 2px 0 6px 0; }
     .voice-sub-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); padding: 2px 6px; border-radius: 4px; }
@@ -131,63 +132,63 @@
 
     /* 3. Main Chat Area */
     .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); min-width: 0; position: relative; }
-    .global-announcement { display: none; background: var(--accent); color: white; padding: 8px 16px; font-size: 13px; font-weight: 600; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
-    .global-announcement.active { display: flex; }
-    .chat-header { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.25); box-shadow: 0 1px 2px rgba(0,0,0,0.12); font-weight: 700; color: var(--text-header); flex-shrink: 0; }
+    .chat-header { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.25); box-shadow: 0 1px 2px rgba(0,0,0,0.12); font-weight: 700; color: var(--text-header); flex-shrink: 0; gap: 10px; }
     .header-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
-    .header-right { display: flex; align-items: center; gap: 6px; }
+    .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .private-badge { background: var(--yellow); color: #1e1f22; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800; letter-spacing: 0.04em; }
     .slowmode-badge { background: var(--bg-chat-input); color: var(--text-muted); font-size: 11px; padding: 3px 8px; border-radius: 12px; display: none; align-items: center; gap: 4px; font-weight: 600; }
+    .header-search-input { background: var(--bg-servers); border: 1px solid var(--divider); color: var(--text-main); padding: 4px 10px; border-radius: 6px; font-size: 12px; width: 155px; outline: none; transition: width 0.15s, border-color 0.15s; }
+    .header-search-input:focus { width: 210px; border-color: var(--accent); }
 
     /* Voice Channel Stage (WebRTC Video Grid) */
     .voice-stage { display: none; flex: 1; background: #111214; padding: 20px; flex-direction: column; gap: 16px; overflow: hidden; }
     .voice-stage.active { display: flex; }
     .voice-stage-header { display: flex; align-items: center; justify-content: space-between; color: white; flex-shrink: 0; }
     .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-content: center; justify-content: center; overflow-y: auto; }
-    .video-tile { background: #2b2d31; border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 16px rgba(0,0,0,0.5); border: 2px solid #1e1f22; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
-    .video-tile.speaking { border-color: var(--green); box-shadow: 0 0 0 2px rgba(35, 165, 90, 0.35); }
-    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: #000; position: absolute; inset: 0; z-index: 1; }
-    .video-tile video.mirrored { transform: scaleX(-1); }
-    .video-avatar-fallback { width: 74px; height: 74px; border-radius: var(--avatar-radius); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: white; z-index: 0; overflow: hidden; background-size: cover; background-position: center; }
-    .video-avatar-fallback img { width: 100%; height: 100%; object-fit: cover; }
-    .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.78); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; z-index: 3; display: flex; align-items: center; gap: 6px; }
-    .video-status-pill { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 6px; font-size: 11px; color: #b5bac1; z-index: 3; }
-    .video-controls { height: 70px; background: #1e1f22; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-shrink: 0; padding: 0 16px; }
-    .v-btn { background: #2b2d31; border: none; border-radius: 24px; height: 44px; padding: 0 16px; display: flex; align-items: center; justify-content: center; gap: 8px; color: white; cursor: pointer; transition: 0.15s; font-size: 13px; font-weight: 600; }
-    .v-btn:hover { background: #35373c; }
-    .v-btn.muted { background: var(--red); }
-    .v-btn.active-share { background: var(--green); }
-    .v-btn.danger { background: var(--red); }
-    .v-btn.danger:hover { background: #b82d32; }
-
-    /* Messages Stream */
-    .messages { flex: 1; padding: 16px 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--msg-gap); }
-    .welcome-banner { padding: 16px 16px 12px 16px; border-bottom: 1px solid var(--divider); margin: 0 16px 8px 16px; }
-    .welcome-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--bg-active); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--text-header); margin-bottom: 12px; }
-    .message { display: flex; gap: 16px; position: relative; padding: 4px 16px; transition: background 0.08s; }
-    .message:hover { background: rgba(0, 0, 0, 0.1); }
-    .message.compact-followup { margin-top: calc(var(--msg-gap) * -0.75); padding-left: 72px; }
-    .message.mentioned { background: rgba(240, 178, 50, 0.1); border-left: 3px solid var(--yellow); padding-left: 13px; }
-    .msg-avatar {
-      width: 40px; height: 40px;
-      border-radius: var(--avatar-radius);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: white; font-size: 16px;
-      flex-shrink: 0; cursor: pointer; margin-top: 2px;
-      overflow: hidden; background-size: cover; background-position: center;
-    }
-    .msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .msg-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+    .msg-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; flex-wrap: wrap; }
     .msg-author { font-weight: 600; color: var(--text-header); cursor: pointer; }
     .msg-author:hover { text-decoration: underline; }
+    .msg-handle-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+    .nick-badge { background: var(--bg-active); color: var(--text-muted); font-size: 10px; font-weight: 600; padding: 1px 5px; border-radius: 4px; }
     .admin-tag { background: var(--accent); color: white; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
     .msg-time { font-size: 11px; color: var(--text-muted); }
+    .msg-edited-tag { font-size: 10px; color: var(--text-muted); margin-left: 4px; font-style: italic; }
     .msg-reply-quote { font-size: 12px; color: var(--text-muted); border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 4px; opacity: 0.9; }
     .msg-body { line-height: 1.45; word-break: break-word; color: var(--text-main); }
     .msg-body a { color: #00a8fc; text-decoration: none; }
     .msg-body a:hover { text-decoration: underline; }
     .msg-img { max-width: 340px; max-height: 240px; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer; }
-    .mention-pill { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 4px; border-radius: 3px; font-weight: 500; }
+    .mention-pill { background: rgba(88, 101, 242, 0.32); color: #c9cdfb; padding: 1px 5px; border-radius: 4px; font-weight: 600; cursor: pointer; }
+    .mention-pill.self-ping { background: rgba(240, 178, 50, 0.35); color: #ffe08a; }
+
+    /* Inline Message Edit Box */
+    .inline-edit-box { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .inline-edit-input { width: 100%; background: var(--bg-chat-input); border: 1px solid var(--accent); color: var(--text-main); padding: 7px 10px; border-radius: 6px; outline: none; font-size: var(--chat-font-size); }
+    .inline-edit-hint { font-size: 11px; color: var(--text-muted); }
+
+    /* Jump to Present Floating Pill */
+    .jump-present-btn { display: none; position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; border: none; padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.45); z-index: 20; align-items: center; gap: 6px; }
+    .jump-present-btn.visible { display: flex; }
+    .jump-present-btn:hover { background: var(--accent-hover); }
+
+    /* Autocomplete Popover (@Mentions & /Slash Commands) */
+    .autocomplete-popover { display: none; position: absolute; bottom: 76px; left: 16px; right: 16px; max-width: 440px; background: var(--bg-floating); border: 1px solid var(--divider); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 60; overflow: hidden; }
+    .autocomplete-popover.open { display: block; }
+    .autocomplete-header { padding: 7px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--divider); letter-spacing: 0.03em; }
+    .autocomplete-list { max-height: 210px; overflow-y: auto; padding: 4px; }
+    .autocomplete-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 6px; cursor: pointer; gap: 10px; }
+    .autocomplete-item:hover, .autocomplete-item.selected { background: var(--bg-active); }
+    .autocomplete-item-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .autocomplete-item-title { font-weight: 600; color: var(--text-header); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .autocomplete-item-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+    /* Pinned Messages Popover */
+    .pins-popover { display: none; position: absolute; top: 54px; right: 16px; width: 380px; max-width: 92vw; max-height: 420px; background: var(--bg-floating); border: 1px solid var(--divider); border-radius: 8px; box-shadow: 0 8px 28px rgba(0,0,0,0.65); z-index: 55; flex-direction: column; overflow: hidden; }
+    .pins-popover.open { display: flex; }
+    .pins-popover-header { padding: 12px 14px; font-weight: 700; color: var(--text-header); border-bottom: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center; }
+    .pins-popover-list { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .pin-card { background: var(--bg-channels); border: 1px solid var(--divider); border-radius: 6px; padding: 10px; font-size: 13px; }
+    .pin-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 
     /* Message Hover Actions - Clean Text Words Toolbar */
     .msg-actions {
@@ -439,10 +440,23 @@
           <span id="slowmode-badge" class="slowmode-badge" title="Slowmode is enabled">Slowmode: <span id="slowmode-sec-label">0</span>s</span>
         </div>
         <div class="header-right">
+          <input type="text" class="header-search-input" id="channel-search-input" placeholder="Search channel..." title="Filter messages in this channel" />
+          <button class="icon-btn" id="open-pins-btn" title="Pinned Messages">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg>
+          </button>
           <button class="icon-btn active" id="toggle-members-btn" title="Toggle Member List">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           </button>
         </div>
+      </div>
+
+      <!-- Pinned Messages Popover -->
+      <div class="pins-popover" id="pins-popover">
+        <div class="pins-popover-header">
+          <span>Pinned Messages</span>
+          <button class="icon-btn" id="close-pins-btn" style="padding:2px 6px;">✕</button>
+        </div>
+        <div class="pins-popover-list" id="pins-list"></div>
       </div>
 
       <!-- Voice Stage (Real Multi-Peer WebRTC Video & Voice) -->
@@ -465,6 +479,15 @@
 
       <!-- Messages Feed -->
       <div class="messages" id="messages"></div>
+
+      <!-- Jump to Present Pill -->
+      <button class="jump-present-btn" id="jump-present-btn">↓ Jump to Present</button>
+
+      <!-- Autocomplete Popover (@Mentions & /Commands) -->
+      <div class="autocomplete-popover" id="autocomplete-popover">
+        <div class="autocomplete-header" id="autocomplete-header">Members</div>
+        <div class="autocomplete-list" id="autocomplete-list"></div>
+      </div>
 
       <!-- Typing Indicator -->
       <div class="typing-bar">
@@ -529,14 +552,26 @@
           </div>
         </div>
         <div class="profile-body">
-          <div class="profile-username" id="modal-profile-name">Username</div>
+          <div class="profile-username" id="modal-profile-name">Display Name</div>
+          <div class="profile-tag" id="modal-profile-handle" style="margin-bottom:4px;">@username</div>
           <div class="profile-tag" id="modal-profile-role">Member</div>
           <div id="modal-profile-custom-status" style="font-size:12px; color:var(--text-main); margin-bottom:10px; display:none; font-style:italic;"></div>
           <div class="section-label" style="padding:0 0 6px 0;">About Me</div>
           <div class="profile-bio-box" id="modal-profile-bio">Hanging out on MiniCord!</div>
-          <div id="profile-action-container" style="margin-bottom:12px; display:flex; gap:8px;">
+
+          <!-- Private Friend Nickname Box (Only shown when viewing someone else) -->
+          <div id="friend-nickname-box" style="display:none; margin-bottom:12px; background:var(--bg-servers); padding:10px; border-radius:8px; border:1px solid var(--divider);">
+            <div class="section-label" style="padding:0 0 6px 0;">Friend Nickname (Only Visible to You)</div>
+            <div style="display:flex; gap:6px;">
+              <input type="text" class="modal-input" id="friend-nickname-input" placeholder="Set a custom nickname..." style="margin:0; padding:6px 10px; font-size:13px;" />
+              <button class="btn btn-primary" id="save-friend-nickname-btn" style="padding:6px 12px;">Save</button>
+            </div>
+          </div>
+
+          <div id="profile-action-container" style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap;">
             <button class="btn btn-success" id="profile-add-friend-btn" style="flex:1;">Add Friend</button>
             <button class="btn btn-primary" id="profile-dm-btn" style="flex:1;">Message</button>
+            <button class="btn btn-secondary" id="profile-mention-btn" style="flex:1;">Mention @</button>
           </div>
           <div id="my-profile-status-box">
             <div class="section-label" style="padding:0 0 6px 0;">Set Status</div>
@@ -636,12 +671,16 @@
                 </div>
               </div>
               <div class="profile-body" style="padding:40px 16px 12px 16px;">
-                <div class="profile-username" id="preview-username-text" style="font-size:17px;">Username</div>
+                <div class="profile-username" id="preview-username-text" style="font-size:17px;">Display Name</div>
+                <div class="profile-tag" id="preview-handle-text" style="margin-bottom:4px; font-size:12px;">@username</div>
                 <div class="profile-tag" id="preview-status-text" style="margin-bottom:8px;">Hanging out on MiniCord!</div>
                 <div class="profile-bio-box" id="preview-bio-text" style="margin-bottom:0; padding:8px 10px; font-size:12px;">Hanging out on MiniCord!</div>
               </div>
             </div>
           </div>
+
+          <label class="auth-label">Display Name</label>
+          <input type="text" class="modal-input" id="settings-displayname-input" maxlength="32" placeholder="How your name appears to everyone..." />
 
           <label class="auth-label">Profile Picture (Upload Image or Paste URL)</label>
           <input type="file" id="pfp-file-input" accept="image/*" style="display:none;" />
@@ -841,6 +880,14 @@
             <span class="kbd-badge">/</span>
           </div>
           <div class="shortcut-row">
+            <span>Edit Your Last Message</span>
+            <span class="kbd-badge">Up Arrow (in empty box)</span>
+          </div>
+          <div class="shortcut-row">
+            <span>Autocomplete Mention or Command</span>
+            <span class="kbd-badge">@ or / + Tab / Enter</span>
+          </div>
+          <div class="shortcut-row">
             <span>Push-to-Talk (when enabled)</span>
             <span class="kbd-badge">Hold Space</span>
           </div>
@@ -1018,6 +1065,7 @@
               loginUser(
                 uData.username,
                 uData.userId,
+                dbAcc.displayName || uData.displayName || uData.username,
                 dbAcc.color || uData.color || '#5865f2',
                 dbAcc.bio || uData.bio || "Hanging out on MiniCord!",
                 dbAcc.banner || uData.banner || "",
@@ -1034,35 +1082,7 @@
     });
 
     authSwitchBtn.onclick = () => {
-      isSignUpMode = !isSignUpMode;
-      document.getElementById('auth-title').textContent = isSignUpMode ? "Create an account" : "Welcome back!";
-      document.getElementById('auth-subtitle').textContent = isSignUpMode ? "Join the conversation in seconds" : "We're so excited to see you again!";
-      authSubmitBtn.textContent = isSignUpMode ? "Continue" : "Log In";
-      authSwitchBtn.innerHTML = isSignUpMode
-        ? 'Already have an account? <span style="color:#00a8fc; font-weight:600;">Log In</span>'
-        : 'Need an account? <span style="color:#00a8fc; font-weight:600;">Register</span>';
-    };
-
-    function handleAuthSubmit() {
-      const uName = authUserEl.value.trim();
-      const uPass = authPassEl.value.trim();
-      authErrorEl.style.display = 'none';
-
-      if (!uName || !uPass) {
-        authErrorEl.textContent = "Please fill in all fields.";
-        authErrorEl.style.display = 'block';
-        return;
-      }
-
-      const safeKey = uName.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
-      const userRef = db.ref('accounts/' + safeKey);
-      
-      userRef.once('value', (snap) => {
-        const data = snap.val();
-        if (isSignUpMode) {
-          if (data) {
-            authErrorEl.textContent = "Username is already taken!";
-            authErrorEl.style.display = 'block';
+// ... existing code ... -->
           } else {
             const palette = ['#5865f2', '#23a55a', '#f0b232', '#da373c', '#eb459e', '#00a8fc'];
             const newColor = palette[Math.floor(Math.random() * palette.length)];
@@ -1070,6 +1090,7 @@
             const defaultBio = "Hanging out on MiniCord!";
             const accountPayload = {
               username: uName,
+              displayName: uName,
               password: uPass,
               userId: newId,
               color: newColor,
@@ -1080,21 +1101,22 @@
             };
             userRef.set(accountPayload);
             localStorage.setItem('minicord_user', JSON.stringify(accountPayload));
-            loginUser(uName, newId, newColor, defaultBio, "", "", "");
+            loginUser(uName, newId, uName, newColor, defaultBio, "", "", "");
           }
         } else {
           if (!data || data.password !== uPass) {
             authErrorEl.textContent = "Login or password is invalid.";
             authErrorEl.style.display = 'block';
           } else {
+            const dispName = data.displayName || data.username;
             const bio = data.bio || "Hanging out on MiniCord!";
             const banner = data.banner || "";
             const pfp = data.pfp || "";
             const customStatus = data.customStatus || "";
             localStorage.setItem('minicord_user', JSON.stringify({
-              username: data.username, userId: data.userId, color: data.color, bio, banner, pfp, customStatus
+              username: data.username, displayName: dispName, userId: data.userId, color: data.color, bio, banner, pfp, customStatus
             }));
-            loginUser(data.username, data.userId, data.color, bio, banner, pfp, customStatus);
+            loginUser(data.username, data.userId, dispName, data.color, bio, banner, pfp, customStatus);
           }
         }
       });
@@ -1109,6 +1131,7 @@
     };
 
     let username = "";
+    let displayName = "";
     let userColor = "";
     let userId = "";
     let userBio = "Hanging out on MiniCord!";
@@ -1122,10 +1145,12 @@
     let globalSpamLimit = 1;
     let lastMessageSentTime = 0;
     let replyingTo = null;
+    let friendNicknames = {};
 
-    function loginUser(name, id, color, bio, banner, pfp, customStatus) {
+    function loginUser(name, id, dispName, color, bio, banner, pfp, customStatus) {
       username = name;
       userId = id;
+      displayName = dispName || name;
       userColor = color;
       userBio = bio || "Hanging out on MiniCord!";
       userBanner = banner || "";
@@ -1137,32 +1162,65 @@
     }
 
     function initApp() {
+      // Helper to resolve a user's shown label: Friend Nickname > Display Name > Username
+      function getEffectiveName(targetUsername, fallbackDisplayName = null) {
+        if (!targetUsername) return 'User';
+        const lower = targetUsername.toLowerCase();
+        if (lower === username.toLowerCase()) return displayName || username;
+        if (friendNicknames[lower]) return friendNicknames[lower];
+        const onU = Object.values(onlineUsersMap).find(u => u && u.name && u.name.toLowerCase() === lower);
+        if (onU && onU.displayName) return onU.displayName;
+        const accU = Object.values(allAccountsMap).find(a => a && a.username && a.username.toLowerCase() === lower);
+        if (accU && accU.displayName) return accU.displayName;
+        return fallbackDisplayName || targetUsername;
+      }
+
+      // Sync Private Friend Nicknames
+      db.ref('friend_nicknames/' + userId).on('value', (snap) => {
+        const raw = snap.val() || {};
+        friendNicknames = {};
+        Object.keys(raw).forEach(k => {
+          if (raw[k]) friendNicknames[k.toLowerCase()] = raw[k];
+        });
+        renderMemberSidebar();
+        if (isFriendsMode) {
+          if (activeDmUser) {
+            document.getElementById('channel-name').textContent = getEffectiveName(activeDmUser);
+          }
+          openFriendsTab(activeDmUser);
+        }
+        loadMessages();
+      });
+
       function refreshMyDockUI() {
-        document.getElementById('my-name').textContent = username;
-        applyAvatarStyle(document.getElementById('my-avatar'), username, userColor, userPfp);
+        document.getElementById('my-name').textContent = displayName;
+        applyAvatarStyle(document.getElementById('my-avatar'), displayName, userColor, userPfp);
         const subText = isAdmin
-          ? 'Admin 👑'
-          : (userCustomStatus || (currentStatus === 'dnd' ? 'Do Not Disturb' : currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)));
+          ? `Admin 👑 • @${username}`
+          : (userCustomStatus || `@${username}`);
         document.getElementById('role-label').textContent = subText;
       }
 
       function updateSettingsLivePreview() {
         const previewName = document.getElementById('preview-username-text');
+        const previewHandle = document.getElementById('preview-handle-text');
         const previewStatus = document.getElementById('preview-status-text');
         const previewBio = document.getElementById('preview-bio-text');
         const previewAvatar = document.getElementById('preview-avatar-box');
         const previewBanner = document.getElementById('preview-banner-box');
 
+        const draftDispName = document.getElementById('settings-displayname-input').value.trim() || username;
         const draftPfp = document.getElementById('settings-pfp-input').value.trim();
         const draftBanner = document.getElementById('settings-banner-input').value.trim();
         const draftBio = document.getElementById('settings-bio-input').value.trim() || "Hanging out on MiniCord!";
         const draftStatus = document.getElementById('settings-custom-status-input').value.trim();
         const draftColor = document.getElementById('settings-color-input').value;
 
-        previewName.textContent = username;
+        previewName.textContent = draftDispName;
+        previewHandle.textContent = `@${username}`;
         previewStatus.textContent = draftStatus || (isAdmin ? 'Administrator' : 'Member');
         previewBio.textContent = draftBio;
-        applyAvatarStyle(previewAvatar, username, draftColor, draftPfp);
+        applyAvatarStyle(previewAvatar, draftDispName, draftColor, draftPfp);
 
         if (draftBanner) {
           previewBanner.style.backgroundImage = `url('${draftBanner}')`;
@@ -1174,6 +1232,7 @@
       }
 
       refreshMyDockUI();
+      document.getElementById('settings-displayname-input').value = displayName;
       document.getElementById('settings-pfp-input').value = userPfp;
       document.getElementById('settings-banner-input').value = userBanner;
       document.getElementById('settings-bio-input').value = userBio;
@@ -1181,7 +1240,7 @@
       document.getElementById('settings-color-input').value = userColor;
       updateSettingsLivePreview();
 
-      ['settings-pfp-input', 'settings-banner-input', 'settings-bio-input', 'settings-custom-status-input', 'settings-color-input'].forEach(id => {
+      ['settings-displayname-input', 'settings-pfp-input', 'settings-banner-input', 'settings-bio-input', 'settings-custom-status-input', 'settings-color-input'].forEach(id => {
         document.getElementById(id).addEventListener('input', updateSettingsLivePreview);
       });
 
@@ -1425,67 +1484,16 @@
       document.getElementById('mirror-cam-select').onchange = (e) => {
         mirrorLocalCam = (e.target.value === 'enabled');
         localStorage.setItem('minicord_mirrorcam', e.target.value);
-        const localVid = document.getElementById(`video_${userId}`);
-        if (localVid) localVid.classList.toggle('mirrored', mirrorLocalCam);
-      };
-
-      document.getElementById('ptt-select').onchange = (e) => {
-        pttEnabled = (e.target.value === 'enabled');
-        localStorage.setItem('minicord_ptt', e.target.value);
-        if (pttEnabled && localStream) {
-          localStream.getAudioTracks().forEach(t => t.enabled = false);
-          updateVoiceControlButtons();
-          showToast("Push-to-Talk enabled: Hold Spacebar to speak.");
-        }
-      };
-
-      async function populateMediaDevices() {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
-        try {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const micSel = document.getElementById('mic-device-select');
-          const camSel = document.getElementById('cam-device-select');
-          micSel.innerHTML = '<option value="default">Default Microphone</option>';
-          camSel.innerHTML = '<option value="default">Default Camera</option>';
-          devices.forEach(d => {
-            if (d.kind === 'audioinput' && d.deviceId) {
-              const opt = document.createElement('option');
-              opt.value = d.deviceId;
-              opt.textContent = d.label || `Microphone (${d.deviceId.slice(0, 6)})`;
-              micSel.appendChild(opt);
-            } else if (d.kind === 'videoinput' && d.deviceId) {
-              const opt = document.createElement('option');
-              opt.value = d.deviceId;
-              opt.textContent = d.label || `Camera (${d.deviceId.slice(0, 6)})`;
-              camSel.appendChild(opt);
-            }
-          });
-          micSel.value = selectedMicId;
-          camSel.value = selectedCamId;
-        } catch (e) {}
-      }
-
-      document.getElementById('refresh-devices-btn').onclick = () => {
-        populateMediaDevices();
-        showToast("Media devices refreshed.");
-      };
-      document.getElementById('mic-device-select').onchange = (e) => {
-        selectedMicId = e.target.value;
-        localStorage.setItem('minicord_mic_id', selectedMicId);
-      };
-      document.getElementById('cam-device-select').onchange = (e) => {
-        selectedCamId = e.target.value;
-        localStorage.setItem('minicord_cam_id', selectedCamId);
-      };
-
-      // Save Profile Picture, Banner, Description, Custom Status, and Accent Color
+      // Save Display Name, Profile Picture, Banner, Description, Custom Status, and Accent Color
       document.getElementById('save-profile-settings-btn').onclick = () => {
+        const newDispName = document.getElementById('settings-displayname-input').value.trim() || username;
         const newPfp = document.getElementById('settings-pfp-input').value.trim();
         const newBanner = document.getElementById('settings-banner-input').value.trim();
         const newBio = document.getElementById('settings-bio-input').value.trim() || "Hanging out on MiniCord!";
         const newCustomStatus = document.getElementById('settings-custom-status-input').value.trim();
         const newColor = document.getElementById('settings-color-input').value;
 
+        displayName = newDispName;
         userPfp = newPfp;
         userBanner = newBanner;
         userBio = newBio;
@@ -1497,6 +1505,7 @@
         
         const safeKey = username.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
         db.ref('accounts/' + safeKey).update({
+          displayName: displayName,
           pfp: userPfp,
           banner: userBanner,
           bio: userBio,
@@ -1504,37 +1513,50 @@
           color: userColor
         });
         localStorage.setItem('minicord_user', JSON.stringify({
-          username, userId, color: userColor, bio: userBio, banner: userBanner, pfp: userPfp, customStatus: userCustomStatus
+          username, displayName, userId, color: userColor, bio: userBio, banner: userBanner, pfp: userPfp, customStatus: userCustomStatus
         }));
         updatePresence();
         renderMemberSidebar();
         loadMessages();
-        showToast("Profile picture, banner & description saved!", "success");
+        showToast("Display name & profile saved!", "success");
       };
 
-      function playNotificationSound() {
+      function playNotificationSound(isPing = false) {
         if (!soundEnabled) return;
         try {
           const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-          osc.frequency.setValueAtTime(1320, audioCtx.currentTime + 0.08);
-          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.25);
+          osc.type = isPing ? 'triangle' : 'sine';
+          if (isPing) {
+            // Distinct double-note alert for @mentions / pings
+            osc.frequency.setValueAtTime(987.77, audioCtx.currentTime); // B5
+            osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.11); // E6
+            gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.36);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.36);
+          } else {
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1320, audioCtx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.11, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.24);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.24);
+          }
         } catch (e) {}
       }
 
-      // Profile Modal with Banner, PFP & Description Support
+      // Profile Modal with Display Name, Banner, PFP, Description & Friend Nicknames
       document.getElementById('open-my-profile-btn').onclick = () => {
-        document.getElementById('modal-profile-name').textContent = username;
+        document.getElementById('modal-profile-name').textContent = displayName;
+        document.getElementById('modal-profile-handle').textContent = `@${username}`;
         document.getElementById('modal-profile-role').textContent = isAdmin ? 'Administrator' : 'Member';
-        applyAvatarStyle(document.getElementById('modal-profile-avatar'), username, userColor, userPfp);
+        applyAvatarStyle(document.getElementById('modal-profile-avatar'), displayName, userColor, userPfp);
         const bannerBox = document.getElementById('modal-banner-color');
         if (userBanner) {
           bannerBox.style.backgroundImage = `url('${userBanner}')`;
@@ -1551,6 +1573,7 @@
           statusEl.style.display = 'none';
         }
         document.getElementById('modal-profile-bio').textContent = userBio;
+        document.getElementById('friend-nickname-box').style.display = 'none';
         document.getElementById('profile-action-container').style.display = 'none';
         document.getElementById('my-profile-status-box').style.display = 'block';
         const editBtn = document.getElementById('edit-profile-from-modal-btn');
@@ -1563,16 +1586,18 @@
       };
 
       window.openPeerProfile = function(targetName) {
-        if (targetName === username) {
+        if (targetName.toLowerCase() === username.toLowerCase()) {
           document.getElementById('open-my-profile-btn').click();
           return;
         }
 
-        // Look up latest profile data from onlineUsersMap or allAccountsMap
         const lower = targetName.toLowerCase();
         const onlineInfo = Object.values(onlineUsersMap).find(u => u && u.name && u.name.toLowerCase() === lower);
         const accInfo = Object.values(allAccountsMap).find(a => a && a.username && a.username.toLowerCase() === lower);
 
+        const actualUsername = (onlineInfo && onlineInfo.name) || (accInfo && accInfo.username) || targetName;
+        const targetDispName = (onlineInfo && onlineInfo.displayName) || (accInfo && accInfo.displayName) || actualUsername;
+        const targetNick = friendNicknames[lower] || '';
         const targetColor = (onlineInfo && onlineInfo.color) || (accInfo && accInfo.color) || '#5865f2';
         const targetIsAdmin = !!(onlineInfo && onlineInfo.isAdmin);
         const targetBio = (onlineInfo && onlineInfo.bio) || (accInfo && accInfo.bio) || "MiniCord Member";
@@ -1580,9 +1605,10 @@
         const targetPfp = (onlineInfo && onlineInfo.pfp) || (accInfo && accInfo.pfp) || "";
         const targetCustomStatus = (onlineInfo && onlineInfo.customStatus) || (accInfo && accInfo.customStatus) || "";
 
-        document.getElementById('modal-profile-name').textContent = targetName;
+        document.getElementById('modal-profile-name').textContent = targetNick ? `${targetNick} (${targetDispName})` : targetDispName;
+        document.getElementById('modal-profile-handle').textContent = `@${actualUsername}`;
         document.getElementById('modal-profile-role').textContent = targetIsAdmin ? 'Administrator' : 'Member';
-        applyAvatarStyle(document.getElementById('modal-profile-avatar'), targetName, targetColor, targetPfp);
+        applyAvatarStyle(document.getElementById('modal-profile-avatar'), targetDispName, targetColor, targetPfp);
 
         const bannerBox = document.getElementById('modal-banner-color');
         if (targetBanner) {
@@ -1605,19 +1631,43 @@
         document.getElementById('my-profile-status-box').style.display = 'none';
         document.getElementById('edit-profile-from-modal-btn').style.display = 'none';
 
+        // Friend Nickname Editor
+        const nickBox = document.getElementById('friend-nickname-box');
+        const nickInput = document.getElementById('friend-nickname-input');
+        nickBox.style.display = 'block';
+        nickInput.value = targetNick;
+        document.getElementById('save-friend-nickname-btn').onclick = () => {
+          const val = nickInput.value.trim();
+          const safeTargetKey = actualUsername.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
+          if (val) {
+            db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).set(val);
+            showToast(`Nickname set to "${val}"`, "success");
+          } else {
+            db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).remove();
+            showToast("Friend nickname cleared.");
+          }
+          document.getElementById('modal-profile-name').textContent = val ? `${val} (${targetDispName})` : targetDispName;
+        };
+
         const actionContainer = document.getElementById('profile-action-container');
         actionContainer.style.display = 'flex';
         const addBtn = document.getElementById('profile-add-friend-btn');
         const dmBtn = document.getElementById('profile-dm-btn');
+        const mentionBtn = document.getElementById('profile-mention-btn');
 
         dmBtn.onclick = () => {
           closeModal('profile-modal');
-          openFriendsTab(targetName);
+          openFriendsTab(actualUsername);
+        };
+
+        mentionBtn.onclick = () => {
+          closeModal('profile-modal');
+          insertMentionIntoInput(actualUsername);
         };
 
         db.ref('friends/' + userId).once('value', (snap) => {
           let alreadyFriends = false;
-          snap.forEach(child => { if (child.val() === targetName) alreadyFriends = true; });
+          snap.forEach(child => { if (child.val().toLowerCase() === actualUsername.toLowerCase()) alreadyFriends = true; });
           if (alreadyFriends) {
             addBtn.textContent = "Friends ✓";
             addBtn.className = "btn btn-secondary";
@@ -1626,10 +1676,10 @@
             addBtn.textContent = "Add Friend";
             addBtn.className = "btn btn-success";
             addBtn.onclick = () => {
-              db.ref('friends/' + userId).push(targetName);
+              db.ref('friends/' + userId).push(actualUsername);
               addBtn.textContent = "Added! ✓";
               addBtn.className = "btn btn-secondary";
-              showToast(`Added ${targetName} as a friend!`, "success");
+              showToast(`Added ${targetDispName} as a friend!`, "success");
             };
           }
         });
@@ -1650,6 +1700,7 @@
         myPresenceRef.set({
           userId: userId,
           name: username,
+          displayName: displayName,
           color: userColor,
           isAdmin: isAdmin,
           status: currentStatus,
@@ -1671,17 +1722,19 @@
       let onlineUsersMap = {};
       let allAccountsMap = {};
 
-      function getUserVisuals(authorName, fallbackColor) {
+      function getUserVisuals(authorName, fallbackColor, fallbackDisplayName = null) {
         const lower = (authorName || '').toLowerCase();
         if (lower === username.toLowerCase()) {
-          return { color: userColor, pfp: userPfp, isAdmin };
+          return { color: userColor, pfp: userPfp, isAdmin, displayName: displayName || username, nickname: '' };
         }
         const onU = Object.values(onlineUsersMap).find(u => u && u.name && u.name.toLowerCase() === lower);
         const accU = Object.values(allAccountsMap).find(a => a && a.username && a.username.toLowerCase() === lower);
         return {
           color: (onU && onU.color) || (accU && accU.color) || fallbackColor || '#5865f2',
           pfp: (onU && onU.pfp) || (accU && accU.pfp) || '',
-          isAdmin: !!(onU && onU.isAdmin)
+          isAdmin: !!(onU && onU.isAdmin),
+          displayName: (onU && onU.displayName) || (accU && accU.displayName) || fallbackDisplayName || authorName,
+          nickname: friendNicknames[lower] || ''
         };
       }
 
@@ -1694,6 +1747,7 @@
           if (!acc || !acc.username) return;
           combined[acc.username.toLowerCase()] = {
             name: acc.username,
+            displayName: acc.displayName || acc.username,
             color: acc.color || '#5865f2',
             isAdmin: false,
             status: 'offline',
@@ -1708,6 +1762,7 @@
           if (!u || !u.name) return;
           combined[u.name.toLowerCase()] = {
             name: u.name,
+            displayName: u.displayName || u.name,
             color: u.color || '#5865f2',
             isAdmin: !!u.isAdmin,
             status: u.status || 'online',
@@ -1721,6 +1776,7 @@
         if (username) {
           combined[username.toLowerCase()] = {
             name: username,
+            displayName: displayName,
             color: userColor,
             isAdmin: isAdmin,
             status: currentStatus,
@@ -1743,12 +1799,14 @@
           header.textContent = `${title} — ${users.length}`;
           memberListEl.appendChild(header);
 
-          users.sort((a, b) => a.name.localeCompare(b.name)).forEach(u => {
+          users.sort((a, b) => getEffectiveName(a.name, a.displayName).localeCompare(getEffectiveName(b.name, b.displayName))).forEach(u => {
+            const shownName = getEffectiveName(u.name, u.displayName);
+            const hasNick = !!friendNicknames[u.name.toLowerCase()];
             const div = document.createElement('div');
             div.className = 'member-item' + (isOfflineGroup ? ' offline' : '');
             const avatarInner = u.pfp
-              ? `<img src="${escapeHTML(u.pfp)}" alt="${escapeHTML(u.name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(u.name[0].toUpperCase())}';" />`
-              : escapeHTML(u.name[0].toUpperCase());
+              ? `<img src="${escapeHTML(u.pfp)}" alt="${escapeHTML(shownName)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(shownName[0].toUpperCase())}';" />`
+              : escapeHTML(shownName[0].toUpperCase());
 
             div.innerHTML = `
               <div class="avatar-container" style="width:32px; height:32px;">
@@ -1757,10 +1815,11 @@
               </div>
               <div class="member-info">
                 <div class="member-name">
-                  <span>${escapeHTML(u.name)}</span>
+                  <span style="overflow:hidden; text-overflow:ellipsis;">${escapeHTML(shownName)}</span>
+                  ${hasNick ? '<span class="nick-badge" title="Friend Nickname">NICK</span>' : ''}
                   ${u.isAdmin ? '<span class="admin-tag" style="font-size:9px; padding:1px 4px;">ADMIN</span>' : ''}
                 </div>
-                <div class="member-subtext">${escapeHTML(u.customStatus || u.bio || '')}</div>
+                <div class="member-subtext">${escapeHTML(u.customStatus || (shownName !== u.name ? `@${u.name}` : u.bio) || '')}</div>
               </div>
             `;
             div.onclick = () => openPeerProfile(u.name);
@@ -2260,6 +2319,7 @@
         const vcUserRef = db.ref(`voice_presence/${serverId}/${vcName}/${userId}`);
         vcUserRef.set({
           name: username,
+          displayName: displayName,
           color: userColor,
           pfp: userPfp,
           videoActive: false
@@ -2302,7 +2362,8 @@
           // Render tiles and initiate WebRTC connections with newly joined peers
           activeIds.forEach(peerId => {
             const peerData = peers[peerId];
-            renderVoiceTile(peerId, peerData);
+            const shownPeerName = getEffectiveName(peerData.name, peerData.displayName);
+            renderVoiceTile(peerId, { ...peerData, name: shownPeerName });
 
             if (peerId !== userId && !peerConnections[peerId]) {
               const stateObj = createPeerConnection(peerId, peerData);
@@ -2347,7 +2408,7 @@
           db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}/videoActive`).set(!!newVideoTrack);
         }
 
-        renderVoiceTile(userId, { name: username, color: userColor, pfp: userPfp, videoActive: !!newVideoTrack });
+        renderVoiceTile(userId, { name: displayName, color: userColor, pfp: userPfp, videoActive: !!newVideoTrack });
       }
 
       async function disconnectServerVoice(hideStage = true) {
@@ -2601,6 +2662,7 @@
       }
 
       const unreadChannels = {};
+      const unreadPings = {};
 
       function loadChannels() {
         if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
@@ -2618,13 +2680,19 @@
 
           channelListEl.innerHTML = '';
           currentChannelsList.forEach(ch => {
-            const isUnread = unreadChannels[`${activeServer}_${ch}`] && ch !== activeChannel;
+            const chKey = `${activeServer}_${ch}`;
+            const pingCount = unreadPings[chKey] || 0;
+            const isUnread = (unreadChannels[chKey] || pingCount > 0) && ch !== activeChannel;
             const div = document.createElement('div');
             div.className = 'channel-item ' + (ch === activeChannel ? 'active' : '') + (isUnread ? ' unread' : '');
-            div.innerHTML = `<div class="channel-left"><span class="channel-hash">#</span><span>${escapeHTML(ch)}</span></div>`;
+            div.innerHTML = `
+              <div class="channel-left"><span class="channel-hash">#</span><span>${escapeHTML(ch)}</span></div>
+              ${pingCount > 0 && ch !== activeChannel ? `<span class="ping-badge">${pingCount}</span>` : ''}
+            `;
             div.onclick = () => {
               showVoiceStage(false);
-              unreadChannels[`${activeServer}_${ch}`] = false;
+              unreadChannels[chKey] = false;
+              unreadPings[chKey] = 0;
               activeChannel = ch;
               loadChannels();
             };
@@ -2671,17 +2739,18 @@
                 const subList = document.createElement('div');
                 subList.className = 'voice-users-sublist';
                 connectedUsers.forEach(u => {
-                  const visuals = getUserVisuals(u.name, u.color);
+                  const visuals = getUserVisuals(u.name, u.color, u.displayName);
+                  const shownName = getEffectiveName(u.name, u.displayName);
                   const pfpUrl = u.pfp || visuals.pfp;
                   const avatarInner = pfpUrl
-                    ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(u.name)}" />`
-                    : escapeHTML(u.name[0].toUpperCase());
+                    ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(shownName)}" />`
+                    : escapeHTML(shownName[0].toUpperCase());
 
                   const uRow = document.createElement('div');
                   uRow.className = 'voice-sub-user';
                   uRow.innerHTML = `
                     <div class="avatar" style="background:${u.color || visuals.color}; width:18px; height:18px; font-size:10px;">${avatarInner}</div>
-                    <span>${escapeHTML(u.name)}</span>
+                    <span>${escapeHTML(shownName)}</span>
                   `;
                   subList.appendChild(uRow);
                 });
@@ -2758,14 +2827,22 @@
             };
 
             allPeers.forEach(fName => {
+              const shownFriendName = getEffectiveName(fName);
+              const hasNick = !!friendNicknames[fName.toLowerCase()];
               const item = document.createElement('div');
-              item.className = 'channel-item ' + (activeDmUser === fName ? 'active' : '');
-              item.innerHTML = `<div class="channel-left"><span style="font-weight:700;">@</span><span>${escapeHTML(fName)}</span></div>`;
+              item.className = 'channel-item ' + (activeDmUser && activeDmUser.toLowerCase() === fName.toLowerCase() ? 'active' : '');
+              item.innerHTML = `
+                <div class="channel-left">
+                  <span style="font-weight:700;">@</span>
+                  <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(shownFriendName)}</span>
+                </div>
+                ${hasNick ? '<span class="nick-badge" style="font-size:9px;">NICK</span>' : ''}
+              `;
               item.onclick = () => {
                 showVoiceStage(false);
                 activeDmUser = fName;
-                document.getElementById('channel-name').textContent = fName;
-                chatInputEl.placeholder = "Message @" + fName;
+                document.getElementById('channel-name').textContent = shownFriendName;
+                chatInputEl.placeholder = "Message @" + shownFriendName;
                 openFriendsTab(fName);
                 loadMessages();
               };
@@ -2774,8 +2851,9 @@
 
             if (preselectFriend) {
               activeDmUser = preselectFriend;
-              document.getElementById('channel-name').textContent = preselectFriend;
-              chatInputEl.placeholder = "Message @" + preselectFriend;
+              const shownPre = getEffectiveName(preselectFriend);
+              document.getElementById('channel-name').textContent = shownPre;
+              chatInputEl.placeholder = "Message @" + shownPre;
               loadMessages();
             } else if (!activeDmUser) {
               document.getElementById('channel-name').textContent = "Friends";
@@ -2784,7 +2862,7 @@
                 <div class="welcome-banner">
                   <div class="welcome-icon">@</div>
                   <div style="font-size:22px; font-weight:700; color:var(--text-header);">Your Friends & DMs</div>
-                  <div style="color:var(--text-muted); font-size:14px;">Select any conversation on the left to start chatting directly.</div>
+                  <div style="color:var(--text-muted); font-size:14px;">Select any conversation on the left to start chatting directly. Click any user to set a custom Friend Nickname!</div>
                 </div>
               `;
             }
@@ -3002,8 +3080,9 @@
 
       // Messages & Reply
       function setReplyTarget(author, text) {
-        replyingTo = { author, text: text.substring(0, 70) };
-        document.getElementById('reply-preview-text').textContent = `Replying to @${author}: "${replyingTo.text}${text.length > 70 ? '...' : ''}"`;
+        const shownAuthor = getEffectiveName(author);
+        replyingTo = { author, displayName: shownAuthor, text: text.substring(0, 70) };
+        document.getElementById('reply-preview-text').textContent = `Replying to ${shownAuthor} (@${author}): "${replyingTo.text}${text.length > 70 ? '...' : ''}"`;
         document.getElementById('reply-preview-bar').classList.add('active');
         chatInputEl.focus();
       }
@@ -3021,6 +3100,14 @@
         return isPrivateMode ? 'private_messages/' + activePrivateRoom.key : 'messages/' + activeServer + '/' + activeChannel;
       }
 
+      function getPinsPath() {
+        if (isFriendsMode) {
+          if (!activeDmUser) return null;
+          return 'dm_pins/' + [username, activeDmUser].sort().join('_');
+        }
+        return isPrivateMode ? 'private_pins/' + activePrivateRoom.key : 'pins/' + activeServer + '/' + activeChannel;
+      }
+
       function getTypingPath() {
         if (isFriendsMode) {
           if (!activeDmUser) return null;
@@ -3029,9 +3116,34 @@
         return isPrivateMode ? 'private_typing/' + activePrivateRoom.key : 'typing/' + activeServer + '/' + activeChannel;
       }
 
+      // Check if a message pings the current logged-in user (@username, @DisplayName, @everyone, or @here)
+      function doesMessagePingMe(rawText) {
+        if (!rawText) return false;
+        const lower = rawText.toLowerCase();
+        if (lower.includes('@everyone') || lower.includes('@here')) return true;
+        const uHandle = '@' + username.toLowerCase();
+        const dHandle = '@' + displayName.toLowerCase().replace(/\s+/g, '');
+        const dExact = '@' + displayName.toLowerCase();
+        return lower.includes(uHandle) || (displayName && (lower.includes(dHandle) || lower.includes(dExact)));
+      }
+
       function formatMessageBody(rawText) {
         let safe = escapeHTML(rawText);
-        safe = safe.replace(/@([a-zA-Z0-9_-]+)/g, '<span class="mention-pill">@$1</span>');
+        // Highlight @mentions and mark self-pings distinctly
+        safe = safe.replace(/@([a-zA-Z0-9_.-]+)/g, (match, token) => {
+          const tLow = token.toLowerCase();
+          const isMe = (
+            tLow === 'everyone' ||
+            tLow === 'here' ||
+            tLow === username.toLowerCase() ||
+            tLow === displayName.toLowerCase().replace(/\s+/g, '')
+          );
+          const matchedUser = Object.values(allAccountsMap).find(a => a && a.username && a.username.toLowerCase() === tLow);
+          const shownLabel = matchedUser ? `@${escapeHTML(getEffectiveName(matchedUser.username, matchedUser.displayName))}` : match;
+          const clickAttr = matchedUser ? `onclick="openPeerProfile('${escapeHTML(matchedUser.username)}')"` : '';
+          return `<span class="mention-pill ${isMe ? 'self-ping' : ''}" ${clickAttr} title="${escapeHTML(match)}">${shownLabel}</span>`;
+        });
+
         safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         safe = safe.replace(/\*(.+?)\*/g, '<em>$1</em>');
         safe = safe.replace(/`(.+?)`/g, '<code style="background:var(--bg-servers); padding:2px 5px; border-radius:4px; font-family:monospace;">$1</code>');
@@ -3054,7 +3166,240 @@
         return safe;
       }
 
+      // ==========================================
+      // CHANNEL PINS POPOVER
+      // ==========================================
+      const pinsPopover = document.getElementById('pins-popover');
+      document.getElementById('open-pins-btn').onclick = (e) => {
+        e.stopPropagation();
+        pinsPopover.classList.toggle('open');
+        if (pinsPopover.classList.contains('open')) renderPinnedMessages();
+      };
+      document.getElementById('close-pins-btn').onclick = () => pinsPopover.classList.remove('open');
+
+      function renderPinnedMessages() {
+        const pPath = getPinsPath();
+        const pinsList = document.getElementById('pins-list');
+        if (!pPath) {
+          pinsList.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:12px;">No pins available here.</div>';
+          return;
+        }
+        pinsList.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:12px;">Loading pins...</div>';
+        db.ref(pPath).once('value', (snap) => {
+          const pins = snap.val() || {};
+          const keys = Object.keys(pins);
+          if (keys.length === 0) {
+            pinsList.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:16px;">No pinned messages in this channel yet. Hover any message and click <strong>Pin</strong>!</div>';
+            return;
+          }
+          pinsList.innerHTML = '';
+          keys.reverse().forEach(k => {
+            const p = pins[k];
+            const card = document.createElement('div');
+            card.className = 'pin-card';
+            card.innerHTML = `
+              <div class="pin-card-top">
+                <strong style="color:var(--text-header);">${escapeHTML(getEffectiveName(p.author, p.displayName))} <span style="font-size:11px; color:var(--text-muted); font-weight:400;">${escapeHTML(p.time || '')}</span></strong>
+                <button class="btn btn-secondary unpin-btn" style="padding:2px 8px; font-size:11px;">Unpin</button>
+              </div>
+              <div style="color:var(--text-main); word-break:break-word;">${formatMessageBody(p.text || '')}</div>
+            `;
+            card.querySelector('.unpin-btn').onclick = () => {
+              db.ref(`${pPath}/${k}`).remove();
+              renderPinnedMessages();
+              showToast("Message unpinned.");
+            };
+            pinsList.appendChild(card);
+          });
+        });
+      }
+
+      // ==========================================
+      // CHANNEL SEARCH & JUMP TO PRESENT
+      // ==========================================
+      let currentSearchFilter = '';
+      document.getElementById('channel-search-input').addEventListener('input', (e) => {
+        currentSearchFilter = e.target.value.trim().toLowerCase();
+        loadMessages();
+      });
+
+      const jumpPresentBtn = document.getElementById('jump-present-btn');
+      messagesEl.addEventListener('scroll', () => {
+        const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+        jumpPresentBtn.classList.toggle('visible', distanceFromBottom > 180);
+      });
+      jumpPresentBtn.onclick = () => {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        jumpPresentBtn.classList.remove('visible');
+      };
+
+      // ==========================================
+      // AUTOCOMPLETE (@MENTIONS & /SLASH COMMANDS)
+      // ==========================================
+      const acPopover = document.getElementById('autocomplete-popover');
+      const acHeader = document.getElementById('autocomplete-header');
+      const acList = document.getElementById('autocomplete-list');
+      let acItems = [];
+      let acSelectedIndex = 0;
+      let acMode = null; // 'mention' or 'slash'
+
+      function insertMentionIntoInput(targetUsername) {
+        const cur = chatInputEl.value;
+        const prefix = cur.length > 0 && !cur.endsWith(' ') ? cur + ' ' : cur;
+        chatInputEl.value = `${prefix}@${targetUsername} `;
+        updateCharCounter();
+        chatInputEl.focus();
+      }
+
+      function closeAutocomplete() {
+        acPopover.classList.remove('open');
+        acItems = [];
+        acMode = null;
+        acSelectedIndex = 0;
+      }
+
+      function renderAutocompleteList() {
+        if (acItems.length === 0) {
+          closeAutocomplete();
+          return;
+        }
+        acList.innerHTML = '';
+        acItems.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'autocomplete-item' + (idx === acSelectedIndex ? ' selected' : '');
+          row.innerHTML = `
+            <div class="autocomplete-item-left">
+              ${item.avatarHTML || ''}
+              <div style="min-width:0;">
+                <div class="autocomplete-item-title">${escapeHTML(item.title)}</div>
+                ${item.subtitle ? `<div class="autocomplete-item-sub">${escapeHTML(item.subtitle)}</div>` : ''}
+              </div>
+            </div>
+            <div class="autocomplete-item-sub">${escapeHTML(item.rightText || '')}</div>
+          `;
+          row.onmousedown = (e) => {
+            e.preventDefault();
+            applyAutocompleteSelection(item);
+          };
+          acList.appendChild(row);
+        });
+        acPopover.classList.add('open');
+      }
+
+      function applyAutocompleteSelection(item) {
+        const val = chatInputEl.value;
+        if (acMode === 'mention') {
+          const replaced = val.replace(/(^|\s)@[a-zA-Z0-9_.-]*$/, `$1@${item.insertValue} `);
+          chatInputEl.value = replaced;
+        } else if (acMode === 'slash') {
+          chatInputEl.value = item.insertValue + ' ';
+        }
+        updateCharCounter();
+        closeAutocomplete();
+        chatInputEl.focus();
+      }
+
+      const slashCommandsCatalog = [
+        { cmd: '/shrug', desc: 'Appends ¯\\_(ツ)_/¯ to your message', insertValue: '/shrug' },
+        { cmd: '/tableflip', desc: 'Appends (╯°□°)╯︵ ┻━┻', insertValue: '/tableflip' },
+        { cmd: '/unflip', desc: 'Appends ┬─┬ノ( º _ ºノ)', insertValue: '/unflip' },
+        { cmd: '/me', desc: 'Send an italicized action message', insertValue: '/me' },
+        { cmd: '/nick', desc: 'Set a friend nickname: /nick username NewNick', insertValue: '/nick' },
+        { cmd: '/clear', desc: 'Clear messages on your screen locally', insertValue: '/clear' },
+        { cmd: '/help', desc: 'Show available slash commands', insertValue: '/help' }
+      ];
+
+      function checkAutocompleteTrigger() {
+        const val = chatInputEl.value;
+
+        // 1. Slash command trigger at start of input
+        if (val.startsWith('/') && !val.includes(' ')) {
+          const query = val.toLowerCase();
+          const matches = slashCommandsCatalog.filter(c => c.cmd.startsWith(query));
+          if (matches.length > 0) {
+            acMode = 'slash';
+            acHeader.textContent = 'Slash Commands';
+            acSelectedIndex = 0;
+            acItems = matches.map(m => ({
+              title: m.cmd,
+              subtitle: m.desc,
+              rightText: 'Command',
+              insertValue: m.cmd
+            }));
+            renderAutocompleteList();
+            return;
+          }
+        }
+
+        // 2. @Mention trigger anywhere in input
+        const mentionMatch = val.match(/(?:^|\s)@([a-zA-Z0-9_.-]*)$/);
+        if (mentionMatch) {
+          const query = mentionMatch[1].toLowerCase();
+          acMode = 'mention';
+          acHeader.textContent = 'Mention Member or Role';
+          acSelectedIndex = 0;
+
+          const candidates = [];
+          // Special broadcast mentions
+          candidates.push({
+            title: '@everyone',
+            subtitle: 'Notify all members in this channel',
+            rightText: 'Ping All',
+            insertValue: 'everyone',
+            avatarHTML: `<div class="avatar" style="background:var(--yellow); color:#111; width:24px; height:24px; font-size:12px;">@</div>`
+          });
+          candidates.push({
+            title: '@here',
+            subtitle: 'Notify currently online members',
+            rightText: 'Ping Online',
+            insertValue: 'here',
+            avatarHTML: `<div class="avatar" style="background:var(--green); width:24px; height:24px; font-size:12px;">@</div>`
+          });
+
+          // Combine accounts + online users
+          const seen = new Set();
+          const allPeople = [];
+          Object.values(onlineUsersMap).forEach(u => {
+            if (u && u.name && !seen.has(u.name.toLowerCase())) {
+              seen.add(u.name.toLowerCase());
+              allPeople.push({ username: u.name, displayName: u.displayName || u.name, color: u.color || '#5865f2', pfp: u.pfp || '', online: true });
+            }
+          });
+          Object.values(allAccountsMap).forEach(a => {
+            if (a && a.username && !seen.has(a.username.toLowerCase())) {
+              seen.add(a.username.toLowerCase());
+              allPeople.push({ username: a.username, displayName: a.displayName || a.username, color: a.color || '#5865f2', pfp: a.pfp || '', online: false });
+            }
+          });
+
+          allPeople.forEach(p => {
+            const shown = getEffectiveName(p.username, p.displayName);
+            const nick = friendNicknames[p.username.toLowerCase()] || '';
+            const avInner = p.pfp ? `<img src="${escapeHTML(p.pfp)}" alt="" />` : escapeHTML(shown[0].toUpperCase());
+            candidates.push({
+              title: shown,
+              subtitle: nick ? `Nickname • @${p.username}` : `@${p.username}`,
+              rightText: p.online ? 'Online' : 'Offline',
+              insertValue: p.username,
+              searchKey: `${p.username} ${p.displayName} ${nick}`.toLowerCase(),
+              avatarHTML: `<div class="avatar" style="background:${p.color}; width:24px; height:24px; font-size:11px;">${avInner}</div>`
+            });
+          });
+
+          acItems = candidates.filter(c => {
+            if (!query) return true;
+            return (c.searchKey || c.title.toLowerCase()).includes(query);
+          });
+          renderAutocompleteList();
+          return;
+        }
+
+        closeAutocomplete();
+      }
+
       let isInitialLoad = true;
+      let lastOwnMessageRef = null;
+
       function loadMessages() {
         if (activeMsgRef && activeMsgCb) activeMsgRef.off('value', activeMsgCb);
         if (activeTypingRef && activeTypingCb) activeTypingRef.off('value', activeTypingCb);
@@ -3063,13 +3408,18 @@
         if (!path) return;
 
         isInitialLoad = true;
+        lastOwnMessageRef = null;
         activeMsgRef = db.ref(path);
         activeMsgCb = (snapshot) => {
+          const channelTitle = isFriendsMode
+            ? '@' + escapeHTML(getEffectiveName(activeDmUser))
+            : '#' + escapeHTML(isPrivateMode ? activePrivateRoom.name : activeChannel);
+
           messagesEl.innerHTML = `
             <div class="welcome-banner">
               <div class="welcome-icon">${isFriendsMode ? '@' : '#'}</div>
-              <div style="font-size:24px; font-weight:800; color:var(--text-header);">Welcome to ${isFriendsMode ? '@' + escapeHTML(activeDmUser) : '#' + escapeHTML(isPrivateMode ? activePrivateRoom.name : activeChannel)}!</div>
-              <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">This is the start of the conversation history.</div>
+              <div style="font-size:24px; font-weight:800; color:var(--text-header);">Welcome to ${channelTitle}!</div>
+              <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">This is the start of the conversation history. Type <code>@</code> to ping or <code>/</code> for commands.</div>
             </div>
           `;
 
@@ -3078,60 +3428,101 @@
           let lastMsgObj = null;
 
           snapshot.forEach(child => {
-            messageCount++;
             const msg = child.val();
-            lastMsgObj = msg;
             const msgKey = child.key;
+
+            if (msg.author === username) {
+              lastOwnMessageRef = { key: msgKey, text: msg.text || '' };
+            }
+
+            // Apply search filter if active
+            if (currentSearchFilter) {
+              const haystack = `${msg.author || ''} ${msg.displayName || ''} ${msg.text || ''}`.toLowerCase();
+              if (!haystack.includes(currentSearchFilter)) return;
+            }
+
+            messageCount++;
+            lastMsgObj = msg;
             const isGrouped = (lastAuthor === msg.author && !msg.replyTo);
             lastAuthor = msg.author;
 
-            const visuals = getUserVisuals(msg.author, msg.color);
-            const isMentioned = msg.text && msg.text.toLowerCase().includes('@' + username.toLowerCase());
+            const visuals = getUserVisuals(msg.author, msg.color, msg.displayName);
+            const shownAuthor = getEffectiveName(msg.author, msg.displayName);
+            const isMentioned = doesMessagePingMe(msg.text || '');
+
             const div = document.createElement('div');
             div.className = 'message' + (isGrouped ? ' compact-followup' : '') + (isMentioned ? ' mentioned' : '');
 
             const avatarInner = visuals.pfp
-              ? `<img src="${escapeHTML(visuals.pfp)}" alt="${escapeHTML(msg.author)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(msg.author[0].toUpperCase())}';" />`
-              : escapeHTML(msg.author[0].toUpperCase());
+              ? `<img src="${escapeHTML(visuals.pfp)}" alt="${escapeHTML(shownAuthor)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(shownAuthor[0].toUpperCase())}';" />`
+              : escapeHTML(shownAuthor[0].toUpperCase());
 
             const avatarHTML = isGrouped ? '' : `
               <div class="msg-avatar" style="background:${visuals.color};" onclick="openPeerProfile('${escapeHTML(msg.author)}')">${avatarInner}</div>
             `;
 
+            const handleSubHTML = (shownAuthor.toLowerCase() !== msg.author.toLowerCase())
+              ? `<span class="msg-handle-sub">@${escapeHTML(msg.author)}</span>`
+              : '';
+
             const headerHTML = isGrouped ? '' : `
               <div class="msg-header">
-                <span class="msg-author" onclick="openPeerProfile('${escapeHTML(msg.author)}')">${escapeHTML(msg.author)}</span>
+                <span class="msg-author" onclick="openPeerProfile('${escapeHTML(msg.author)}')">${escapeHTML(shownAuthor)}</span>
+                ${handleSubHTML}
+                ${visuals.nickname ? '<span class="nick-badge" title="Friend Nickname">NICK</span>' : ''}
                 ${(msg.isAdmin || visuals.isAdmin) ? '<span class="admin-tag">ADMIN</span>' : ''}
                 <span class="msg-time">${escapeHTML(msg.time || '')}</span>
               </div>
             `;
 
+            const replyShownAuthor = msg.replyTo ? getEffectiveName(msg.replyTo.author, msg.replyTo.displayName) : '';
             const replyHTML = msg.replyTo
-              ? `<div class="msg-reply-quote">Replying to <strong>@${escapeHTML(msg.replyTo.author)}</strong>: ${escapeHTML(msg.replyTo.text)}</div>`
+              ? `<div class="msg-reply-quote">Replying to <strong>${escapeHTML(replyShownAuthor)}</strong>: ${escapeHTML(msg.replyTo.text)}</div>`
               : '';
 
-            // Word-based Hover Action Buttons instead of emojis
+            const editedHTML = msg.edited ? `<span class="msg-edited-tag">(edited)</span>` : '';
+            const isMine = (msg.author === username);
+
+            // Clean Word-Based Hover Actions
             div.innerHTML = `
               ${avatarHTML}
               <div style="flex:1; min-width:0;">
                 ${replyHTML}
                 ${headerHTML}
-                <div class="msg-body">${formatMessageBody(msg.text || '')}</div>
+                <div class="msg-body">${formatMessageBody(msg.text || '')}${editedHTML}</div>
               </div>
               <div class="msg-actions">
                 <button class="msg-action-btn reply-btn" title="Reply to message">Reply</button>
-                <button class="msg-action-btn quote-btn" title="Quote message">Quote</button>
+                <button class="msg-action-btn mention-btn" title="Ping @${escapeHTML(msg.author)}">Mention</button>
+                ${isMine ? `<button class="msg-action-btn edit-btn" title="Edit your message">Edit</button>` : ''}
+                <button class="msg-action-btn pin-btn" title="Pin to channel">Pin</button>
                 <button class="msg-action-btn copy-btn" title="Copy message text">Copy</button>
-                ${(isAdmin || msg.author === username) ? `<button class="msg-action-btn danger del-btn" title="Delete message">Delete</button>` : ''}
+                ${(isAdmin || isMine) ? `<button class="msg-action-btn danger del-btn" title="Delete message">Delete</button>` : ''}
               </div>
             `;
 
             div.querySelector('.reply-btn').onclick = () => setReplyTarget(msg.author, msg.text || '');
-            div.querySelector('.quote-btn').onclick = () => {
-              chatInputEl.value = `> "${(msg.text || '').substring(0, 80)}" — @${msg.author} `;
-              updateCharCounter();
-              chatInputEl.focus();
+            div.querySelector('.mention-btn').onclick = () => insertMentionIntoInput(msg.author);
+
+            // Inline Message Editing
+            const editBtn = div.querySelector('.edit-btn');
+            if (editBtn) {
+              editBtn.onclick = () => startInlineMessageEdit(div, path, msgKey, msg.text || '');
+            }
+
+            // Pin Message
+            div.querySelector('.pin-btn').onclick = () => {
+              const pPath = getPinsPath();
+              if (!pPath) return;
+              db.ref(`${pPath}/${msgKey}`).set({
+                author: msg.author,
+                displayName: shownAuthor,
+                time: msg.time || '',
+                text: msg.text || ''
+              });
+              showToast("Message pinned to channel!", "success");
             };
+
             div.querySelector('.copy-btn').onclick = () => {
               const tempArea = document.createElement('textarea');
               tempArea.value = msg.text || '';
@@ -3149,9 +3540,15 @@
           });
 
           if (!isInitialLoad && messageCount > 0 && lastMsgObj && lastMsgObj.author !== username) {
-            playNotificationSound();
-            if (desktopNotifEnabled && document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-              new Notification(`MiniCord — ${lastMsgObj.author}`, { body: lastMsgObj.text });
+            const pingedMe = doesMessagePingMe(lastMsgObj.text || '');
+            playNotificationSound(pingedMe);
+            if (pingedMe) {
+              const senderShown = getEffectiveName(lastMsgObj.author, lastMsgObj.displayName);
+              showToast(`${senderShown} pinged you!`, 'info');
+            }
+            if (desktopNotifEnabled && (document.hidden || pingedMe) && 'Notification' in window && Notification.permission === 'granted') {
+              const senderShown = getEffectiveName(lastMsgObj.author, lastMsgObj.displayName);
+              new Notification(`MiniCord — ${senderShown}${pingedMe ? ' (Pinged You!)' : ''}`, { body: lastMsgObj.text });
             }
           }
           isInitialLoad = false;
@@ -3161,7 +3558,9 @@
 
         activeTypingRef = db.ref(getTypingPath());
         activeTypingCb = (snap) => {
-          const typers = Object.entries(snap.val() || {}).filter(([id]) => id !== userId).map(([, name]) => name);
+          const typers = Object.entries(snap.val() || {})
+            .filter(([id]) => id !== userId)
+            .map(([, val]) => (typeof val === 'object' ? getEffectiveName(val.username, val.displayName) : val));
           document.getElementById('typing-text').textContent = typers.length
             ? `${typers.join(', ')} ${typers.length > 1 ? 'are' : 'is'} typing...`
             : '';
@@ -3169,11 +3568,50 @@
         activeTypingRef.on('value', activeTypingCb);
       }
 
+      function startInlineMessageEdit(msgDiv, chatPath, msgKey, originalText) {
+        const bodyEl = msgDiv.querySelector('.msg-body');
+        if (!bodyEl || bodyEl.querySelector('.inline-edit-input')) return;
+
+        bodyEl.innerHTML = `
+          <div class="inline-edit-box">
+            <input type="text" class="inline-edit-input" value="${escapeHTML(originalText)}" maxlength="${globalTextLimit}" />
+            <div class="inline-edit-hint">Press <strong>Enter</strong> to save • <strong>Escape</strong> to cancel</div>
+          </div>
+        `;
+        const inp = bodyEl.querySelector('.inline-edit-input');
+        inp.focus();
+        inp.setSelectionRange(inp.value.length, inp.value.length);
+
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            loadMessages();
+          } else if (e.key === 'Enter') {
+            const updated = inp.value.trim();
+            if (!updated) {
+              db.ref(`${chatPath}/${msgKey}`).remove();
+            } else {
+              db.ref(`${chatPath}/${msgKey}`).update({ text: updated, edited: true });
+              showToast("Message edited.", "success");
+            }
+          }
+        });
+      }
+
       // Global keyboard shortcuts
       window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && replyingTo) {
-          replyingTo = null;
-          document.getElementById('reply-preview-bar').classList.remove('active');
+        if (e.key === 'Escape') {
+          if (acPopover.classList.contains('open')) {
+            closeAutocomplete();
+            return;
+          }
+          if (pinsPopover.classList.contains('open')) {
+            pinsPopover.classList.remove('open');
+            return;
+          }
+          if (replyingTo) {
+            replyingTo = null;
+            document.getElementById('reply-preview-bar').classList.remove('active');
+          }
         }
         if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
           e.preventDefault();
@@ -3184,18 +3622,51 @@
       let typingTimeout;
       chatInputEl.addEventListener('input', () => {
         updateCharCounter();
+        checkAutocompleteTrigger();
         const tPath = getTypingPath();
         if (!tPath) return;
         const myTypingRef = db.ref(tPath + '/' + userId);
-        myTypingRef.set(username);
+        myTypingRef.set({ username, displayName });
         myTypingRef.onDisconnect().remove();
         clearTimeout(typingTimeout);
         typingTimeout = setTimeout(() => myTypingRef.remove(), 2000);
       });
 
       chatInputEl.addEventListener('keydown', (e) => {
+        // Autocomplete Navigation (ArrowUp, ArrowDown, Tab, Enter)
+        if (acPopover.classList.contains('open') && acItems.length > 0) {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            acSelectedIndex = (acSelectedIndex + 1) % acItems.length;
+            renderAutocompleteList();
+            return;
+          }
+          if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            acSelectedIndex = (acSelectedIndex - 1 + acItems.length) % acItems.length;
+            renderAutocompleteList();
+            return;
+          }
+          if (e.key === 'Tab' || e.key === 'Enter') {
+            e.preventDefault();
+            applyAutocompleteSelection(acItems[acSelectedIndex]);
+            return;
+          }
+        }
+
+        // Up Arrow in empty input quickly edits your last sent message
+        if (e.key === 'ArrowUp' && chatInputEl.value === '' && lastOwnMessageRef) {
+          e.preventDefault();
+          const allMsgDivs = messagesEl.querySelectorAll('.message');
+          const lastDiv = allMsgDivs[allMsgDivs.length - 1];
+          if (lastDiv) {
+            startInlineMessageEdit(lastDiv, getChatPath(), lastOwnMessageRef.key, lastOwnMessageRef.text);
+          }
+          return;
+        }
+
         if (e.key === 'Enter' && chatInputEl.value.trim()) {
-          const val = chatInputEl.value.trim();
+          let val = chatInputEl.value.trim();
 
           if (val.startsWith('/admin')) {
             const parts = val.split(' ');
@@ -3219,6 +3690,46 @@
             }
           }
 
+          // Slash Commands Processing
+          if (val === '/clear') {
+            messagesEl.innerHTML = '';
+            chatInputEl.value = '';
+            updateCharCounter();
+            showToast("Cleared messages locally.");
+            return;
+          }
+          if (val === '/help') {
+            showToast("Commands: /shrug, /tableflip, /unflip, /me, /nick, /clear");
+            chatInputEl.value = '';
+            updateCharCounter();
+            return;
+          }
+          if (val.startsWith('/nick ')) {
+            const parts = val.split(' ');
+            const targetUser = parts[1];
+            const newNick = parts.slice(2).join(' ').trim();
+            if (!targetUser) {
+              showToast("Usage: /nick username NewNickname", "error");
+              return;
+            }
+            const safeTargetKey = targetUser.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
+            if (newNick) {
+              db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).set(newNick);
+              showToast(`Set nickname for @${targetUser} to "${newNick}"`, "success");
+            } else {
+              db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).remove();
+              showToast(`Cleared nickname for @${targetUser}`);
+            }
+            chatInputEl.value = '';
+            updateCharCounter();
+            return;
+          }
+          if (val === '/shrug') val = '¯\\_(ツ)_/¯';
+          else if (val.startsWith('/shrug ')) val = val.replace('/shrug ', '') + ' ¯\\_(ツ)_/¯';
+          else if (val === '/tableflip') val = '(╯°□°)╯︵ ┻━┻';
+          else if (val === '/unflip') val = '┬─┬ノ( º _ ºノ)';
+          else if (val.startsWith('/me ')) val = `*${val.slice(4)}*`;
+
           if (val.length > globalTextLimit && !isAdmin) {
             showToast(`Message exceeds max limit of ${globalTextLimit} characters!`, "error");
             return;
@@ -3238,7 +3749,14 @@
 
           lastMessageSentTime = nowMs;
           const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
-          const payload = { author: username, color: userColor, isAdmin: isAdmin, time: timeStr, text: val };
+          const payload = {
+            author: username,
+            displayName: displayName,
+            color: userColor,
+            isAdmin: isAdmin,
+            time: timeStr,
+            text: val
+          };
           if (replyingTo) {
             payload.replyTo = replyingTo;
             replyingTo = null;
@@ -3249,6 +3767,7 @@
           db.ref(getTypingPath() + '/' + userId).remove();
           chatInputEl.value = '';
           updateCharCounter();
+          closeAutocomplete();
         }
       });
 
