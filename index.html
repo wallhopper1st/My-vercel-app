@@ -475,11 +475,9 @@
             localStorage.setItem('minicord_user', JSON.stringify({ username: uName, userId: newId, color: newColor }));
             loginUser(uName, newId, newColor);
           }
-        } else {
           if (!data || data.password !== uPass) {
             authErrorEl.textContent = "Invalid username or password!";
             authErrorEl.style.display = 'block';
-          } else {
             localStorage.setItem('minicord_user', JSON.stringify({ username: data.username, userId: data.userId, color: data.color }));
             loginUser(data.username, data.userId, data.color);
           }
@@ -602,7 +600,6 @@
             addBtn.textContent = "Already Friends ✓";
             addBtn.className = "btn btn-primary";
             addBtn.onclick = null;
-          } else {
             addBtn.onclick = () => {
               db.ref('friends/' + userId).push(targetName);
               addBtn.textContent = "Friend Added! ✓";
@@ -793,7 +790,6 @@
               } catch (err) { console.warn('answer', err); }
             }
           });
-        } else {
           db.ref(`${activeCallKey}/signals/${pk}/${peerId}/offer`).on('value', async (snap) => {
             const off = snap.val();
             if (off && !pc.currentRemoteDescription) {
@@ -813,7 +809,6 @@
           if (!cand) return;
           if (pc.currentRemoteDescription) {
             try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
-          } else {
             pendingCandidates[peerId].push(cand);
           }
         });
@@ -1429,7 +1424,6 @@
               chatInputEl.value = '';
               loadMessages();
               return;
-            } else {
               alert("Incorrect Admin PIN.");
               chatInputEl.value = '';
               return;
