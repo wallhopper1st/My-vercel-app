@@ -1101,8 +1101,13 @@
             db.ref('friends/' + userId).once('value', (snap) => {
               let exists = false;
               snap.forEach(c => { if (c.val() === f.trim()) exists = true; });
-              if (!exists) { db.ref('friends/' + userId).push(f.trim()); alert("Added " + f); }
-              else alert("Already on your friends list!");
+             if (exists) {
+  alert("Already on your friends list!");
+  return;
+}
+
+db.ref('friends/' + userId).push(f.trim());
+alert("Added " + f);
             });
           }
         };
