@@ -157,7 +157,7 @@
 </head>
 <body class="theme-dark">
 
-  <!-- AUTHENTICATION SCREEN (Username + Password, No Gmail) -->
+  <!-- AUTHENTICATION SCREEN -->
   <div id="auth-screen">
     <div class="auth-card">
       <div class="auth-title" id="auth-title">Welcome to MiniCord</div>
@@ -375,7 +375,7 @@
     </div>
   </div>
 
-  <!-- EXPANDED ADMIN PANEL (Delete servers, channels, wipe chats) -->
+  <!-- EXPANDED ADMIN PANEL -->
   <div class="modal-overlay" id="admin-modal">
     <div class="modal">
       <div class="modal-header">
@@ -428,7 +428,6 @@
     window.closeModal = (id) => document.getElementById(id).classList.remove('open');
     function openModal(id) { document.getElementById(id).classList.add('open'); }
 
-    // AUTHENTICATION LOGIC (Username + Password localStorage persistence)
     let isSignUpMode = false;
     const authSwitchBtn = document.getElementById('auth-switch-mode');
     const authSubmitBtn = document.getElementById('auth-submit-btn');
@@ -436,7 +435,6 @@
     const authPassEl = document.getElementById('auth-password');
     const authErrorEl = document.getElementById('auth-error');
 
-    // Auto-login if previously saved
     window.addEventListener('DOMContentLoaded', () => {
       const savedUser = localStorage.getItem('minicord_user');
       if (savedUser) {
@@ -526,8 +524,7 @@
       document.getElementById('my-avatar').textContent = username[0].toUpperCase();
       document.getElementById('my-avatar').style.backgroundColor = userColor;
 
-      // Push-to-talk / QOL state
-      const unread = {};           // "server/channel" -> true
+      const unread = {};
       let soundEnabled = true;
       let idleTimer = null;
       let manuallySetStatus = false;
@@ -550,14 +547,12 @@
         } catch (e) {}
       }
 
-      // ---------- Modals: Escape closes ----------
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
         }
       });
 
-      // ---------- Idle detection ----------
       function resetIdle() {
         clearTimeout(idleTimer);
         if (manuallySetStatus) return;
