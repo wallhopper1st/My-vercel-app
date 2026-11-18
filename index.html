@@ -77,10 +77,11 @@
     .server-pill { position: absolute; left: 0; width: 4px; height: 0; background: var(--text-header); border-radius: 0 4px 4px 0; transition: height 0.15s ease; }
     .server-wrapper:hover .server-pill { height: 20px; }
     .server-wrapper.active .server-pill { height: 40px; }
-    .server-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-chat); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; cursor: pointer; transition: border-radius 0.15s ease, background-color 0.15s ease, color 0.15s ease; user-select: none; color: var(--text-main); }
+    .server-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-chat); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; cursor: pointer; transition: border-radius 0.15s ease, background-color 0.15s ease, color 0.15s ease; user-select: none; color: var(--text-main); position: relative; }
     .server-icon:hover, .server-wrapper.active .server-icon { border-radius: 16px; background: var(--accent); color: white; }
     .server-icon.action-icon { color: var(--green); }
     .server-icon.action-icon:hover { background: var(--green); color: white; }
+    .server-unread-badge { position: absolute; top: -2px; right: -2px; background: var(--red); color: white; font-size: 10px; font-weight: 800; padding: 1px 5px; border-radius: 10px; border: 2px solid var(--bg-servers); }
     .divider { width: 32px; height: 2px; background: var(--divider); border-radius: 1px; margin: 2px 0; flex-shrink: 0; }
 
     /* 2. Channels Sidebar */
@@ -189,8 +190,15 @@
     .msg-body a { color: #00a8fc; text-decoration: none; }
     .msg-body a:hover { text-decoration: underline; }
     .msg-img { max-width: 340px; max-height: 240px; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer; }
+    .file-attachment-card { background: var(--bg-channels); border: 1px solid var(--divider); padding: 10px 14px; border-radius: 8px; display: flex; align-items: center; gap: 12px; margin-top: 6px; max-width: 360px; }
     .mention-pill { background: rgba(88, 101, 242, 0.32); color: #c9cdfb; padding: 1px 5px; border-radius: 4px; font-weight: 600; cursor: pointer; }
     .mention-pill.self-ping { background: rgba(240, 178, 50, 0.35); color: #ffe08a; }
+
+    /* Reactions */
+    .msg-reactions-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+    .reaction-pill { background: var(--bg-channels); border: 1px solid var(--divider); padding: 2px 8px; border-radius: 12px; font-size: 12px; display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+    .reaction-pill:hover { background: var(--bg-hover); border-color: var(--accent); }
+    .reaction-pill.reacted { background: rgba(88, 101, 242, 0.2); border-color: var(--accent); color: #c9cdfb; }
 
     /* Inline Message Edit Box */
     .inline-edit-box { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
@@ -961,7 +969,13 @@
         <button class="btn btn-success" id="save-limits-btn" style="width:100%;">Apply Limits Globally</button>
       </div>
 
-      <!-- NEW: Server Theme & Default Settings Override -->
+      <!-- NEW: Private Rooms Management -->
+      <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:14px; border:1px solid var(--divider);">
+        <div class="section-label" style="padding:0 0 8px 0; color:var(--text-header);">Private Rooms Management (Enter Bypass / Delete)</div>
+        <div id="admin-private-rooms-list" style="max-height: 120px; overflow-y: auto; display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+
+      <!-- Server Theme & Default Settings Override -->
       <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:14px; border:1px solid var(--divider);">
         <div class="section-label" style="padding:0 0 10px 0; color:var(--text-header);">Server Configuration & Controls</div>
         <div style="display:flex; gap:10px; align-items:center;">
@@ -2117,7 +2131,7 @@
           
           let formattedText = `[Attachment]: ${fileDataUrl}`;
           if (!file.type.startsWith('image/')) {
-            formattedText = `[File Upload]: ${file.name} (${Math.round(file.size/1024)} KB) - ${fileDataUrl}`;
+            formattedText = `[File Upload]: ${file.name}|${file.size}|${fileDataUrl}`;
           }
 
           db.ref(path).push({
@@ -2671,6 +2685,9 @@
         }
       });
 
+      // Track unread channel pings across servers
+      const serverUnreadPings = {};
+
       function loadServersList() {
         db.ref('servers').on('value', (snap) => {
           const servers = snap.val() || { gaming: { title: 'Gaming Hub' }, dev: { title: 'Dev Squad' } };
@@ -2696,12 +2713,16 @@
             const sObj = servers[sId];
             const title = sObj.title || sId;
             const initials = title.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            const serverPingTotal = serverUnreadPings[sId] || 0;
 
             const wrap = document.createElement('div');
             wrap.className = 'server-wrapper ' + (!isFriendsMode && !isPrivateMode && sId === activeServer ? 'active' : '');
             wrap.innerHTML = `
               <div class="server-pill"></div>
-              <div class="server-icon" title="${escapeHTML(title)}">${escapeHTML(initials)}</div>
+              <div class="server-icon" title="${escapeHTML(title)}">
+                ${escapeHTML(initials)}
+                ${serverPingTotal > 0 ? `<div class="server-unread-badge">${serverPingTotal}</div>` : ''}
+              </div>
             `;
             wrap.onclick = () => {
               showVoiceStage(false);
@@ -2712,6 +2733,7 @@
               document.getElementById('header-symbol').textContent = '#';
               activeServer = sId;
               document.getElementById('server-name').textContent = title;
+              serverUnreadPings[sId] = 0;
               loadServersList();
               loadChannels();
             };
@@ -2730,7 +2752,21 @@
               <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </div>
           `;
-          createWrap.onclick = () => openModal('create-room-modal');
+          createWrap.onclick = () => {
+            if (!isAdmin) {
+              db.ref('public_rooms').once('value', (snap) => {
+                const rooms = snap.val() || {};
+                const myRoomsCount = Object.values(rooms).filter(r => r && r.owner === userId).length;
+                if (myRoomsCount >= 1) {
+                  showToast("You can only create 1 private room at a time!", "error");
+                  return;
+                }
+                openModal('create-room-modal');
+              });
+            } else {
+              openModal('create-room-modal');
+            }
+          };
           container.appendChild(createWrap);
 
           const browseWrap = document.createElement('div');
@@ -2778,6 +2814,7 @@
               showVoiceStage(false);
               unreadChannels[chKey] = false;
               unreadPings[chKey] = 0;
+              serverUnreadPings[activeServer] = 0;
               activeChannel = ch;
               loadChannels();
             };
@@ -2958,11 +2995,23 @@
         const name = document.getElementById('new-room-name').value.trim();
         const pass = document.getElementById('new-room-pass').value.trim();
         if (!name || !pass) return showToast("Enter room name and password.", "error");
-        const clean = name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-        const roomObj = { name: clean, pass: pass, key: clean + '_' + Math.random().toString(36).substring(2,7) };
-        db.ref('public_rooms/' + roomObj.key).set(roomObj);
-        closeModal('create-room-modal');
-        enterPrivateRoom(roomObj);
+
+        db.ref('public_rooms').once('value', (snap) => {
+          const rooms = snap.val() || {};
+          if (!isAdmin) {
+            const myRoomsCount = Object.values(rooms).filter(r => r && r.owner === userId).length;
+            if (myRoomsCount >= 1) {
+              closeModal('create-room-modal');
+              showToast("You can only create 1 private room at a time!", "error");
+              return;
+            }
+          }
+          const clean = name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+          const roomObj = { name: clean, pass: pass, owner: userId, ownerName: username, key: clean + '_' + Math.random().toString(36).substring(2,7) };
+          db.ref('public_rooms/' + roomObj.key).set(roomObj);
+          closeModal('create-room-modal');
+          enterPrivateRoom(roomObj);
+        });
       };
 
       function openBrowseRooms() {
@@ -2980,7 +3029,12 @@
             const r = rooms[k];
             const row = document.createElement('div');
             row.className = 'admin-ch-row';
-            row.innerHTML = `<span>${escapeHTML(r.name)}</span>`;
+            row.innerHTML = `<span>${escapeHTML(r.name)} <span style="font-size:11px; color:var(--text-muted);">by @${escapeHTML(r.ownerName || 'someone')}</span></span>`;
+            
+            const btnGroup = document.createElement('div');
+            btnGroup.style.display = 'flex';
+            btnGroup.style.gap = '6px';
+
             const joinBtn = document.createElement('button');
             joinBtn.className = 'btn btn-success';
             joinBtn.style.padding = '5px 12px'; joinBtn.textContent = 'Join';
@@ -2995,7 +3049,22 @@
                 } else showToast("Incorrect room password!", "error");
               };
             };
-            row.appendChild(joinBtn);
+            btnGroup.appendChild(joinBtn);
+
+            if (isAdmin || r.owner === userId) {
+              const delBtn = document.createElement('button');
+              delBtn.className = 'btn btn-danger';
+              delBtn.style.padding = '5px 10px'; delBtn.textContent = 'Delete';
+              delBtn.onclick = () => {
+                db.ref('public_rooms/' + k).remove();
+                db.ref('private_messages/' + k).remove();
+                showToast("Private room deleted.", "success");
+                closeModal('join-room-modal');
+              };
+              btnGroup.appendChild(delBtn);
+            }
+
+            row.appendChild(btnGroup);
             browseList.appendChild(row);
           });
         });
@@ -3037,6 +3106,60 @@
             };
             row.appendChild(delBtn);
             sListEl.appendChild(row);
+          });
+        });
+
+        // Admin Private Rooms Manager
+        db.ref('public_rooms').once('value', (snap) => {
+          const prListEl = document.getElementById('admin-private-rooms-list');
+          if (!prListEl) return;
+          prListEl.innerHTML = '';
+          const rooms = snap.val() || {};
+          const keys = Object.keys(rooms);
+          if (keys.length === 0) {
+            prListEl.innerHTML = '<div style="color:var(--text-muted); font-size:12px; padding:4px;">No active private rooms.</div>';
+            return;
+          }
+          keys.forEach(k => {
+            const r = rooms[k];
+            const row = document.createElement('div');
+            row.className = 'admin-ch-row';
+            row.innerHTML = `
+              <div style="min-width:0; overflow:hidden;">
+                <div style="font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">#${escapeHTML(r.name)}</div>
+                <div style="font-size:11px; color:var(--text-muted);">Pass: ${escapeHTML(r.pass)} • Owner: @${escapeHTML(r.ownerName || 'unknown')}</div>
+              </div>
+            `;
+            const btnGroup = document.createElement('div');
+            btnGroup.style.display = 'flex';
+            btnGroup.style.gap = '6px';
+            btnGroup.style.flexShrink = '0';
+
+            const enterBtn = document.createElement('button');
+            enterBtn.className = 'btn btn-primary';
+            enterBtn.style.padding = '3px 8px'; enterBtn.style.fontSize = '11px';
+            enterBtn.textContent = 'Enter (Bypass)';
+            enterBtn.onclick = () => {
+              closeModal('admin-modal');
+              enterPrivateRoom(r);
+              showToast(`Bypassed password into #${r.name}`, "success");
+            };
+            btnGroup.appendChild(enterBtn);
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-danger';
+            delBtn.style.padding = '3px 8px'; delBtn.style.fontSize = '11px';
+            delBtn.textContent = 'Delete';
+            delBtn.onclick = () => {
+              db.ref('public_rooms/' + k).remove();
+              db.ref('private_messages/' + k).remove();
+              renderAdminPanelLists();
+              showToast(`Deleted private room #${r.name}`, "success");
+            };
+            btnGroup.appendChild(delBtn);
+
+            row.appendChild(btnGroup);
+            prListEl.appendChild(row);
           });
         });
 
@@ -3238,8 +3361,23 @@
         }
 
         if (rawText.startsWith('[File Upload]: ')) {
-          const parts = rawText.replace('[File Upload]: ', '');
-          return `File: <strong>${escapeHTML(parts)}</strong>`;
+          const content = rawText.replace('[File Upload]: ', '');
+          const parts = content.split('|');
+          if (parts.length >= 3) {
+            const fileName = parts[0];
+            const fileSizeKB = Math.round(parseInt(parts[1]) / 1024);
+            const fileUrl = parts.slice(2).join('|');
+            return `
+              <div class="file-attachment-card">
+                <svg class="svg-icon" style="width:28px; height:28px; color:var(--accent);" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <div style="min-width:0; flex:1;">
+                  <div style="font-weight:600; color:var(--text-header); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(fileName)}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">${fileSizeKB} KB • File Upload</div>
+                </div>
+                <a href="${escapeHTML(fileUrl)}" download="${escapeHTML(fileName)}" class="btn btn-primary" style="padding:4px 10px; font-size:12px; text-decoration:none;">Download</a>
+              </div>
+            `;
+          }
         }
 
         safe = safe.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
@@ -3551,14 +3689,31 @@
             const editedHTML = msg.edited ? `<span class="msg-edited-tag">(edited)</span>` : '';
             const isMine = (msg.author === username);
 
+            // Render reactions
+            const reactions = msg.reactions || {};
+            let reactionsHTML = '';
+            const reactionEntries = Object.entries(reactions);
+            if (reactionEntries.length > 0) {
+              reactionsHTML = '<div class="msg-reactions-row">';
+              reactionEntries.forEach(([emoji, usersObj]) => {
+                const userList = Object.values(usersObj || {});
+                const count = userList.length;
+                const reactedByMe = userList.includes(username);
+                reactionsHTML += `<div class="reaction-pill ${reactedByMe ? 'reacted' : ''}" data-emoji="${escapeHTML(emoji)}">${escapeHTML(emoji)} <span>${count}</span></div>`;
+              });
+              reactionsHTML += '</div>';
+            }
+
             div.innerHTML = `
               ${avatarHTML}
               <div style="flex:1; min-width:0;">
                 ${replyHTML}
                 ${headerHTML}
                 <div class="msg-body">${formatMessageBody(msg.text || '')}${editedHTML}</div>
+                ${reactionsHTML}
               </div>
               <div class="msg-actions">
+                <button class="msg-action-btn react-btn" title="Add Reaction">React</button>
                 <button class="msg-action-btn reply-btn" title="Reply to message">Reply</button>
                 <button class="msg-action-btn mention-btn" title="Ping @${escapeHTML(msg.author)}">Mention</button>
                 ${isMine ? `<button class="msg-action-btn edit-btn" title="Edit your message">Edit</button>` : ''}
@@ -3567,6 +3722,35 @@
                 ${(isAdmin || isMine) ? `<button class="msg-action-btn danger del-btn" title="Delete message">Delete</button>` : ''}
               </div>
             `;
+
+            div.querySelectorAll('.reaction-pill').forEach(pill => {
+              pill.onclick = () => {
+                const em = pill.dataset.emoji;
+                const rRef = db.ref(`${path}/${msgKey}/reactions/${em}`);
+                rRef.once('value', (s) => {
+                  const uMap = s.val() || {};
+                  let foundKey = null;
+                  Object.keys(uMap).forEach(k => { if (uMap[k] === username) foundKey = k; });
+                  if (foundKey) rRef.child(foundKey).remove();
+                  else rRef.push(username);
+                });
+              };
+            });
+
+            div.querySelector('.react-btn').onclick = () => {
+              const quickEmojis = ['👍', '❤️', '🔥', '😂', '🎉'];
+              const chosen = prompt(`Choose reaction emoji:\n${quickEmojis.join('  ')}`, '👍');
+              if (chosen && chosen.trim()) {
+                const em = chosen.trim();
+                const rRef = db.ref(`${path}/${msgKey}/reactions/${em}`);
+                rRef.once('value', (s) => {
+                  const uMap = s.val() || {};
+                  let already = false;
+                  Object.keys(uMap).forEach(k => { if (uMap[k] === username) already = true; });
+                  if (!already) rRef.push(username);
+                });
+              }
+            };
 
             div.querySelector('.reply-btn').onclick = () => setReplyTarget(msg.author, msg.text || '');
             div.querySelector('.mention-btn').onclick = () => insertMentionIntoInput(msg.author);
@@ -3610,6 +3794,13 @@
             if (pingedMe) {
               const senderShown = getEffectiveName(lastMsgObj.author, lastMsgObj.displayName);
               showToast(`${senderShown} pinged you!`, 'info');
+              const chKey = `${activeServer}_${activeChannel}`;
+              unreadPings[chKey] = (unreadPings[chKey] || 0) + 1;
+              serverUnreadPings[activeServer] = (serverUnreadPings[activeServer] || 0) + 1;
+              loadServersList();
+            } else {
+              const chKey = `${activeServer}_${activeChannel}`;
+              unreadChannels[chKey] = true;
             }
             if (desktopNotifEnabled && (document.hidden || pingedMe) && 'Notification' in window && Notification.permission === 'granted') {
               const senderShown = getEffectiveName(lastMsgObj.author, lastMsgObj.displayName);
