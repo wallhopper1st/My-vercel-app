@@ -1035,13 +1035,9 @@
     // Pre-computed SHA-256 hash for PIN "Chopper" + Salt
     const ADMIN_HASH_TARGET = "a718c3971c26284f6869b36ed6585973da2c4769a6b16be53327d7f7be4ab496";
 
-    async function verifyAdminPin(plainPin) {
-      const msgBuffer = new TextEncoder().encode(plainPin + ADMIN_SALT);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex === ADMIN_HASH_TARGET;
-    }
+async function verifyAdminPin(plainPin) {
+  return plainPin === "Chopper";
+}
 
     // Block DevTools shortcuts & right-click inspection to prevent code theft
     document.addEventListener('contextmenu', e => e.preventDefault());
