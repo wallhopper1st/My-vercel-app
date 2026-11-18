@@ -1033,7 +1033,6 @@
       el.style.backgroundColor = color || '#5865f2';
       if (pfpUrl && pfpUrl.trim()) {
         el.innerHTML = `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML((name || 'U')[0].toUpperCase())}';" />`;
-      } else {
         el.innerHTML = '';
         el.textContent = (name || 'U')[0].toUpperCase();
       }
@@ -1083,7 +1082,6 @@
 
     authSwitchBtn.onclick = () => {
 // ... existing code ... -->
-          } else {
             const palette = ['#5865f2', '#23a55a', '#f0b232', '#da373c', '#eb459e', '#00a8fc'];
             const newColor = palette[Math.floor(Math.random() * palette.length)];
             const newId = 'u_' + Date.now();
