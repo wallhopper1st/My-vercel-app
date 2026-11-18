@@ -145,11 +145,11 @@
     .global-announcement.active { display: flex; }
 
     /* Voice Stage (Real Multi-Peer WebRTC Video Grid) */
-    .voice-stage { display: none; flex: 1; background: #111214; padding: 20px; flex-direction: column; gap: 16px; overflow: hidden; }
+    .voice-stage { display: none; flex: 1; background: #111214; padding: 20px; flex-direction: column; gap: 16px; overflow: hidden; min-height: 0; }
     .voice-stage.active { display: flex; }
     .voice-stage-header { display: flex; align-items: center; justify-content: space-between; color: white; flex-shrink: 0; }
-    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-content: center; justify-content: center; overflow-y: auto; }
-    .video-tile { background: #2b2d31; border-radius: 10px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 2px solid transparent; }
+    .video-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-content: center; justify-content: center; overflow-y: auto; }
+    .video-tile { background: #2b2d31; border-radius: 10px; overflow: hidden; position: relative; aspect-ratio: 16/9; max-height: 100%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 2px solid transparent; }
     .video-tile.speaking { border-color: var(--green); box-shadow: 0 0 0 3px rgba(35, 165, 90, 0.4); }
     .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; transform: scaleX(-1); }
     .video-tile video.mirrored { transform: scaleX(-1); }
@@ -157,8 +157,8 @@
     .video-tile .video-avatar-fallback img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
     .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.65); padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; color: white; z-index: 3; display: flex; align-items: center; gap: 6px; }
     .video-status-pill { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; color: #b5bac1; z-index: 3; }
-    .video-controls { height: 72px; background: #1e1f22; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-shrink: 0; }
-    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.15s; }
+    .video-controls { height: 72px; min-height: 72px; background: #1e1f22; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-shrink: 0; }
+    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.15s; flex-shrink: 0; }
     .v-btn:hover { background: #35373c; }
     .v-btn.muted { background: var(--red); color: white; }
     .v-btn.danger { background: var(--red); width: auto; padding: 0 20px; border-radius: 24px; font-size: 13px; }
@@ -922,18 +922,14 @@
             <span>Push-to-Talk (when enabled)</span>
             <span class="kbd-badge">Hold Space</span>
           </div>
-          <div class="shortcut-row">
-            <span>Unlock Admin Panel</span>
-            <span class="kbd-badge">/admin [PIN]</span>
-          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- UPGRADED ADMIN PANEL -->
+  <!-- UPGRADED EXPANDED ADMIN PANEL -->
   <div class="modal-overlay" id="admin-modal">
-    <div class="modal" style="width:540px;">
+    <div class="modal" style="width:620px;">
       <div class="modal-header">
         <span class="modal-title">Admin Control Center</span>
         <button class="icon-btn" onclick="closeModal('admin-modal')">✕</button>
@@ -963,6 +959,15 @@
           </div>
         </div>
         <button class="btn btn-success" id="save-limits-btn" style="width:100%;">Apply Limits Globally</button>
+      </div>
+
+      <!-- NEW: Server Theme & Default Settings Override -->
+      <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:14px; border:1px solid var(--divider);">
+        <div class="section-label" style="padding:0 0 10px 0; color:var(--text-header);">Server Configuration & Controls</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn-danger" id="purge-all-messages-btn" style="flex:1;">Purge All Channel History</button>
+          <button class="btn btn-secondary" id="export-server-logs-btn" style="flex:1;">Export Server Diagnostics</button>
+        </div>
       </div>
 
       <!-- Manage Servers -->
@@ -1405,6 +1410,28 @@
         const sLim = Math.max(0, Math.min(120, parseFloat(document.getElementById('admin-spam-limit').value) || 0));
         db.ref('config/limits').set({ textLimit: tLim, spamLimit: sLim });
         showToast(`Limits updated: ${tLim} chars, ${sLim}s cooldown`, 'success');
+      };
+
+      document.getElementById('purge-all-messages-btn').onclick = () => {
+        if (!isAdmin) return;
+        if (confirm("Are you sure you want to purge all message history across all servers?")) {
+          db.ref('messages').remove();
+          showToast("All message history purged.", "success");
+        }
+      };
+
+      document.getElementById('export-server-logs-btn').onclick = () => {
+        if (!isAdmin) return;
+        db.ref('/').once('value', (snap) => {
+          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snap.val(), null, 2));
+          const dlAnchor = document.createElement('a');
+          dlAnchor.setAttribute("href", dataStr);
+          dlAnchor.setAttribute("download", `minicord_backup_${Date.now()}.json`);
+          document.body.appendChild(dlAnchor);
+          dlAnchor.click();
+          dlAnchor.remove();
+          showToast("Server diagnostics exported!", "success");
+        });
       };
 
       let soundEnabled = localStorage.getItem('minicord_sound') !== 'disabled';
@@ -2785,7 +2812,7 @@
               item.className = 'channel-item ' + (isJoinedHere ? 'active' : '');
               item.innerHTML = `
                 <div class="channel-left">
-                  <svg class="svg-icon" style="width:18px; height:18px; color:var(--text-muted);" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                  <svg class="svg-icon" style="width:18px; height:18px; color:var(--text-muted);" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77-2.99-7.86-7-8.77z"/></svg>
                   <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(vcName)}</span>
                 </div>
                 ${connectedUsers.length > 0 ? `<span class="voice-live-badge">${connectedUsers.length}</span>` : ''}
@@ -3174,7 +3201,7 @@
       function doesMessagePingMe(rawText) {
         if (!rawText) return false;
         const lower = rawText.toLowerCase();
-        if (lower.includes('@everyone') || lower.includes('@here')) return true;
+        if ((lower.includes('@everyone') || lower.includes('@here')) && isAdmin) return true;
         const uHandle = '@' + username.toLowerCase();
         const dHandle = '@' + displayName.toLowerCase().replace(/\s+/g, '');
         const dExact = '@' + displayName.toLowerCase();
@@ -3204,7 +3231,7 @@
         if (rawText.startsWith('[Attachment]: ')) {
           const url = rawText.replace('[Attachment]: ', '').trim();
           const safeUrl = escapeHTML(url);
-          if (autoEmbedEnabled && (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(url) || url.includes('giphy.com') || url.startsWith('data:image'))) {
+          if (autoEmbedEnabled && (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$|giphy\.com|data:image/i.test(url))) {
             return `<img src="${safeUrl}" class="msg-img" alt="Attachment" />`;
           }
           return `<a href="${safeUrl}" target="_blank" rel="noopener">Attachment: ${safeUrl}</a>`;
@@ -3382,20 +3409,22 @@
           acSelectedIndex = 0;
 
           const candidates = [];
-          candidates.push({
-            title: '@everyone',
-            subtitle: 'Notify all members in this channel',
-            rightText: 'Ping All',
-            insertValue: 'everyone',
-            avatarHTML: `<div class="avatar" style="background:var(--yellow); color:#111; width:24px; height:24px; font-size:12px;">@</div>`
-          });
-          candidates.push({
-            title: '@here',
-            subtitle: 'Notify currently online members',
-            rightText: 'Ping Online',
-            insertValue: 'here',
-            avatarHTML: `<div class="avatar" style="background:var(--green); width:24px; height:24px; font-size:12px;">@</div>`
-          });
+          if (isAdmin) {
+            candidates.push({
+              title: '@everyone',
+              subtitle: 'Notify all members in this channel (Admin Only)',
+              rightText: 'Ping All',
+              insertValue: 'everyone',
+              avatarHTML: `<div class="avatar" style="background:var(--yellow); color:#111; width:24px; height:24px; font-size:12px;">@</div>`
+            });
+            candidates.push({
+              title: '@here',
+              subtitle: 'Notify currently online members (Admin Only)',
+              rightText: 'Ping Online',
+              insertValue: 'here',
+              avatarHTML: `<div class="avatar" style="background:var(--green); width:24px; height:24px; font-size:12px;">@</div>`
+            });
+          }
 
           const seen = new Set();
           const allPeople = [];
@@ -3587,8 +3616,19 @@
               new Notification(`MiniCord — ${senderShown}${pingedMe ? ' (Pinged You!)' : ''}`, { body: lastMsgObj.text });
             }
           }
+
+          if (isInitialLoad) {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+          } else {
+            const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+            if (distanceFromBottom < 160) {
+              messagesEl.scrollTop = messagesEl.scrollHeight;
+            } else {
+              jumpPresentBtn.classList.add('visible');
+            }
+          }
+
           isInitialLoad = false;
-          messagesEl.scrollTop = messagesEl.scrollHeight;
         };
         activeMsgRef.on('value', activeMsgCb);
 
