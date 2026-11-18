@@ -152,8 +152,8 @@
   </style>
 
   <!-- Firebase v10 Compat Scripts -->
-  <script src="[gstatic.com](https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js)"></script>
-  <script src="[gstatic.com](https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js)"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body class="theme-dark">
 
@@ -418,7 +418,7 @@
 
   <script>
     // ==========================================
-    const DB_URL = "[minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app](https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/)";
+    const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
     const ADMIN_PIN = "Chopper";
     // ==========================================
 
@@ -507,28 +507,7 @@
       userColor = color;
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('app-container').style.display = 'flex';
-      initApp(document.getElementById('add-friend-btn').onclick = () => {
-  const friendName = prompt("Enter friend's exact username:");
-  if (!friendName || !friendName.trim()) return;
-
-  const name = friendName.trim();
-
-  db.ref('friends/' + userId).once('value', (snap) => {
-    let exists = false;
-
-    snap.forEach((child) => {
-      if (child.val() === name) exists = true;
-    });
-
-    if (exists) {
-      alert("Already on your friends list!");
-      return;
-    }
-
-    db.ref('friends/' + userId).push(name);
-    alert("Added " + name);
-  });
-};);
+      initApp();
     }
 
     function escapeHTML(str) {
@@ -719,7 +698,6 @@
       let activeCallKey = null;
       let audioMeterTimer = null;
 
-      // Lower id is the polite peer: it waits instead of firing its own offer.
       function isPolite(myId, theirId) { return myId < theirId; }
 
       function getVideoRoomKey() {
@@ -774,7 +752,6 @@
         pendingCandidates[peerId] = [];
       }
 
-      // Pair key: for A<->B we use the SORTED pair so both sides read the same node.
       function pairKey(a, b) { return [a, b].sort().join('__'); }
 
       function createPeerConnection(peerId) {
@@ -803,7 +780,6 @@
           if (['failed', 'closed', 'disconnected'].includes(pc.connectionState)) teardownPeer(peerId);
         };
 
-        // The impolite peer (higher id) starts the negotiation.
         pc.onnegotiationneeded = async () => {
           if (isPolite(userId, peerId)) return;
           try {
@@ -814,7 +790,6 @@
         };
 
         if (!isPolite(userId, peerId)) {
-          // Impolite: send the offer, then wait for their answer.
           db.ref(`${activeCallKey}/signals/${pk}/${peerId}/answer`).on('value', async (snap) => {
             const ans = snap.val();
             if (ans && !pc.currentRemoteDescription) {
@@ -825,7 +800,6 @@
             }
           });
         } else {
-          // Polite: wait for their offer, then reply with an answer.
           db.ref(`${activeCallKey}/signals/${pk}/${peerId}/offer`).on('value', async (snap) => {
             const off = snap.val();
             if (off && !pc.currentRemoteDescription) {
@@ -840,7 +814,6 @@
           });
         }
 
-        // ICE from the other side of the pair.
         db.ref(`${activeCallKey}/signals/${pk}/${peerId}/candidates`).on('child_added', async (snap) => {
           const cand = snap.val();
           if (!cand) return;
@@ -896,7 +869,7 @@
             audio: true
           });
         } catch (err) {
-          alert('Could not access camera/microphone. This page must be opened over https:// (your Vercel URL is fine) and you must allow camera + mic permissions.');
+          alert('Could not access camera/microphone. Please ensure you allow permissions.');
           return;
         }
 
@@ -994,7 +967,6 @@
         if (activeCallKey) db.ref(`${activeCallKey}/state/${userId}/mic`).set(micOn);
       };
 
-      // Right-click the mic button to deafen (mutes mic + incoming audio).
       document.getElementById('mute-mic-btn').addEventListener('contextmenu', (e) => {
         e.preventDefault();
         if (!localStream) return;
@@ -1122,13 +1094,12 @@
             db.ref('friends/' + userId).once('value', (snap) => {
               let exists = false;
               snap.forEach(c => { if (c.val() === f.trim()) exists = true; });
-             if (exists) {
-  alert("Already on your friends list!");
-  return;
-}
-
-db.ref('friends/' + userId).push(f.trim());
-alert("Added " + f);
+              if (exists) {
+                alert("Already on your friends list!");
+                return;
+              }
+              db.ref('friends/' + userId).push(f.trim());
+              alert("Added " + f);
             });
           }
         };
@@ -1333,7 +1304,6 @@ alert("Added " + f);
             const div = document.createElement('div');
             div.className = 'message' + (mentioned && !mine ? ' mentioned' : '');
 
-            // reaction chips
             const reactions = msg.reactions || {};
             const reacted = {};
             Object.keys(reactions).forEach(emoji => {
@@ -1371,10 +1341,8 @@ alert("Added " + f);
                 </div>` : ''}
             `;
 
-            // clicking an author opens profile
             div.querySelector('.msg-author').onclick = () => openPeerProfile(msg.author, msg.color, !!msg.isAdmin);
 
-            // reactions
             div.querySelectorAll('.reaction-picker button').forEach(btn => {
               btn.onclick = () => {
                 const emoji = btn.dataset.emoji;
@@ -1400,7 +1368,6 @@ alert("Added " + f);
               };
             });
 
-            // edit
             const editBtn = div.querySelector('.edit-btn');
             if (editBtn) {
               editBtn.onclick = () => {
@@ -1420,7 +1387,6 @@ alert("Added " + f);
               };
             }
 
-            // delete
             const delBtn = div.querySelector('.del-msg');
             if (delBtn) delBtn.onclick = () => db.ref(path + '/' + msgKey).remove();
 
@@ -1429,7 +1395,6 @@ alert("Added " + f);
 
           if (!isInitialLoad && messageCount > 0) {
             playNotificationSound();
-            // unread badge for a non-active channel is handled below
           }
           isInitialLoad = false;
           messagesEl.scrollTop = messagesEl.scrollHeight;
