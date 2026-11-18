@@ -47,14 +47,11 @@
       --accent-hover: #d6006b; --divider: #2e2161;
     }
 
-    body.compact-mode {
-      --msg-gap: 4px;
-    }
+    body.compact-mode { --msg-gap: 4px; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'gg sans', 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: var(--chat-font-size); }
     body { display: flex; height: 100vh; background-color: var(--bg-chat); color: var(--text-main); overflow: hidden; }
 
-    /* Custom Scrollbars (Discord Style) */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #1a1b1e; border-radius: 4px; }
@@ -86,18 +83,31 @@
 
     /* 2. Channels Sidebar */
     .channels { width: 240px; background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; }
-    .server-header { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 15px; border-bottom: 1px solid rgba(0,0,0,0.25); color: var(--text-header); box-shadow: 0 1px 2px rgba(0,0,0,0.15); cursor: pointer; transition: background 0.15s; }
+    .server-header { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 15px; border-bottom: 1px solid rgba(0,0,0,0.25); color: var(--text-header); box-shadow: 0 1px 2px rgba(0,0,0,0.15); cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
     .server-header:hover { background: var(--bg-hover); }
-    .section-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 16px 12px 4px 12px; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: space-between; }
-    .channel-list { padding: 4px 8px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
-    .channel-item { padding: 7px 10px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 8px; font-weight: 500; transition: background 0.1s, color 0.1s; }
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding-bottom: 12px; }
+    .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 16px 12px 4px 12px; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: space-between; }
+    .channel-list { padding: 2px 8px; display: flex; flex-direction: column; gap: 2px; }
+    .channel-item { padding: 7px 10px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; font-weight: 500; transition: background 0.1s, color 0.1s; position: relative; }
     .channel-item:hover { background: var(--bg-hover); color: var(--text-main); }
     .channel-item.active { background: var(--bg-active); color: var(--text-header); font-weight: 600; }
+    .channel-item.unread { color: var(--text-header); font-weight: 700; }
+    .channel-item.unread::before { content: ''; position: absolute; left: -6px; width: 4px; height: 8px; background: var(--text-header); border-radius: 0 4px 4px 0; }
+    .channel-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
     .channel-hash { color: var(--text-muted); font-size: 18px; font-weight: 400; line-height: 1; }
     .channel-item.active .channel-hash { color: var(--text-main); }
 
+    /* Voice Channel Connected Users List inside Sidebar */
+    .voice-users-sublist { padding-left: 26px; display: flex; flex-direction: column; gap: 4px; margin: 2px 0 6px 0; }
+    .voice-sub-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); padding: 2px 6px; border-radius: 4px; }
+    .voice-live-badge { font-size: 10px; background: var(--green); color: white; padding: 1px 5px; border-radius: 8px; font-weight: 700; }
+
+    /* Active Voice Connection Bar above User Dock */
+    .voice-status-bar { display: none; background: #1e1f22; border-bottom: 1px solid var(--divider); padding: 8px 12px; align-items: center; justify-content: space-between; }
+    .voice-status-bar.connected { display: flex; }
+
     /* Bottom User Panel */
-    .user-panel { height: 52px; background: var(--bg-user); padding: 0 8px; display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+    .user-panel { height: 52px; background: var(--bg-user); padding: 0 8px; display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-shrink: 0; }
     .user-info { display: flex; align-items: center; gap: 8px; overflow: hidden; cursor: pointer; padding: 4px 6px; border-radius: 4px; flex: 1; min-width: 0; }
     .user-info:hover { background: var(--bg-hover); }
     .avatar-container { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
@@ -110,42 +120,50 @@
 
     /* 3. Main Chat Area */
     .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); min-width: 0; position: relative; }
+    .global-announcement { display: none; background: var(--accent); color: white; padding: 8px 16px; font-size: 13px; font-weight: 600; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+    .global-announcement.active { display: flex; }
     .chat-header { height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.25); box-shadow: 0 1px 2px rgba(0,0,0,0.12); font-weight: 700; color: var(--text-header); flex-shrink: 0; }
     .header-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
-    .header-right { display: flex; align-items: center; gap: 8px; }
+    .header-right { display: flex; align-items: center; gap: 6px; }
     .private-badge { background: var(--yellow); color: #1e1f22; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800; letter-spacing: 0.04em; }
     .slowmode-badge { background: var(--bg-chat-input); color: var(--text-muted); font-size: 11px; padding: 3px 8px; border-radius: 12px; display: none; align-items: center; gap: 4px; font-weight: 600; }
 
-    /* Video Grid */
-    .video-container { display: none; flex: 1; background: #111214; padding: 16px; flex-direction: column; gap: 16px; }
-    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-content: center; justify-content: center; }
-    .video-tile { background: #2b2d31; border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; }
-    .video-name { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; z-index: 2; }
-    .video-controls { height: 64px; background: #1e1f22; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 16px; }
-    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.15s; font-size: 18px; }
+    /* Dedicated Server Voice Channel Stage */
+    .voice-stage { display: none; flex: 1; background: #111214; padding: 20px; flex-direction: column; gap: 16px; }
+    .voice-stage.active { display: flex; }
+    .voice-stage-header { display: flex; align-items: center; justify-content: space-between; color: white; }
+    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-content: center; justify-content: center; }
+    .video-tile { background: #2b2d31; border-radius: 10px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 16px rgba(0,0,0,0.5); border: 2px solid transparent; }
+    .video-tile.speaking { border-color: var(--green); }
+    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; position: absolute; inset: 0; }
+    .video-avatar-fallback { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: white; z-index: 1; }
+    .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.75); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; z-index: 2; }
+    .video-controls { height: 68px; background: #1e1f22; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.15s; font-size: 18px; }
     .v-btn:hover { background: #35373c; }
-    .v-btn.danger { background: var(--red); }
+    .v-btn.muted { background: var(--red); }
+    .v-btn.active-share { background: var(--green); }
+    .v-btn.danger { background: var(--red); width: 56px; border-radius: 24px; }
 
     /* Messages Stream */
     .messages { flex: 1; padding: 16px 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--msg-gap); }
-    .welcome-banner { padding: 16px 16px 8px 16px; border-bottom: 1px solid var(--divider); margin: 0 16px 8px 16px; }
+    .welcome-banner { padding: 16px 16px 12px 16px; border-bottom: 1px solid var(--divider); margin: 0 16px 8px 16px; }
     .welcome-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--bg-active); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--text-header); margin-bottom: 12px; }
     .message { display: flex; gap: 16px; position: relative; padding: 4px 16px; transition: background 0.08s; }
     .message:hover { background: rgba(0, 0, 0, 0.08); }
     .message.compact-followup { margin-top: calc(var(--msg-gap) * -0.75); padding-left: 72px; }
     .message.mentioned { background: rgba(240, 178, 50, 0.1); border-left: 3px solid var(--yellow); padding-left: 13px; }
     .msg-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 16px; flex-shrink: 0; cursor: pointer; margin-top: 2px; }
-    .msg-avatar:hover { opacity: 0.9; }
     .msg-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
     .msg-author { font-weight: 600; color: var(--text-header); cursor: pointer; }
     .msg-author:hover { text-decoration: underline; }
     .admin-tag { background: var(--accent); color: white; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
     .msg-time { font-size: 11px; color: var(--text-muted); }
+    .msg-reply-quote { font-size: 12px; color: var(--text-muted); border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 4px; opacity: 0.85; }
     .msg-body { line-height: 1.45; word-break: break-word; color: var(--text-main); }
     .msg-body a { color: #00a8fc; text-decoration: none; }
     .msg-body a:hover { text-decoration: underline; }
-    .msg-img { max-width: 360px; max-height: 260px; border-radius: 6px; margin-top: 6px; display: block; cursor: pointer; }
+    .msg-img { max-width: 340px; max-height: 240px; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer; }
     .mention-pill { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 4px; border-radius: 3px; font-weight: 500; }
 
     /* Message Hover Actions */
@@ -155,25 +173,39 @@
     .msg-action-btn:hover { background: var(--bg-hover); color: var(--text-header); }
     .msg-action-btn.danger:hover { background: var(--red); color: white; }
 
-    /* Chat Input Area */
+    /* Chat Input & Reply Banner */
     .typing-bar { height: 22px; padding: 0 18px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; }
     .input-wrapper { padding: 0 16px 20px 16px; display: flex; flex-direction: column; }
+    .reply-preview-bar { display: none; background: var(--bg-channels); padding: 6px 12px; border-radius: 8px 8px 0 0; font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between; border-bottom: 1px solid var(--divider); }
+    .reply-preview-bar.active { display: flex; }
     .input-box { background: var(--bg-chat-input); border-radius: 8px; display: flex; align-items: center; padding: 0 12px; gap: 8px; }
+    .reply-preview-bar.active + .input-box { border-radius: 0 0 8px 8px; }
     .chat-input { flex: 1; padding: 11px 4px; border: none; background: transparent; color: var(--text-main); outline: none; }
     .chat-input::placeholder { color: var(--text-muted); }
     .char-counter { font-size: 11px; color: var(--text-muted); font-weight: 600; display: none; }
     .char-counter.warn { color: var(--yellow); display: inline; }
     .char-counter.limit { color: var(--red); display: inline; }
+    .gif-btn { background: var(--bg-active); border: none; color: var(--text-header); font-size: 11px; font-weight: 800; padding: 4px 7px; border-radius: 4px; cursor: pointer; letter-spacing: 0.04em; }
+    .gif-btn:hover { background: var(--accent); color: white; }
     .emoji-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; border-radius: 4px; transition: transform 0.1s; }
     .emoji-btn:hover { transform: scale(1.15); }
 
-    /* Emoji Picker Popover */
-    .emoji-popover { display: none; position: absolute; bottom: 72px; right: 20px; background: var(--bg-channels); border: 1px solid var(--divider); border-radius: 8px; padding: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); grid-template-columns: repeat(6, 1fr); gap: 6px; z-index: 50; }
-    .emoji-popover.open { display: grid; }
+    /* Emoji & GIF Popovers */
+    .popover-panel { display: none; position: absolute; bottom: 74px; right: 20px; background: var(--bg-channels); border: 1px solid var(--divider); border-radius: 8px; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 50; }
+    .popover-panel.open { display: block; }
+    .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
     .emoji-cell { font-size: 20px; padding: 6px; cursor: pointer; border-radius: 6px; text-align: center; }
     .emoji-cell:hover { background: var(--bg-hover); }
 
-    /* 4. Members Sidebar (Discord Grouped Style) */
+    .gif-panel { width: 340px; max-width: 90vw; }
+    .gif-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+    .gif-tab { background: var(--bg-chat-input); border: none; color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .gif-tab.active { background: var(--accent); color: white; }
+    .gif-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; }
+    .gif-item { width: 100%; height: 95px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.12s; }
+    .gif-item:hover { border-color: var(--accent); transform: scale(1.02); }
+
+    /* 4. Members Sidebar */
     .members { width: 240px; background: var(--bg-channels); padding: 16px 8px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; overflow-y: auto; }
     .members.hidden { display: none; }
     .member-group-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 12px 8px 4px 8px; letter-spacing: 0.02em; }
@@ -188,13 +220,13 @@
     /* Modals & Settings */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(2px); }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--bg-chat); width: 460px; max-width: 94vw; max-height: 90vh; overflow-y: auto; border-radius: 8px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); color: var(--text-main); }
+    .modal { background: var(--bg-chat); width: 480px; max-width: 94vw; max-height: 90vh; overflow-y: auto; border-radius: 8px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); color: var(--text-main); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--text-header); }
     .modal-input { width: 100%; padding: 10px 12px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.3); background: var(--bg-servers); color: var(--text-main); margin-bottom: 14px; outline: none; }
     .modal-input:focus { border-color: var(--accent); }
 
-    /* Fullscreen Discord-style User Settings Modal */
+    /* User Settings Modal */
     .settings-modal-box { width: 740px; max-width: 95vw; height: 540px; max-height: 90vh; padding: 0; display: flex; overflow: hidden; }
     .settings-sidebar { width: 210px; background: var(--bg-channels); padding: 24px 12px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
     .settings-nav-item { padding: 8px 12px; border-radius: 4px; cursor: pointer; color: var(--text-muted); font-weight: 600; font-size: 14px; }
@@ -216,7 +248,7 @@
     .profile-tag { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
     .profile-bio-box { background: var(--bg-servers); padding: 12px; border-radius: 6px; font-size: 13px; color: var(--text-main); margin-bottom: 14px; line-height: 1.4; }
 
-    /* Buttons & Badges */
+    /* Buttons */
     .btn { padding: 9px 16px; border: none; border-radius: 4px; font-weight: 600; font-size: 14px; cursor: pointer; color: white; transition: background 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-primary { background: var(--accent); }
     .btn-primary:hover { background: var(--accent-hover); }
@@ -227,12 +259,12 @@
     .btn-secondary { background: var(--bg-active); color: var(--text-header); }
     .btn-secondary:hover { background: var(--bg-hover); }
 
-    .admin-ch-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-channels); padding: 8px 12px; border-radius: 4px; margin-bottom: 6px; }
+    .admin-ch-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-channels); padding: 8px 12px; border-radius: 4px; margin-bottom: 6px; gap: 8px; }
     .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
     .icon-btn:hover { color: var(--text-header); background: var(--bg-hover); }
     .icon-btn.active { color: var(--text-header); }
 
-    /* Toast Notification */
+    /* Toast */
     #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
     .toast { background: var(--bg-floating); color: var(--text-header); padding: 12px 16px; border-radius: 6px; border-left: 4px solid var(--accent); box-shadow: 0 6px 20px rgba(0,0,0,0.5); font-size: 13px; font-weight: 600; animation: slideIn 0.2s ease; }
     .toast.error { border-left-color: var(--red); }
@@ -241,7 +273,7 @@
 
     @media (max-width: 768px) {
       .members { position: fixed; right: 0; top: 48px; bottom: 0; z-index: 40; box-shadow: -4px 0 16px rgba(0,0,0,0.4); }
-      .channels { width: 200px; }
+      .channels { width: 205px; }
     }
   </style>
 
@@ -280,15 +312,36 @@
 
     <!-- 2. Channels Sidebar -->
     <div class="channels">
-      <div class="server-header" id="server-header-btn" title="Server Info">
+      <div class="server-header" id="server-header-btn">
         <span id="server-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Gaming Hub</span>
         <svg class="svg-icon" style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
       </div>
 
-      <div class="section-label" id="sidebar-label">
-        <span>Text Channels</span>
+      <div class="sidebar-scroll">
+        <div class="section-label" id="sidebar-label">
+          <span>Text Channels</span>
+        </div>
+        <div class="channel-list" id="channel-list"></div>
+
+        <!-- SERVER-ONLY VOICE CHANNELS SECTION -->
+        <div id="voice-channels-section">
+          <div class="section-label">
+            <span>Voice Channels</span>
+          </div>
+          <div class="channel-list" id="voice-channel-list"></div>
+        </div>
       </div>
-      <div class="channel-list" id="channel-list"></div>
+
+      <!-- Connected Voice Status Bar -->
+      <div class="voice-status-bar" id="voice-status-bar">
+        <div style="min-width:0;">
+          <div style="color:var(--green); font-size:12px; font-weight:700;">🔊 Voice Connected</div>
+          <div id="voice-connected-label" style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">General Voice</div>
+        </div>
+        <button class="icon-btn" id="disconnect-voice-sidebar-btn" title="Disconnect Voice" style="color:var(--red);">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+        </button>
+      </div>
 
       <!-- Bottom User Dock -->
       <div class="user-panel">
@@ -313,8 +366,14 @@
       </div>
     </div>
 
-    <!-- 3. Main Chat & Video Call Area -->
+    <!-- 3. Main Chat & Voice Channel Stage -->
     <div class="chat-area">
+      <!-- Global Admin Broadcast Banner -->
+      <div class="global-announcement" id="global-announcement-bar">
+        <span id="global-announcement-text">📢 Announcement</span>
+        <button class="icon-btn" id="dismiss-announcement-btn" style="color:white; padding:2px 6px;">✕</button>
+      </div>
+
       <div class="chat-header">
         <div class="header-left">
           <span style="color: var(--text-muted); font-size: 22px; font-weight:400;" id="header-symbol">#</span>
@@ -323,22 +382,27 @@
           <span id="slowmode-badge" class="slowmode-badge" title="Slowmode is enabled">⏱️ <span id="slowmode-sec-label">0</span>s</span>
         </div>
         <div class="header-right">
-          <button class="icon-btn" id="toggle-video-call-btn" title="Start Video Call">
-            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-          </button>
           <button class="icon-btn active" id="toggle-members-btn" title="Toggle Member List">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- Video Call Grid -->
-      <div class="video-container" id="video-container">
+      <!-- Server Voice Channel Stage -->
+      <div class="voice-stage" id="voice-stage">
+        <div class="voice-stage-header">
+          <div>
+            <span style="font-size:18px; font-weight:700;" id="voice-stage-title">🔊 General Voice</span>
+            <span style="font-size:12px; color:#949ba4; margin-left:8px;">Server Voice Channel</span>
+          </div>
+          <button class="btn btn-secondary" id="back-to-text-btn" style="padding:6px 12px; font-size:12px;">View Text Chat</button>
+        </div>
         <div class="video-grid" id="video-grid"></div>
         <div class="video-controls">
-          <button class="v-btn" id="mute-mic-btn" title="Mute Microphone">🎤</button>
-          <button class="v-btn" id="toggle-cam-btn" title="Turn Camera Off">📹</button>
-          <button class="v-btn danger" id="leave-call-btn" title="Disconnect Call">📞</button>
+          <button class="v-btn" id="mute-mic-btn" title="Mute / Unmute Mic">🎤</button>
+          <button class="v-btn" id="toggle-cam-btn" title="Toggle Camera">📹</button>
+          <button class="v-btn" id="share-screen-btn" title="Share Screen">🖥️</button>
+          <button class="v-btn danger" id="leave-call-btn" title="Disconnect Voice">📞</button>
         </div>
       </div>
 
@@ -352,16 +416,38 @@
       </div>
 
       <!-- Emoji Popover -->
-      <div class="emoji-popover" id="emoji-popover"></div>
+      <div class="popover-panel" id="emoji-popover">
+        <div class="emoji-grid" id="emoji-grid"></div>
+      </div>
+
+      <!-- GIF Picker Popover -->
+      <div class="popover-panel gif-panel" id="gif-popover">
+        <div class="gif-tabs" id="gif-tabs">
+          <button class="gif-tab active" data-cat="hype">Hype</button>
+          <button class="gif-tab" data-cat="funny">Funny</button>
+          <button class="gif-tab" data-cat="gaming">Gaming</button>
+          <button class="gif-tab" data-cat="reactions">Reactions</button>
+        </div>
+        <div class="gif-grid" id="gif-grid"></div>
+        <div style="display:flex; gap:6px;">
+          <input type="text" class="modal-input" id="custom-gif-url" placeholder="Or paste any GIF URL..." style="margin:0; padding:6px 10px; font-size:12px;" />
+          <button class="btn btn-primary" id="send-custom-gif-btn" style="padding:6px 10px; font-size:12px;">Send</button>
+        </div>
+      </div>
 
       <!-- Chat Input Bar -->
       <div class="input-wrapper" id="chat-input-wrapper">
+        <div class="reply-preview-bar" id="reply-preview-bar">
+          <span id="reply-preview-text">Replying to @User</span>
+          <button class="icon-btn" id="cancel-reply-btn" style="padding:2px 6px;">✕</button>
+        </div>
         <div class="input-box">
           <button class="icon-btn" id="attach-btn" title="Share Image / File URL">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
           </button>
           <input type="text" class="chat-input" id="chat-input" placeholder="Message #general" autocomplete="off" />
           <span class="char-counter" id="char-counter">0/500</span>
+          <button class="gif-btn" id="gif-btn" title="Send a GIF">GIF</button>
           <button class="emoji-btn" id="emoji-btn" title="Emoji Picker">😀</button>
         </div>
       </div>
@@ -472,25 +558,20 @@
       <div class="settings-content">
         <button class="icon-btn" onclick="closeModal('settings-modal')" style="position:absolute; right:18px; top:18px; border:1px solid var(--divider); border-radius:50%; width:32px; height:32px;">✕</button>
 
-        <!-- Tab 1: My Account -->
         <div class="settings-tab active" id="tab-account">
           <div class="modal-title" style="margin-bottom:16px;">My Account</div>
           <label class="auth-label">About Me / Custom Bio</label>
           <textarea class="modal-input" id="settings-bio-input" rows="3" maxlength="160" placeholder="Tell others about yourself..."></textarea>
-          
           <label class="auth-label">Avatar & Banner Accent Color</label>
           <div style="display:flex; gap:10px; align-items:center; margin-bottom:18px;">
             <input type="color" id="settings-color-input" style="width:48px; height:36px; border:none; background:none; cursor:pointer;" />
             <span style="font-size:13px; color:var(--text-muted);">Pick your profile color</span>
           </div>
-
           <button class="btn btn-success" id="save-profile-settings-btn">Save Profile Changes</button>
         </div>
 
-        <!-- Tab 2: Appearance -->
         <div class="settings-tab" id="tab-appearance">
           <div class="modal-title" style="margin-bottom:16px;">Appearance</div>
-          
           <div class="setting-row">
             <div>
               <div class="setting-row-title">Theme</div>
@@ -503,7 +584,6 @@
               <option value="theme-cyberpunk">Neon Cyberpunk</option>
             </select>
           </div>
-
           <div class="setting-row">
             <div>
               <div class="setting-row-title">Message Display</div>
@@ -514,7 +594,6 @@
               <option value="compact">Compact</option>
             </select>
           </div>
-
           <div class="setting-row">
             <div>
               <div class="setting-row-title">Chat Font Scaling</div>
@@ -528,21 +607,18 @@
           </div>
         </div>
 
-        <!-- Tab 3: Notifications & Chat -->
         <div class="settings-tab" id="tab-notifications">
           <div class="modal-title" style="margin-bottom:16px;">Notifications & Chat</div>
-
           <div class="setting-row">
             <div>
               <div class="setting-row-title">Message Audio Chime</div>
-              <div class="setting-row-desc">Play a subtle sound when new messages arrive</div>
+              <div class="setting-row-desc">Play a sound when new messages arrive</div>
             </div>
             <select class="modal-input" id="sound-select" style="width:170px; margin:0;">
               <option value="enabled">Enabled</option>
               <option value="disabled">Muted</option>
             </select>
           </div>
-
           <div class="setting-row">
             <div>
               <div class="setting-row-title">24-Hour Timestamps</div>
@@ -553,30 +629,32 @@
               <option value="24h">24-Hour</option>
             </select>
           </div>
-
-          <div class="setting-row">
-            <div>
-              <div class="setting-row-title">Enter Key Behavior</div>
-              <div class="setting-row-desc">Press Enter to send messages immediately</div>
-            </div>
-            <span style="color:var(--green); font-weight:700; font-size:13px;">Active</span>
-          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- EXPANDED ADMIN PANEL (With Text Limit & Spam Limit Controls) -->
+  <!-- UPGRADED ADMIN PANEL -->
   <div class="modal-overlay" id="admin-modal">
-    <div class="modal" style="width:500px;">
+    <div class="modal" style="width:540px;">
       <div class="modal-header">
-        <span class="modal-title">Admin Panel 👑</span>
+        <span class="modal-title">Admin Control Center 👑</span>
         <button class="icon-btn" onclick="closeModal('admin-modal')">✕</button>
       </div>
 
-      <!-- Global Chat Limits (Text Limit & Spam Limit) -->
-      <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:16px; border:1px solid var(--divider);">
-        <div class="section-label" style="padding:0 0 10px 0; color:var(--text-header);">Global Chat Limits & Anti-Spam</div>
+      <!-- Global Broadcast Announcement -->
+      <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:14px; border:1px solid var(--divider);">
+        <div class="section-label" style="padding:0 0 8px 0; color:var(--text-header);">📢 Global Server Announcement Banner</div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="modal-input" id="admin-announcement-input" placeholder="Broadcast message to all users..." style="margin:0;" />
+          <button class="btn btn-primary" id="post-announcement-btn">Post</button>
+          <button class="btn btn-secondary" id="clear-announcement-btn">Clear</button>
+        </div>
+      </div>
+
+      <!-- Global Chat Limits -->
+      <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:14px; border:1px solid var(--divider);">
+        <div class="section-label" style="padding:0 0 10px 0; color:var(--text-header);">⏱️ Global Chat & Anti-Spam Limits</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:10px;">
           <div>
             <label class="auth-label">Max Text Length (Chars)</label>
@@ -589,35 +667,45 @@
         </div>
         <button class="btn btn-success" id="save-limits-btn" style="width:100%;">Apply Limits Globally</button>
       </div>
-      
+
+      <!-- Manage Servers -->
       <div style="margin-bottom: 14px;">
-        <div class="section-label" style="padding:0 0 6px 0;">Create Custom Server</div>
-        <div style="display:flex; gap:8px;">
-          <input type="text" class="modal-input" id="new-server-name" placeholder="Server Name (e.g. Music Club)" style="margin:0;" />
+        <div class="section-label" style="padding:0 0 6px 0;">Servers Management</div>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <input type="text" class="modal-input" id="new-server-name" placeholder="New Server Name (e.g. Music Club)" style="margin:0;" />
           <button class="btn btn-primary" id="create-server-submit">Create</button>
         </div>
+        <div id="admin-server-list" style="max-height: 100px; overflow-y: auto;"></div>
       </div>
 
+      <!-- Manage Text Channels -->
       <div style="margin-bottom: 14px;">
-        <div class="section-label" style="padding:0 0 6px 0;">Manage Servers</div>
-        <div id="admin-server-list" style="max-height: 110px; overflow-y: auto;"></div>
-      </div>
-
-      <div style="margin-bottom: 14px;">
-        <div class="section-label" style="padding:0 0 6px 0;">Create Channel in Current Server</div>
-        <div style="display:flex; gap:8px;">
+        <div class="section-label" style="padding:0 0 6px 0;">Text Channels (Current Server)</div>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
           <input type="text" class="modal-input" id="new-channel-input" placeholder="e.g. announcements" style="margin:0;" />
           <button class="btn btn-primary" id="create-channel-submit">Create</button>
         </div>
+        <div id="admin-channel-list" style="max-height: 100px; overflow-y: auto;"></div>
       </div>
-      
+
+      <!-- Manage Voice Channels (Server-Only) -->
       <div style="margin-bottom: 14px;">
-        <div class="section-label" style="padding:0 0 6px 0;">Manage Channels</div>
-        <div id="admin-channel-list" style="max-height: 110px; overflow-y: auto;"></div>
+        <div class="section-label" style="padding:0 0 6px 0;">🔊 Voice Channels (Current Server)</div>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <input type="text" class="modal-input" id="new-voice-channel-input" placeholder="e.g. Squad Lounge" style="margin:0;" />
+          <button class="btn btn-primary" id="create-voice-channel-submit">Create</button>
+        </div>
+        <div id="admin-voice-channel-list" style="max-height: 100px; overflow-y: auto;"></div>
+      </div>
+
+      <!-- Active User Moderation -->
+      <div style="margin-bottom: 14px;">
+        <div class="section-label" style="padding:0 0 6px 0;">🛡️ Online Users Moderation</div>
+        <div id="admin-users-list" style="max-height: 110px; overflow-y: auto;"></div>
       </div>
 
       <div style="border-top: 1px solid var(--divider); padding-top: 12px; display:flex; justify-content:space-between; align-items:center;">
-        <span style="color:var(--text-muted); font-size:13px;">Wipe all messages in current channel:</span>
+        <span style="color:var(--text-muted); font-size:13px;">Wipe all messages in current text channel:</span>
         <button class="btn btn-danger" id="wipe-chat-btn">Wipe Chat</button>
       </div>
     </div>
@@ -725,10 +813,10 @@
     let isAdmin = false;
     let currentStatus = 'online';
 
-    // Global Limits State (Controlled via Admin Panel)
     let globalTextLimit = 500;
-    let globalSpamLimit = 1; // seconds
+    let globalSpamLimit = 1;
     let lastMessageSentTime = 0;
+    let replyingTo = null;
 
     function loginUser(name, id, color, bio) {
       username = name;
@@ -747,7 +835,57 @@
       document.getElementById('settings-bio-input').value = userBio;
       document.getElementById('settings-color-input').value = userColor;
 
-      // Sync Global Limits (Text Limit & Spam Limit)
+      // Sync Global Announcement Banner
+      db.ref('config/announcement').on('value', (snap) => {
+        const text = snap.val();
+        const bar = document.getElementById('global-announcement-bar');
+        if (text && text.trim()) {
+          document.getElementById('global-announcement-text').textContent = '📢 ' + text;
+          bar.classList.add('active');
+        } else {
+          bar.classList.remove('active');
+        }
+      });
+
+      document.getElementById('dismiss-announcement-btn').onclick = () => {
+        document.getElementById('global-announcement-bar').classList.remove('active');
+      };
+
+      document.getElementById('post-announcement-btn').onclick = () => {
+        if (!isAdmin) return;
+        const msg = document.getElementById('admin-announcement-input').value.trim();
+        if (!msg) return;
+        db.ref('config/announcement').set(msg);
+        document.getElementById('admin-announcement-input').value = '';
+        showToast("Announcement broadcasted!", "success");
+      };
+
+      document.getElementById('clear-announcement-btn').onclick = () => {
+        if (!isAdmin) return;
+        db.ref('config/announcement').remove();
+        showToast("Announcement cleared.");
+      };
+
+      // Listen for Admin Kick or Promotion actions targeting this user
+      db.ref('mod_actions/' + userId).on('value', (snap) => {
+        const act = snap.val();
+        if (!act) return;
+        if (act.type === 'kick') {
+          db.ref('mod_actions/' + userId).remove();
+          myPresenceRef.remove();
+          alert("You were kicked by an Administrator.");
+          location.reload();
+        } else if (act.type === 'promote') {
+          db.ref('mod_actions/' + userId).remove();
+          isAdmin = true;
+          document.getElementById('role-label').textContent = 'Admin 👑';
+          document.getElementById('open-admin-quick-btn').style.display = 'flex';
+          updatePresence();
+          showToast("An Admin granted you Admin privileges! 👑", "success");
+        }
+      });
+
+      // Sync Global Limits
       db.ref('config/limits').on('value', (snap) => {
         const cfg = snap.val() || { textLimit: 500, spamLimit: 1 };
         globalTextLimit = parseInt(cfg.textLimit) || 500;
@@ -772,7 +910,7 @@
         const tLim = Math.max(20, Math.min(5000, parseInt(document.getElementById('admin-text-limit').value) || 500));
         const sLim = Math.max(0, Math.min(120, parseFloat(document.getElementById('admin-spam-limit').value) || 0));
         db.ref('config/limits').set({ textLimit: tLim, spamLimit: sLim });
-        showToast(`Limits updated: ${tLim} chars max, ${sLim}s spam cooldown`, 'success');
+        showToast(`Limits updated: ${tLim} chars, ${sLim}s cooldown`, 'success');
       };
 
       // Settings Tabs & Persistence
@@ -930,10 +1068,7 @@
         updatePresence();
       };
 
-      // ==========================================
-      // FIXED MEMBER LIST & PRESENCE ("Not Showing People" Glitch Fix)
-      // Uses .info/connected + heartbeat + merges registered accounts with live presence
-      // ==========================================
+      // Presence & Member List
       const myPresenceRef = db.ref('online/' + userId);
       function updatePresence() {
         myPresenceRef.set({
@@ -949,15 +1084,10 @@
       }
 
       db.ref('.info/connected').on('value', (snap) => {
-        if (snap.val() === true) {
-          updatePresence();
-        }
+        if (snap.val() === true) updatePresence();
       });
 
-      // Keep heartbeat fresh every 25s so browser tab sleep never drops presence silently
-      setInterval(() => {
-        if (username) updatePresence();
-      }, 25000);
+      setInterval(() => { if (username) updatePresence(); }, 25000);
 
       let onlineUsersMap = {};
       let allAccountsMap = {};
@@ -966,7 +1096,6 @@
         const memberListEl = document.getElementById('member-list');
         memberListEl.innerHTML = '';
 
-        // Merge live presence with registered accounts so everyone is visible & never blank
         const combined = {};
         Object.values(allAccountsMap).forEach(acc => {
           if (!acc || !acc.username) return;
@@ -990,7 +1119,6 @@
           };
         });
 
-        // Always ensure current user is present in the list immediately
         if (username) {
           combined[username.toLowerCase()] = {
             name: username,
@@ -1042,6 +1170,7 @@
       db.ref('online').on('value', (snap) => {
         onlineUsersMap = snap.val() || {};
         renderMemberSidebar();
+        if (document.getElementById('admin-modal').classList.contains('open')) renderAdminPanelLists();
       });
 
       db.ref('accounts').on('value', (snap) => {
@@ -1049,34 +1178,40 @@
         renderMemberSidebar();
       });
 
-      // Toggle Members Sidebar QOL
       document.getElementById('toggle-members-btn').onclick = () => {
-        const sidebar = document.getElementById('members-sidebar');
-        const btn = document.getElementById('toggle-members-btn');
-        sidebar.classList.toggle('hidden');
-        btn.classList.toggle('active');
+        document.getElementById('members-sidebar').classList.toggle('hidden');
+        document.getElementById('toggle-members-btn').classList.toggle('active');
       };
 
       // App Navigation State
       let activeServer = 'gaming';
       let activeChannel = 'general';
       let currentChannelsList = [];
+      let currentVoiceChannelsList = [];
       let isPrivateMode = false;
       let isFriendsMode = false;
       let activePrivateRoom = null;
       let activeDmUser = null;
-      let isVideoCallActive = false;
+
+      // Dedicated Server Voice State
+      let connectedVoiceServer = null;
+      let connectedVoiceChannel = null;
       let localStream = null;
+      let isScreenSharing = false;
+      let activeVoicePeersRef = null;
+      let activeVoicePeersCb = null;
 
       let activeChannelRef = null, activeChannelCb = null;
+      let activeVoiceListRef = null, activeVoiceListCb = null;
       let activeMsgRef = null, activeMsgCb = null;
       let activeTypingRef = null, activeTypingCb = null;
 
       const messagesEl = document.getElementById('messages');
       const channelListEl = document.getElementById('channel-list');
+      const voiceChannelListEl = document.getElementById('voice-channel-list');
       const chatInputEl = document.getElementById('chat-input');
 
-      // Character Counter QOL
+      // Character Counter
       function updateCharCounter() {
         const len = chatInputEl.value.length;
         const counter = document.getElementById('char-counter');
@@ -1086,9 +1221,10 @@
         else if (len >= Math.floor(globalTextLimit * 0.8)) counter.classList.add('warn');
       }
 
-      // Emoji Picker Popover
+      // Emoji Picker
       const emojis = ['😀','😂','🔥','❤️','👍','💀','🎮','💯','🚀','👀','🎉','😭','😎','🤝','⚡','👑','✨','🤔'];
       const emojiPopover = document.getElementById('emoji-popover');
+      const emojiGrid = document.getElementById('emoji-grid');
       emojis.forEach(em => {
         const cell = document.createElement('div');
         cell.className = 'emoji-cell';
@@ -1099,109 +1235,280 @@
           emojiPopover.classList.remove('open');
           chatInputEl.focus();
         };
-        emojiPopover.appendChild(cell);
+        emojiGrid.appendChild(cell);
       });
 
       document.getElementById('emoji-btn').onclick = (e) => {
         e.stopPropagation();
+        gifPopover.classList.remove('open');
         emojiPopover.classList.toggle('open');
       };
-      document.addEventListener('click', (e) => {
-        if (!emojiPopover.contains(e.target) && e.target.id !== 'emoji-btn') {
-          emojiPopover.classList.remove('open');
-        }
-      });
 
-      // Video Call Logic
-      function getVideoRoomKey() {
-        if (isFriendsMode && activeDmUser) return 'call_dm_' + [username, activeDmUser].sort().join('_');
-        if (isPrivateMode && activePrivateRoom) return 'call_room_' + activePrivateRoom.key;
-        return 'call_srv_' + activeServer + '_' + activeChannel;
-      }
-
-      document.getElementById('toggle-video-call-btn').onclick = async () => {
-        isVideoCallActive = !isVideoCallActive;
-        const vContainer = document.getElementById('video-container');
-        const vGrid = document.getElementById('video-grid');
-
-        if (isVideoCallActive) {
-          try {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            vContainer.style.display = 'flex';
-            messagesEl.style.display = 'none';
-            document.getElementById('chat-input-wrapper').style.display = 'none';
-            document.querySelector('.typing-bar').style.display = 'none';
-
-            db.ref(getVideoRoomKey() + '/' + userId).set({ name: username, color: userColor });
-            db.ref(getVideoRoomKey() + '/' + userId).onDisconnect().remove();
-
-            db.ref(getVideoRoomKey()).on('value', (snap) => {
-              vGrid.innerHTML = '';
-              const peers = snap.val() || {};
-              Object.keys(peers).forEach(id => {
-                const p = peers[id];
-                const tile = document.createElement('div');
-                tile.className = 'video-tile';
-                const vid = document.createElement('video');
-                vid.autoplay = true;
-                vid.playsInline = true;
-                if (id === userId) vid.muted = true;
-                vid.srcObject = localStream;
-                tile.appendChild(vid);
-                const nameTag = document.createElement('div');
-                nameTag.className = 'video-name';
-                nameTag.textContent = p.name;
-                tile.appendChild(nameTag);
-                vGrid.appendChild(tile);
-              });
-            });
-          } catch (err) {
-            showToast("Camera/mic permission denied.", "error");
-            isVideoCallActive = false;
-          }
-        } else {
-          leaveVideoCall();
-        }
+      // GIF Picker (Categorized + Custom URL)
+      const gifCatalog = {
+        hype: [
+          'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif',
+          'https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif',
+          'https://media.giphy.com/media/artj92V8o75VPL7AeQ/giphy.gif',
+          'https://media.giphy.com/media/111ebonMs90YLu/giphy.gif'
+        ],
+        funny: [
+          'https://media.giphy.com/media/10JhviFuU2gWD6/giphy.gif',
+          'https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif',
+          'https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif',
+          'https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif'
+        ],
+        gaming: [
+          'https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif',
+          'https://media.giphy.com/media/l46Cy1rHbQ92uuLXa/giphy.gif',
+          'https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif',
+          'https://media.giphy.com/media/3ohzdIuqJoo8QdKlnW/giphy.gif'
+        ],
+        reactions: [
+          'https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif',
+          'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif',
+          'https://media.giphy.com/media/l0HlvtIPzPdt2usKs/giphy.gif',
+          'https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif'
+        ]
       };
 
-      function leaveVideoCall() {
+      const gifPopover = document.getElementById('gif-popover');
+      const gifGrid = document.getElementById('gif-grid');
+
+      function sendGifMessage(url) {
+        const path = getChatPath();
+        if (!path) return showToast("Select a text channel or friend first!", "error");
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
+        db.ref(path).push({
+          author: username,
+          color: userColor,
+          isAdmin: isAdmin,
+          time: timeStr,
+          text: `[Attachment]: ${url}`
+        });
+        gifPopover.classList.remove('open');
+      }
+
+      function renderGifCategory(cat) {
+        gifGrid.innerHTML = '';
+        (gifCatalog[cat] || []).forEach(url => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.className = 'gif-item';
+          img.loading = 'lazy';
+          img.onclick = () => sendGifMessage(url);
+          gifGrid.appendChild(img);
+        });
+      }
+
+      document.querySelectorAll('.gif-tab').forEach(tab => {
+        tab.onclick = (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('.gif-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          renderGifCategory(tab.dataset.cat);
+        };
+      });
+      renderGifCategory('hype');
+
+      document.getElementById('gif-btn').onclick = (e) => {
+        e.stopPropagation();
+        emojiPopover.classList.remove('open');
+        gifPopover.classList.toggle('open');
+      };
+
+      document.getElementById('send-custom-gif-btn').onclick = () => {
+        const url = document.getElementById('custom-gif-url').value.trim();
+        if (!url) return;
+        sendGifMessage(url);
+        document.getElementById('custom-gif-url').value = '';
+      };
+
+      document.addEventListener('click', (e) => {
+        if (!emojiPopover.contains(e.target) && e.target.id !== 'emoji-btn') emojiPopover.classList.remove('open');
+        if (!gifPopover.contains(e.target) && e.target.id !== 'gif-btn') gifPopover.classList.remove('open');
+      });
+
+      // ==========================================
+      // DEDICATED SERVER VOICE CHANNELS
+      // ==========================================
+      async function joinServerVoiceChannel(serverId, vcName) {
+        // If already connected to this exact voice channel, just show the voice stage
+        if (connectedVoiceServer === serverId && connectedVoiceChannel === vcName) {
+          showVoiceStage(true);
+          return;
+        }
+
+        // Leave previous voice channel if connected elsewhere
+        if (connectedVoiceServer && connectedVoiceChannel) {
+          await disconnectServerVoice(false);
+        }
+
+        try {
+          localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          // Default camera off on voice channel join (like Discord), mic on
+          const videoTrack = localStream.getVideoTracks()[0];
+          if (videoTrack) videoTrack.enabled = false;
+          document.getElementById('toggle-cam-btn').classList.add('muted');
+          document.getElementById('mute-mic-btn').classList.remove('muted');
+          document.getElementById('share-screen-btn').classList.remove('active-share');
+          isScreenSharing = false;
+        } catch (err) {
+          showToast("Mic/camera unavailable — joined in listen-only mode.", "info");
+          localStream = null;
+        }
+
+        connectedVoiceServer = serverId;
+        connectedVoiceChannel = vcName;
+
+        const vcUserRef = db.ref(`voice_presence/${serverId}/${vcName}/${userId}`);
+        vcUserRef.set({ name: username, color: userColor });
+        vcUserRef.onDisconnect().remove();
+
+        document.getElementById('voice-status-bar').classList.add('connected');
+        document.getElementById('voice-connected-label').textContent = `${vcName} (${serverId})`;
+        document.getElementById('voice-stage-title').textContent = `🔊 ${vcName}`;
+        showVoiceStage(true);
+
+        if (activeVoicePeersRef && activeVoicePeersCb) activeVoicePeersRef.off('value', activeVoicePeersCb);
+        activeVoicePeersRef = db.ref(`voice_presence/${serverId}/${vcName}`);
+        activeVoicePeersCb = (snap) => {
+          const vGrid = document.getElementById('video-grid');
+          vGrid.innerHTML = '';
+          const peers = snap.val() || {};
+          Object.keys(peers).forEach(id => {
+            const p = peers[id];
+            const tile = document.createElement('div');
+            tile.className = 'video-tile speaking';
+
+            const fallback = document.createElement('div');
+            fallback.className = 'video-avatar-fallback';
+            fallback.style.backgroundColor = p.color || '#5865f2';
+            fallback.textContent = p.name[0].toUpperCase();
+            tile.appendChild(fallback);
+
+            if (localStream && (id === userId || localStream.getVideoTracks().some(t => t.enabled))) {
+              const vid = document.createElement('video');
+              vid.autoplay = true;
+              vid.playsInline = true;
+              if (id === userId) vid.muted = true;
+              vid.srcObject = localStream;
+              const vTrack = localStream.getVideoTracks()[0];
+              vid.style.display = (vTrack && vTrack.enabled) ? 'block' : 'none';
+              tile.appendChild(vid);
+            }
+
+            const nameTag = document.createElement('div');
+            nameTag.className = 'video-name';
+            nameTag.textContent = p.name;
+            tile.appendChild(nameTag);
+            vGrid.appendChild(tile);
+          });
+        };
+        activeVoicePeersRef.on('value', activeVoicePeersCb);
+      }
+
+      async function disconnectServerVoice(hideStage = true) {
         if (localStream) {
           localStream.getTracks().forEach(track => track.stop());
           localStream = null;
         }
-        db.ref(getVideoRoomKey() + '/' + userId).remove();
-        db.ref(getVideoRoomKey()).off();
-        isVideoCallActive = false;
-        document.getElementById('video-container').style.display = 'none';
-        messagesEl.style.display = 'flex';
-        document.getElementById('chat-input-wrapper').style.display = 'flex';
-        document.querySelector('.typing-bar').style.display = 'flex';
+        isScreenSharing = false;
+        if (connectedVoiceServer && connectedVoiceChannel) {
+          await db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}`).remove();
+        }
+        if (activeVoicePeersRef && activeVoicePeersCb) {
+          activeVoicePeersRef.off('value', activeVoicePeersCb);
+        }
+        connectedVoiceServer = null;
+        connectedVoiceChannel = null;
+        document.getElementById('voice-status-bar').classList.remove('connected');
+        if (hideStage) showVoiceStage(false);
       }
 
+      function showVoiceStage(show) {
+        const stage = document.getElementById('voice-stage');
+        if (show) {
+          stage.classList.add('active');
+          messagesEl.style.display = 'none';
+          document.getElementById('chat-input-wrapper').style.display = 'none';
+          document.querySelector('.typing-bar').style.display = 'none';
+        } else {
+          stage.classList.remove('active');
+          messagesEl.style.display = 'flex';
+          document.getElementById('chat-input-wrapper').style.display = 'flex';
+          document.querySelector('.typing-bar').style.display = 'flex';
+        }
+      }
+
+      document.getElementById('back-to-text-btn').onclick = () => showVoiceStage(false);
+      document.getElementById('leave-call-btn').onclick = () => disconnectServerVoice(true);
+      document.getElementById('disconnect-voice-sidebar-btn').onclick = () => disconnectServerVoice(true);
+
       document.getElementById('mute-mic-btn').onclick = () => {
-        if (localStream) {
-          const t = localStream.getAudioTracks()[0];
-          if (t) { t.enabled = !t.enabled; document.getElementById('mute-mic-btn').style.background = t.enabled ? '#2b2d31' : '#da373c'; }
+        if (!localStream) return showToast("No microphone active.", "error");
+        const t = localStream.getAudioTracks()[0];
+        if (t) {
+          t.enabled = !t.enabled;
+          document.getElementById('mute-mic-btn').classList.toggle('muted', !t.enabled);
+          showToast(t.enabled ? "Microphone Unmuted" : "Microphone Muted");
         }
       };
 
       document.getElementById('toggle-cam-btn').onclick = () => {
-        if (localStream) {
-          const t = localStream.getVideoTracks()[0];
-          if (t) { t.enabled = !t.enabled; document.getElementById('toggle-cam-btn').style.background = t.enabled ? '#2b2d31' : '#da373c'; }
+        if (!localStream) return showToast("No camera active.", "error");
+        const t = localStream.getVideoTracks()[0];
+        if (t) {
+          t.enabled = !t.enabled;
+          document.getElementById('toggle-cam-btn').classList.toggle('muted', !t.enabled);
+          document.querySelectorAll('#video-grid video').forEach(v => v.style.display = t.enabled ? 'block' : 'none');
         }
       };
 
-      document.getElementById('leave-call-btn').onclick = leaveVideoCall;
+      document.getElementById('share-screen-btn').onclick = async () => {
+        if (!connectedVoiceServer) return;
+        try {
+          if (!isScreenSharing) {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            const screenTrack = screenStream.getVideoTracks()[0];
+            if (localStream) {
+              const oldVideo = localStream.getVideoTracks()[0];
+              if (oldVideo) { oldVideo.stop(); localStream.removeTrack(oldVideo); }
+              localStream.addTrack(screenTrack);
+            } else {
+              localStream = screenStream;
+            }
+            isScreenSharing = true;
+            document.getElementById('share-screen-btn').classList.add('active-share');
+            document.getElementById('toggle-cam-btn').classList.remove('muted');
+            document.querySelectorAll('#video-grid video').forEach(v => { v.srcObject = localStream; v.style.display = 'block'; });
+            screenTrack.onended = () => {
+              isScreenSharing = false;
+              document.getElementById('share-screen-btn').classList.remove('active-share');
+              document.querySelectorAll('#video-grid video').forEach(v => v.style.display = 'none');
+            };
+          } else {
+            const vTrack = localStream && localStream.getVideoTracks()[0];
+            if (vTrack) vTrack.stop();
+            isScreenSharing = false;
+            document.getElementById('share-screen-btn').classList.remove('active-share');
+            document.querySelectorAll('#video-grid video').forEach(v => v.style.display = 'none');
+          }
+        } catch (e) {
+          showToast("Screen share cancelled.", "info");
+        }
+      };
 
-      // Dynamic Server Rail (Discord Pill Style)
+      // ==========================================
+      // SERVER RAIL & CHANNELS
+      // ==========================================
       function loadServersList() {
         db.ref('servers').on('value', (snap) => {
           const servers = snap.val() || { gaming: { title: 'Gaming Hub' }, dev: { title: 'Dev Squad' } };
           const container = document.getElementById('server-list-container');
           container.innerHTML = '';
 
-          // Friends / Direct Messages Home Icon at top (Discord style)
+          // Friends / Direct Messages Home Icon
           const dmWrap = document.createElement('div');
           dmWrap.className = 'server-wrapper ' + (isFriendsMode ? 'active' : '');
           dmWrap.innerHTML = `
@@ -1230,10 +1537,11 @@
               <div class="server-icon" title="${escapeHTML(title)}">${escapeHTML(initials)}</div>
             `;
             wrap.onclick = () => {
-              if (isVideoCallActive) leaveVideoCall();
+              showVoiceStage(false);
               isPrivateMode = false; isFriendsMode = false;
               document.getElementById('private-badge').style.display = 'none';
               document.getElementById('sidebar-label').innerHTML = '<span>Text Channels</span>';
+              document.getElementById('voice-channels-section').style.display = 'block';
               document.getElementById('header-symbol').textContent = '#';
               activeServer = sId;
               document.getElementById('server-name').textContent = title;
@@ -1273,8 +1581,15 @@
         });
       }
 
+      const unreadChannels = {};
+
       function loadChannels() {
         if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
+        if (activeVoiceListRef && activeVoiceListCb) activeVoiceListRef.off('value', activeVoiceListCb);
+
+        document.getElementById('voice-channels-section').style.display = 'block';
+
+        // 1. Text Channels
         activeChannelRef = db.ref('servers/' + activeServer + '/channels');
         activeChannelCb = (snapshot) => {
           if (isPrivateMode || isFriendsMode) return;
@@ -1285,10 +1600,16 @@
 
           channelListEl.innerHTML = '';
           currentChannelsList.forEach(ch => {
+            const isUnread = unreadChannels[`${activeServer}_${ch}`] && ch !== activeChannel;
             const div = document.createElement('div');
-            div.className = 'channel-item ' + (ch === activeChannel ? 'active' : '');
-            div.innerHTML = `<span class="channel-hash">#</span><span>${escapeHTML(ch)}</span>`;
-            div.onclick = () => { if (isVideoCallActive) leaveVideoCall(); activeChannel = ch; loadChannels(); };
+            div.className = 'channel-item ' + (ch === activeChannel ? 'active' : '') + (isUnread ? ' unread' : '');
+            div.innerHTML = `<div class="channel-left"><span class="channel-hash">#</span><span>${escapeHTML(ch)}</span></div>`;
+            div.onclick = () => {
+              showVoiceStage(false);
+              unreadChannels[`${activeServer}_${ch}`] = false;
+              activeChannel = ch;
+              loadChannels();
+            };
             channelListEl.appendChild(div);
           });
           document.getElementById('channel-name').textContent = activeChannel;
@@ -1297,12 +1618,70 @@
           loadMessages();
         };
         activeChannelRef.on('value', activeChannelCb);
+
+        // 2. Server-Only Voice Channels
+        activeVoiceListRef = db.ref('servers/' + activeServer + '/voice_channels');
+        activeVoiceListCb = (snapshot) => {
+          if (isPrivateMode || isFriendsMode) return;
+          let vData = snapshot.val();
+          if (!vData) {
+            vData = { 'General Voice': true };
+            db.ref('servers/' + activeServer + '/voice_channels/General Voice').set(true);
+          }
+          currentVoiceChannelsList = Object.keys(vData);
+
+          db.ref('voice_presence/' + activeServer).once('value', (pSnap) => {
+            const presenceData = pSnap.val() || {};
+            voiceChannelListEl.innerHTML = '';
+
+            currentVoiceChannelsList.forEach(vcName => {
+              const connectedUsers = presenceData[vcName] ? Object.values(presenceData[vcName]) : [];
+              const isJoinedHere = (connectedVoiceServer === activeServer && connectedVoiceChannel === vcName);
+
+              const item = document.createElement('div');
+              item.className = 'channel-item ' + (isJoinedHere ? 'active' : '');
+              item.innerHTML = `
+                <div class="channel-left">
+                  <svg class="svg-icon" style="width:18px; height:18px; color:var(--text-muted);" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                  <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(vcName)}</span>
+                </div>
+                ${connectedUsers.length > 0 ? `<span class="voice-live-badge">${connectedUsers.length}</span>` : ''}
+              `;
+              item.onclick = () => joinServerVoiceChannel(activeServer, vcName);
+              voiceChannelListEl.appendChild(item);
+
+              if (connectedUsers.length > 0) {
+                const subList = document.createElement('div');
+                subList.className = 'voice-users-sublist';
+                connectedUsers.forEach(u => {
+                  const uRow = document.createElement('div');
+                  uRow.className = 'voice-sub-user';
+                  uRow.innerHTML = `
+                    <div class="avatar" style="background:${u.color}; width:18px; height:18px; font-size:10px;">${u.name[0].toUpperCase()}</div>
+                    <span>${escapeHTML(u.name)}</span>
+                  `;
+                  subList.appendChild(uRow);
+                });
+                voiceChannelListEl.appendChild(subList);
+              }
+            });
+          });
+        };
+        activeVoiceListRef.on('value', activeVoiceListCb);
+
+        // Live refresh voice presence badges in sidebar
+        db.ref('voice_presence/' + activeServer).on('value', () => {
+          if (!isPrivateMode && !isFriendsMode && activeVoiceListRef) {
+            activeVoiceListRef.once('value', activeVoiceListCb);
+          }
+        });
       }
 
-      // Friends & Direct Messages
+      // Friends & Direct Messages (No Voice Channels here)
       function openFriendsTab(preselectFriend = null) {
-        if (isVideoCallActive) leaveVideoCall();
+        showVoiceStage(false);
         isFriendsMode = true; isPrivateMode = false;
+        document.getElementById('voice-channels-section').style.display = 'none';
         loadServersList();
         document.getElementById('server-name').textContent = "Direct Messages";
         document.getElementById('sidebar-label').innerHTML = '<span>Direct Messages</span>';
@@ -1314,8 +1693,8 @@
         db.ref('friends/' + userId).on('value', (snap) => {
           if (!isFriendsMode) return;
           channelListEl.innerHTML = `
-            <div class="channel-item ${!activeDmUser ? 'active' : ''}" id="friends-home-item">👋 Friends</div>
-            <div class="channel-item" id="add-friend-btn" style="color:var(--green);">+ Add Friend</div>
+            <div class="channel-item ${!activeDmUser ? 'active' : ''}" id="friends-home-item"><div class="channel-left"><span>👋 Friends</span></div></div>
+            <div class="channel-item" id="add-friend-btn" style="color:var(--green);"><div class="channel-left"><span>+ Add Friend</span></div></div>
             <div class="divider" style="width:100%; margin:6px 0;"></div>
           `;
 
@@ -1343,9 +1722,9 @@
           friends.forEach(fName => {
             const item = document.createElement('div');
             item.className = 'channel-item ' + (activeDmUser === fName ? 'active' : '');
-            item.innerHTML = `<span style="font-weight:700;">@</span><span>${escapeHTML(fName)}</span>`;
+            item.innerHTML = `<div class="channel-left"><span style="font-weight:700;">@</span><span>${escapeHTML(fName)}</span></div>`;
             item.onclick = () => {
-              if (isVideoCallActive) leaveVideoCall();
+              showVoiceStage(false);
               activeDmUser = fName;
               document.getElementById('channel-name').textContent = fName;
               chatInputEl.placeholder = "Message @" + fName;
@@ -1374,7 +1753,7 @@
         });
       }
 
-      // Room creation & browsing
+      // Private Room creation & browsing (No Voice Channels here)
       document.getElementById('confirm-create-room').onclick = () => {
         const name = document.getElementById('new-room-name').value.trim();
         const pass = document.getElementById('new-room-pass').value.trim();
@@ -1423,22 +1802,26 @@
       }
 
       function enterPrivateRoom(roomObj) {
-        if (isVideoCallActive) leaveVideoCall();
+        showVoiceStage(false);
         isPrivateMode = true; isFriendsMode = false; activePrivateRoom = roomObj;
+        document.getElementById('voice-channels-section').style.display = 'none';
         if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
         loadServersList();
         document.getElementById('server-name').textContent = "Private Rooms";
         document.getElementById('sidebar-label').innerHTML = '<span>Active Room</span>';
         document.getElementById('private-badge').style.display = 'inline-block';
         document.getElementById('header-symbol').textContent = '#';
-        channelListEl.innerHTML = `<div class="channel-item active"><span>🔒</span><span>${escapeHTML(roomObj.name)}</span></div>`;
+        channelListEl.innerHTML = `<div class="channel-item active"><div class="channel-left"><span>🔒</span><span>${escapeHTML(roomObj.name)}</span></div></div>`;
         document.getElementById('channel-name').textContent = roomObj.name;
         chatInputEl.placeholder = "Message private room #" + roomObj.name;
         loadMessages();
       }
 
-      // Admin Panel Lists
+      // ==========================================
+      // UPGRADED ADMIN PANEL LOGIC
+      // ==========================================
       function renderAdminPanelLists() {
+        // Servers
         db.ref('servers').once('value', (snap) => {
           const sListEl = document.getElementById('admin-server-list');
           if (!sListEl) return;
@@ -1461,23 +1844,88 @@
           });
         });
 
+        // Text Channels
         const cListEl = document.getElementById('admin-channel-list');
-        if (!cListEl) return;
-        cListEl.innerHTML = '';
-        currentChannelsList.forEach(ch => {
-          const row = document.createElement('div');
-          row.className = 'admin-ch-row';
-          row.innerHTML = `<span># ${escapeHTML(ch)}</span>`;
-          const delBtn = document.createElement('button');
-          delBtn.className = 'btn btn-danger'; delBtn.style.padding = '4px 10px'; delBtn.textContent = 'Delete';
-          delBtn.onclick = () => {
-            if (currentChannelsList.length <= 1) return showToast("Must keep at least 1 channel!", "error");
-            db.ref('servers/' + activeServer + '/channels/' + ch).remove();
-            db.ref('messages/' + activeServer + '/' + ch).remove();
-          };
-          row.appendChild(delBtn);
-          cListEl.appendChild(row);
-        });
+        if (cListEl) {
+          cListEl.innerHTML = '';
+          currentChannelsList.forEach(ch => {
+            const row = document.createElement('div');
+            row.className = 'admin-ch-row';
+            row.innerHTML = `<span># ${escapeHTML(ch)}</span>`;
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-danger'; delBtn.style.padding = '4px 10px'; delBtn.textContent = 'Delete';
+            delBtn.onclick = () => {
+              if (currentChannelsList.length <= 1) return showToast("Must keep at least 1 channel!", "error");
+              db.ref('servers/' + activeServer + '/channels/' + ch).remove();
+              db.ref('messages/' + activeServer + '/' + ch).remove();
+            };
+            row.appendChild(delBtn);
+            cListEl.appendChild(row);
+          });
+        }
+
+        // Voice Channels
+        const vcListEl = document.getElementById('admin-voice-channel-list');
+        if (vcListEl) {
+          vcListEl.innerHTML = '';
+          currentVoiceChannelsList.forEach(vc => {
+            const row = document.createElement('div');
+            row.className = 'admin-ch-row';
+            row.innerHTML = `<span>🔊 ${escapeHTML(vc)}</span>`;
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-danger'; delBtn.style.padding = '4px 10px'; delBtn.textContent = 'Delete';
+            delBtn.onclick = () => {
+              if (currentVoiceChannelsList.length <= 1) return showToast("Must keep at least 1 voice channel!", "error");
+              db.ref('servers/' + activeServer + '/voice_channels/' + vc).remove();
+              db.ref('voice_presence/' + activeServer + '/' + vc).remove();
+            };
+            row.appendChild(delBtn);
+            vcListEl.appendChild(row);
+          });
+        }
+
+        // Online Users Moderation
+        const uListEl = document.getElementById('admin-users-list');
+        if (uListEl) {
+          uListEl.innerHTML = '';
+          Object.values(onlineUsersMap).forEach(u => {
+            if (!u || !u.name) return;
+            const row = document.createElement('div');
+            row.className = 'admin-ch-row';
+            row.innerHTML = `<span style="font-weight:600;">${escapeHTML(u.name)} ${u.isAdmin ? '👑' : ''}</span>`;
+            const btnGroup = document.createElement('div');
+            btnGroup.style.display = 'flex';
+            btnGroup.style.gap = '6px';
+
+            if (u.userId && u.userId !== userId) {
+              if (!u.isAdmin) {
+                const promBtn = document.createElement('button');
+                promBtn.className = 'btn btn-primary';
+                promBtn.style.padding = '3px 8px'; promBtn.style.fontSize = '12px';
+                promBtn.textContent = 'Make Admin';
+                promBtn.onclick = () => {
+                  db.ref('mod_actions/' + u.userId).set({ type: 'promote' });
+                  showToast(`Promoted ${u.name} to Admin!`, "success");
+                };
+                btnGroup.appendChild(promBtn);
+              }
+              const kickBtn = document.createElement('button');
+              kickBtn.className = 'btn btn-danger';
+              kickBtn.style.padding = '3px 8px'; kickBtn.style.fontSize = '12px';
+              kickBtn.textContent = 'Kick';
+              kickBtn.onclick = () => {
+                db.ref('mod_actions/' + u.userId).set({ type: 'kick' });
+                db.ref('online/' + u.userId).remove();
+                showToast(`Kicked ${u.name}`, "info");
+              };
+              btnGroup.appendChild(kickBtn);
+            } else {
+              btnGroup.innerHTML = '<span style="font-size:11px; color:var(--text-muted);">You</span>';
+            }
+            row.appendChild(btnGroup);
+            uListEl.appendChild(row);
+          });
+        }
       }
 
       document.getElementById('create-server-submit').onclick = () => {
@@ -1485,7 +1933,11 @@
         const sTitle = input.value.trim();
         const sId = sTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
         if (!sId) return showToast("Enter a valid server name.", "error");
-        db.ref('servers/' + sId).set({ title: sTitle, channels: { general: true } });
+        db.ref('servers/' + sId).set({
+          title: sTitle,
+          channels: { general: true },
+          voice_channels: { 'General Voice': true }
+        });
         input.value = '';
         renderAdminPanelLists();
         showToast("Server created!", "success");
@@ -1497,7 +1949,17 @@
         if (!clean) return;
         db.ref('servers/' + activeServer + '/channels/' + clean).set(true);
         input.value = '';
-        showToast("Channel #" + clean + " created!", "success");
+        showToast("Text channel #" + clean + " created!", "success");
+      };
+
+      document.getElementById('create-voice-channel-submit').onclick = () => {
+        const input = document.getElementById('new-voice-channel-input');
+        const clean = input.value.trim().replace(/[.#$\[\]\/]/g, '');
+        if (!clean) return;
+        db.ref('servers/' + activeServer + '/voice_channels/' + clean).set(true);
+        input.value = '';
+        renderAdminPanelLists();
+        showToast("Voice channel " + clean + " created!", "success");
       };
 
       document.getElementById('wipe-chat-btn').onclick = () => {
@@ -1508,7 +1970,21 @@
         }
       };
 
-      // Chat Paths & Rich Message Rendering
+      // ==========================================
+      // MESSAGES & REPLY QOL
+      // ==========================================
+      function setReplyTarget(author, text) {
+        replyingTo = { author, text: text.substring(0, 70) };
+        document.getElementById('reply-preview-text').textContent = `Replying to @${author}: "${replyingTo.text}${text.length > 70 ? '...' : ''}"`;
+        document.getElementById('reply-preview-bar').classList.add('active');
+        chatInputEl.focus();
+      }
+
+      document.getElementById('cancel-reply-btn').onclick = () => {
+        replyingTo = null;
+        document.getElementById('reply-preview-bar').classList.remove('active');
+      };
+
       function getChatPath() {
         if (isFriendsMode) {
           if (!activeDmUser) return null;
@@ -1527,26 +2003,20 @@
 
       function formatMessageBody(rawText) {
         let safe = escapeHTML(rawText);
-        // Highlight @mentions
         safe = safe.replace(/@([a-zA-Z0-9_-]+)/g, '<span class="mention-pill">@$1</span>');
-        // Bold **text**
         safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        // Italic *text*
         safe = safe.replace(/\*(.+?)\*/g, '<em>$1</em>');
-        // Inline code `code`
         safe = safe.replace(/`(.+?)`/g, '<code style="background:var(--bg-servers); padding:2px 5px; border-radius:4px; font-family:monospace;">$1</code>');
 
-        // Image Attachment preview
         if (rawText.startsWith('[Attachment]: ')) {
           const url = rawText.replace('[Attachment]: ', '').trim();
           const safeUrl = escapeHTML(url);
-          if (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(url)) {
-            return `<a href="${safeUrl}" target="_blank" rel="noopener">${safeUrl}</a><img src="${safeUrl}" class="msg-img" alt="Attachment" />`;
+          if (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(url) || url.includes('giphy.com')) {
+            return `<img src="${safeUrl}" class="msg-img" alt="GIF / Image" />`;
           }
           return `<a href="${safeUrl}" target="_blank" rel="noopener">📎 ${safeUrl}</a>`;
         }
 
-        // Auto-link URLs
         safe = safe.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
         return safe;
       }
@@ -1577,7 +2047,7 @@
             messageCount++;
             const msg = child.val();
             const msgKey = child.key;
-            const isGrouped = (lastAuthor === msg.author);
+            const isGrouped = (lastAuthor === msg.author && !msg.replyTo);
             lastAuthor = msg.author;
 
             const isMentioned = msg.text && msg.text.toLowerCase().includes('@' + username.toLowerCase());
@@ -1596,27 +2066,32 @@
               </div>
             `;
 
+            const replyHTML = msg.replyTo
+              ? `<div class="msg-reply-quote">↩️ <strong>@${escapeHTML(msg.replyTo.author)}</strong>: ${escapeHTML(msg.replyTo.text)}</div>`
+              : '';
+
             div.innerHTML = `
               ${avatarHTML}
               <div style="flex:1; min-width:0;">
+                ${replyHTML}
                 ${headerHTML}
                 <div class="msg-body">${formatMessageBody(msg.text || '')}</div>
               </div>
               <div class="msg-actions">
+                <button class="msg-action-btn reply-btn" title="Reply">↩️</button>
                 <button class="msg-action-btn copy-btn" title="Copy Text">📋</button>
                 ${(isAdmin || msg.author === username) ? `<button class="msg-action-btn danger del-btn" title="Delete Message">🗑️</button>` : ''}
               </div>
             `;
 
+            div.querySelector('.reply-btn').onclick = () => setReplyTarget(msg.author, msg.text || '');
             div.querySelector('.copy-btn').onclick = () => {
               navigator.clipboard.writeText(msg.text);
               showToast("Copied message to clipboard!");
             };
 
             const delBtn = div.querySelector('.del-btn');
-            if (delBtn) {
-              delBtn.onclick = () => db.ref(path + '/' + msgKey).remove();
-            }
+            if (delBtn) delBtn.onclick = () => db.ref(path + '/' + msgKey).remove();
 
             messagesEl.appendChild(div);
           });
@@ -1637,7 +2112,6 @@
         activeTypingRef.on('value', activeTypingCb);
       }
 
-      // Typing & Character Count Listener
       let typingTimeout;
       chatInputEl.addEventListener('input', () => {
         updateCharCounter();
@@ -1650,7 +2124,6 @@
         typingTimeout = setTimeout(() => myTypingRef.remove(), 2000);
       });
 
-      // Send Message with Text Limit & Spam Cooldown Enforcement
       chatInputEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && chatInputEl.value.trim()) {
           const val = chatInputEl.value.trim();
@@ -1678,13 +2151,11 @@
             }
           }
 
-          // Enforce Admin Text Length Limit
           if (val.length > globalTextLimit && !isAdmin) {
             showToast(`Message exceeds max limit of ${globalTextLimit} characters!`, "error");
             return;
           }
 
-          // Enforce Admin Spam Cooldown Limit
           const nowMs = Date.now();
           const elapsedSec = (nowMs - lastMessageSentTime) / 1000;
           if (!isAdmin && globalSpamLimit > 0 && elapsedSec < globalSpamLimit) {
@@ -1699,7 +2170,14 @@
 
           lastMessageSentTime = nowMs;
           const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
-          db.ref(path).push({ author: username, color: userColor, isAdmin: isAdmin, time: timeStr, text: val });
+          const payload = { author: username, color: userColor, isAdmin: isAdmin, time: timeStr, text: val };
+          if (replyingTo) {
+            payload.replyTo = replyingTo;
+            replyingTo = null;
+            document.getElementById('reply-preview-bar').classList.remove('active');
+          }
+
+          db.ref(path).push(payload);
           db.ref(getTypingPath() + '/' + userId).remove();
           chatInputEl.value = '';
           updateCharCounter();
