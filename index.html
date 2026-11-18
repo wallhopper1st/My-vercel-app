@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg-servers: #1e1f22;
-      --bg-channels: #2b2d31a;
+      --bg-channels: #2b2d31;
       --bg-chat: #313338;
       --bg-chat-input: #383a40;
       --bg-hover: #35373c;
@@ -140,11 +140,42 @@
     .header-search-input { background: var(--bg-servers); border: 1px solid var(--divider); color: var(--text-main); padding: 4px 10px; border-radius: 6px; font-size: 12px; width: 155px; outline: none; transition: width 0.15s, border-color 0.15s; }
     .header-search-input:focus { width: 210px; border-color: var(--accent); }
 
-    /* Voice Channel Stage (WebRTC Video Grid) */
+    /* Global Announcement Banner */
+    .global-announcement { display: none; background: var(--accent); color: white; padding: 8px 16px; font-size: 13px; font-weight: 600; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 10; }
+    .global-announcement.active { display: flex; }
+
+    /* Voice Stage (Real Multi-Peer WebRTC Video Grid) */
     .voice-stage { display: none; flex: 1; background: #111214; padding: 20px; flex-direction: column; gap: 16px; overflow: hidden; }
     .voice-stage.active { display: flex; }
     .voice-stage-header { display: flex; align-items: center; justify-content: space-between; color: white; flex-shrink: 0; }
     .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-content: center; justify-content: center; overflow-y: auto; }
+    .video-tile { background: #2b2d31; border-radius: 10px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 2px solid transparent; }
+    .video-tile.speaking { border-color: var(--green); box-shadow: 0 0 0 3px rgba(35, 165, 90, 0.4); }
+    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; transform: scaleX(-1); }
+    .video-tile video.mirrored { transform: scaleX(-1); }
+    .video-tile .video-avatar-fallback { width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 700; color: white; position: absolute; z-index: 1; }
+    .video-tile .video-avatar-fallback img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.65); padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; color: white; z-index: 3; display: flex; align-items: center; gap: 6px; }
+    .video-status-pill { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; color: #b5bac1; z-index: 3; }
+    .video-controls { height: 72px; background: #1e1f22; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-shrink: 0; }
+    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; font-size: 14px; font-weight: 700; transition: 0.15s; }
+    .v-btn:hover { background: #35373c; }
+    .v-btn.muted { background: var(--red); color: white; }
+    .v-btn.danger { background: var(--red); width: auto; padding: 0 20px; border-radius: 24px; font-size: 13px; }
+    .v-btn.active-share { background: var(--green); }
+
+    /* Messages Area */
+    .messages { flex: 1; padding: 16px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: var(--msg-gap); }
+    .welcome-banner { padding: 24px 0 12px 0; border-bottom: 1px solid var(--divider); margin-bottom: 12px; }
+    .welcome-icon { width: 68px; height: 68px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; font-weight: 700; margin-bottom: 12px; }
+    .message { display: flex; gap: 16px; position: relative; padding: 2px 4px 2px 52px; border-radius: 4px; margin-top: 12px; }
+    .message.compact-followup { padding-top: 0; margin-top: 0; padding-left: 52px; }
+    .message:hover { background: rgba(0,0,0,0.03); }
+    body.theme-dark .message:hover, body.theme-amoled .message:hover, body.theme-cyberpunk .message:hover { background: rgba(255,255,255,0.015); }
+    .message.mentioned { background: rgba(240, 178, 50, 0.08); border-left: 3px solid var(--yellow); padding-left: 49px; }
+    .msg-avatar { position: absolute; left: 4px; top: 2px; width: 36px; height: 36px; border-radius: var(--avatar-radius); background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 15px; cursor: pointer; overflow: hidden; background-size: cover; background-position: center; }
+    .msg-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .message.compact-followup .msg-avatar { display: none; }
     .msg-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; flex-wrap: wrap; }
     .msg-author { font-weight: 600; color: var(--text-header); cursor: pointer; }
     .msg-author:hover { text-decoration: underline; }
@@ -998,7 +1029,6 @@
       setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.2s'; setTimeout(() => t.remove(), 200); }, 2800);
     }
 
-    // Helper: Compress image file via canvas for lightweight RTDB storage
     function compressImageFile(file, maxWidth, maxHeight, quality = 0.8) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1027,13 +1057,12 @@
       });
     }
 
-    // Helper: Render avatar content (custom PFP image or initial letter)
     function applyAvatarStyle(el, name, color, pfpUrl) {
       if (!el) return;
       el.style.backgroundColor = color || '#5865f2';
       if (pfpUrl && pfpUrl.trim()) {
         el.innerHTML = `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML((name || 'U')[0].toUpperCase())}';" />`;
-        el.innerHTML = '';
+      } else {
         el.textContent = (name || 'U')[0].toUpperCase();
       }
     }
@@ -1057,7 +1086,6 @@
         try {
           const uData = JSON.parse(savedUser);
           if (uData && uData.username && uData.userId) {
-            // Sync latest profile fields from Firebase if available
             const safeKey = uData.username.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
             db.ref('accounts/' + safeKey).once('value', (snap) => {
               const dbAcc = snap.val() || {};
@@ -1081,7 +1109,34 @@
     });
 
     authSwitchBtn.onclick = () => {
-// ... existing code ... -->
+      isSignUpMode = !isSignUpMode;
+      document.getElementById('auth-title').textContent = isSignUpMode ? "Create an account" : "Welcome back!";
+      document.getElementById('auth-subtitle').textContent = isSignUpMode ? "Join MiniCord today!" : "We're so excited to see you again!";
+      authSubmitBtn.textContent = isSignUpMode ? "Register" : "Log In";
+      authSwitchBtn.innerHTML = isSignUpMode ? 'Already have an account? <span style="color:#00a8fc; font-weight:600;">Log In</span>' : 'Need an account? <span style="color:#00a8fc; font-weight:600;">Register</span>';
+    };
+
+    function handleAuthSubmit() {
+      const uName = authUserEl.value.trim();
+      const uPass = authPassEl.value.trim();
+      authErrorEl.style.display = 'none';
+
+      if (!uName || !uPass) {
+        authErrorEl.textContent = "Please fill in all fields.";
+        authErrorEl.style.display = 'block';
+        return;
+      }
+
+      const safeKey = uName.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
+      const userRef = db.ref('accounts/' + safeKey);
+      
+      userRef.once('value', (snap) => {
+        const data = snap.val();
+        if (isSignUpMode) {
+          if (data) {
+            authErrorEl.textContent = "Username is already registered!";
+            authErrorEl.style.display = 'block';
+          } else {
             const palette = ['#5865f2', '#23a55a', '#f0b232', '#da373c', '#eb459e', '#00a8fc'];
             const newColor = palette[Math.floor(Math.random() * palette.length)];
             const newId = 'u_' + Date.now();
@@ -1101,9 +1156,11 @@
             localStorage.setItem('minicord_user', JSON.stringify(accountPayload));
             loginUser(uName, newId, uName, newColor, defaultBio, "", "", "");
           }
+        } else {
           if (!data || data.password !== uPass) {
-            authErrorEl.textContent = "Login or password is invalid.";
+            authErrorEl.textContent = "Invalid username or password!";
             authErrorEl.style.display = 'block';
+          } else {
             const dispName = data.displayName || data.username;
             const bio = data.bio || "Hanging out on MiniCord!";
             const banner = data.banner || "";
@@ -1113,6 +1170,9 @@
               username: data.username, displayName: dispName, userId: data.userId, color: data.color, bio, banner, pfp, customStatus
             }));
             loginUser(data.username, data.userId, dispName, data.color, bio, banner, pfp, customStatus);
+          }
+        }
+      });
     }
 
     authSubmitBtn.onclick = handleAuthSubmit;
@@ -1155,7 +1215,6 @@
     }
 
     function initApp() {
-      // Helper to resolve a user's shown label: Friend Nickname > Display Name > Username
       function getEffectiveName(targetUsername, fallbackDisplayName = null) {
         if (!targetUsername) return 'User';
         const lower = targetUsername.toLowerCase();
@@ -1168,7 +1227,6 @@
         return fallbackDisplayName || targetUsername;
       }
 
-      // Sync Private Friend Nicknames
       db.ref('friend_nicknames/' + userId).on('value', (snap) => {
         const raw = snap.val() || {};
         friendNicknames = {};
@@ -1176,13 +1234,11 @@
           if (raw[k]) friendNicknames[k.toLowerCase()] = raw[k];
         });
         renderMemberSidebar();
-        if (isFriendsMode) {
-          if (activeDmUser) {
-            document.getElementById('channel-name').textContent = getEffectiveName(activeDmUser);
-          }
-          openFriendsTab(activeDmUser);
+        if (isFriendsMode && activeDmUser) {
+          document.getElementById('channel-name').textContent = getEffectiveName(activeDmUser);
         }
         loadMessages();
+      });
 
       function refreshMyDockUI() {
         document.getElementById('my-name').textContent = displayName;
@@ -1217,6 +1273,7 @@
         if (draftBanner) {
           previewBanner.style.backgroundImage = `url('${draftBanner}')`;
           previewBanner.style.backgroundColor = 'transparent';
+        } else {
           previewBanner.style.backgroundImage = 'none';
           previewBanner.style.backgroundColor = draftColor;
         }
@@ -1235,7 +1292,6 @@
         document.getElementById(id).addEventListener('input', updateSettingsLivePreview);
       });
 
-      // Profile Picture & Banner Local File Upload Handlers
       const pfpFileInput = document.getElementById('pfp-file-input');
       document.getElementById('upload-pfp-btn').onclick = () => pfpFileInput.click();
       document.getElementById('clear-pfp-btn').onclick = () => {
@@ -1276,13 +1332,13 @@
         bannerFileInput.value = '';
       };
 
-      // Sync Global Announcement Banner
       db.ref('config/announcement').on('value', (snap) => {
         const text = snap.val();
         const bar = document.getElementById('global-announcement-bar');
         if (text && text.trim()) {
           document.getElementById('global-announcement-text').textContent = text;
           bar.classList.add('active');
+        } else {
           bar.classList.remove('active');
         }
       });
@@ -1338,6 +1394,7 @@
         if (globalSpamLimit > 0) {
           smBadge.style.display = 'inline-flex';
           document.getElementById('slowmode-sec-label').textContent = globalSpamLimit;
+        } else {
           smBadge.style.display = 'none';
         }
       });
@@ -1350,7 +1407,6 @@
         showToast(`Limits updated: ${tLim} chars, ${sLim}s cooldown`, 'success');
       };
 
-      // Settings Preferences State
       let soundEnabled = localStorage.getItem('minicord_sound') !== 'disabled';
       let desktopNotifEnabled = localStorage.getItem('minicord_desktop_notif') === 'enabled';
       let use24Hour = localStorage.getItem('minicord_time') === '24h';
@@ -1395,7 +1451,6 @@
       document.getElementById('mirror-cam-select').value = mirrorLocalCam ? 'enabled' : 'disabled';
       document.getElementById('ptt-select').value = pttEnabled ? 'enabled' : 'disabled';
 
-      // Settings Tabs Navigation
       document.querySelectorAll('.settings-nav-item[data-tab]').forEach(nav => {
         nav.onclick = () => {
           document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
@@ -1473,7 +1528,49 @@
       document.getElementById('mirror-cam-select').onchange = (e) => {
         mirrorLocalCam = (e.target.value === 'enabled');
         localStorage.setItem('minicord_mirrorcam', e.target.value);
-      // Save Display Name, Profile Picture, Banner, Description, Custom Status, and Accent Color
+      };
+
+      document.getElementById('ptt-select').onchange = (e) => {
+        pttEnabled = (e.target.value === 'enabled');
+        localStorage.setItem('minicord_ptt', e.target.value);
+      };
+
+      async function populateMediaDevices() {
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const micSelect = document.getElementById('mic-device-select');
+          const camSelect = document.getElementById('cam-device-select');
+          micSelect.innerHTML = '<option value="default">Default Microphone</option>';
+          camSelect.innerHTML = '<option value="default">Default Camera</option>';
+
+          devices.forEach(d => {
+            if (d.kind === 'audioinput') {
+              const opt = document.createElement('option');
+              opt.value = d.deviceId;
+              opt.textContent = d.label || `Microphone (${micSelect.options.length})`;
+              if (d.deviceId === selectedMicId) opt.selected = true;
+              micSelect.appendChild(opt);
+            } else if (d.kind === 'videoinput') {
+              const opt = document.createElement('option');
+              opt.value = d.deviceId;
+              opt.textContent = d.label || `Camera (${camSelect.options.length})`;
+              if (d.deviceId === selectedCamId) opt.selected = true;
+              camSelect.appendChild(opt);
+            }
+          });
+        } catch (e) {}
+      }
+
+      document.getElementById('mic-device-select').onchange = (e) => {
+        selectedMicId = e.target.value;
+        localStorage.setItem('minicord_mic_id', selectedMicId);
+      };
+      document.getElementById('cam-device-select').onchange = (e) => {
+        selectedCamId = e.target.value;
+        localStorage.setItem('minicord_cam_id', selectedCamId);
+      };
+      document.getElementById('refresh-devices-btn').onclick = populateMediaDevices;
+
       document.getElementById('save-profile-settings-btn').onclick = () => {
         const newDispName = document.getElementById('settings-displayname-input').value.trim() || username;
         const newPfp = document.getElementById('settings-pfp-input').value.trim();
@@ -1518,15 +1615,15 @@
           const gain = audioCtx.createGain();
           osc.type = isPing ? 'triangle' : 'sine';
           if (isPing) {
-            // Distinct double-note alert for @mentions / pings
-            osc.frequency.setValueAtTime(987.77, audioCtx.currentTime); // B5
-            osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.11); // E6
+            osc.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.11);
             gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.36);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start();
             osc.stop(audioCtx.currentTime + 0.36);
+          } else {
             osc.frequency.setValueAtTime(880, audioCtx.currentTime);
             osc.frequency.setValueAtTime(1320, audioCtx.currentTime + 0.08);
             gain.gain.setValueAtTime(0.11, audioCtx.currentTime);
@@ -1539,7 +1636,6 @@
         } catch (e) {}
       }
 
-      // Profile Modal with Display Name, Banner, PFP, Description & Friend Nicknames
       document.getElementById('open-my-profile-btn').onclick = () => {
         document.getElementById('modal-profile-name').textContent = displayName;
         document.getElementById('modal-profile-handle').textContent = `@${username}`;
@@ -1549,6 +1645,7 @@
         if (userBanner) {
           bannerBox.style.backgroundImage = `url('${userBanner}')`;
           bannerBox.style.backgroundColor = 'transparent';
+        } else {
           bannerBox.style.backgroundImage = 'none';
           bannerBox.style.backgroundColor = userColor;
         }
@@ -1556,6 +1653,7 @@
         if (userCustomStatus) {
           statusEl.textContent = `"${userCustomStatus}"`;
           statusEl.style.display = 'block';
+        } else {
           statusEl.style.display = 'none';
         }
         document.getElementById('modal-profile-bio').textContent = userBio;
@@ -1600,6 +1698,7 @@
         if (targetBanner) {
           bannerBox.style.backgroundImage = `url('${targetBanner}')`;
           bannerBox.style.backgroundColor = 'transparent';
+        } else {
           bannerBox.style.backgroundImage = 'none';
           bannerBox.style.backgroundColor = targetColor;
         }
@@ -1608,6 +1707,7 @@
         if (targetCustomStatus) {
           statusEl.textContent = `"${targetCustomStatus}"`;
           statusEl.style.display = 'block';
+        } else {
           statusEl.style.display = 'none';
         }
 
@@ -1615,7 +1715,6 @@
         document.getElementById('my-profile-status-box').style.display = 'none';
         document.getElementById('edit-profile-from-modal-btn').style.display = 'none';
 
-        // Friend Nickname Editor
         const nickBox = document.getElementById('friend-nickname-box');
         const nickInput = document.getElementById('friend-nickname-input');
         nickBox.style.display = 'block';
@@ -1626,6 +1725,7 @@
           if (val) {
             db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).set(val);
             showToast(`Nickname set to "${val}"`, "success");
+          } else {
             db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).remove();
             showToast("Friend nickname cleared.");
           }
@@ -1655,6 +1755,7 @@
             addBtn.textContent = "Friends ✓";
             addBtn.className = "btn btn-secondary";
             addBtn.onclick = null;
+          } else {
             addBtn.textContent = "Add Friend";
             addBtn.className = "btn btn-success";
             addBtn.onclick = () => {
@@ -1676,7 +1777,6 @@
         updatePresence();
       };
 
-      // Presence & Member List
       const myPresenceRef = db.ref('online/' + userId);
       function updatePresence() {
         myPresenceRef.set({
@@ -1830,7 +1930,6 @@
         document.getElementById('toggle-members-btn').classList.toggle('active');
       };
 
-      // App Navigation State
       let activeServer = 'gaming';
       let activeChannel = 'general';
       let currentChannelsList = [];
@@ -1859,7 +1958,6 @@
         else if (len >= Math.floor(globalTextLimit * 0.8)) counter.classList.add('warn');
       }
 
-      // Emoji Picker
       const emojis = ['😀','😂','🔥','❤️','👍','💀','🎮','💯','🚀','👀','🎉','😭','😎','🤝','⚡','👑','✨','🤔'];
       const emojiPopover = document.getElementById('emoji-popover');
       const emojiGrid = document.getElementById('emoji-grid');
@@ -1882,7 +1980,6 @@
         emojiPopover.classList.toggle('open');
       };
 
-      // Expanded GIF Catalog
       const gifCatalog = {
         hype: [
           'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif',
@@ -1978,7 +2075,6 @@
         if (!gifPopover.contains(e.target) && e.target.id !== 'gif-btn') gifPopover.classList.remove('open');
       });
 
-      // FILE IMPORT / ATTACHMENT HANDLER
       const fileInputEl = document.getElementById('hidden-file-input');
       document.getElementById('attach-btn').onclick = () => fileInputEl.click();
 
@@ -2010,9 +2106,7 @@
         reader.readAsDataURL(file);
       };
 
-      // ==========================================
-      // REAL MULTI-PEER WEBRTC VIDEO & VOICE CALLING
-      // ==========================================
+      // WebRTC voice variables
       let connectedVoiceServer = null;
       let connectedVoiceChannel = null;
       let localStream = null;
@@ -2023,11 +2117,8 @@
       let activeVoicePeersCb = null;
       let signalInboxRef = null;
 
-      // Map<peerUserId, { pc: RTCPeerConnection, iceQueue: RTCIceCandidateInit[], makingOffer: boolean, ignoreOffer: boolean }>
       const peerConnections = {};
-      // Map<peerUserId, MediaStream>
       const remoteStreams = {};
-      // Map<peerUserId, { intervalId: number, audioCtx: AudioContext }>
       const speakingMonitors = {};
 
       const RTC_CONFIG = {
@@ -2135,16 +2226,14 @@
           iceQueue: [],
           makingOffer: false,
           ignoreOffer: false,
-          isPolite: userId > remoteId // Deterministic polite/impolite collision handling
+          isPolite: userId > remoteId
         };
         peerConnections[remoteId] = stateObj;
 
-        // Add local tracks if available
         if (localStream) {
           localStream.getTracks().forEach(track => {
             pc.addTrack(track, localStream);
           });
-          // Ensure recvonly transceivers exist so listen-only users still receive audio/video
           pc.addTransceiver('audio', { direction: 'recvonly' });
           pc.addTransceiver('video', { direction: 'recvonly' });
         }
@@ -2245,6 +2334,7 @@
           } else if (msg.type === 'candidate' && msg.candidate) {
             if (pc.remoteDescription && pc.remoteDescription.type) {
               await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+            } else {
               stateObj.iceQueue.push(msg.candidate);
             }
           }
@@ -2267,7 +2357,6 @@
         isCamEnabled = false;
         isScreenSharing = false;
 
-        // Request Audio (and optionally Video if available)
         try {
           const audioConstraints = selectedMicId !== 'default' ? { deviceId: { exact: selectedMicId } } : true;
           localStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false });
@@ -2283,18 +2372,16 @@
         connectedVoiceServer = serverId;
         connectedVoiceChannel = vcName;
 
-        // Listen to incoming WebRTC signals addressed to my userId
         const myInboxPath = `${getSignalBasePath(serverId, vcName)}/${userId}`;
         signalInboxRef = db.ref(myInboxPath);
         await signalInboxRef.remove();
         signalInboxRef.onDisconnect().remove();
         signalInboxRef.on('child_added', (snap) => {
           const data = snap.val();
-          snap.ref.remove(); // Consume signal immediately
+          snap.ref.remove();
           handleIncomingSignal(data);
         });
 
-        // Register presence in this voice channel
         const vcUserRef = db.ref(`voice_presence/${serverId}/${vcName}/${userId}`);
         vcUserRef.set({
           name: username,
@@ -2317,7 +2404,6 @@
           const peers = snap.val() || {};
           const activeIds = Object.keys(peers);
 
-          // Remove tiles and close peer connections for disconnected users
           Array.from(vGrid.children).forEach(child => {
             const tilePeerId = child.id.replace('tile_', '');
             if (!activeIds.includes(tilePeerId)) {
@@ -2338,7 +2424,6 @@
             }
           });
 
-          // Render tiles and initiate WebRTC connections with newly joined peers
           activeIds.forEach(peerId => {
             const peerData = peers[peerId];
             const shownPeerName = getEffectiveName(peerData.name, peerData.displayName);
@@ -2346,7 +2431,6 @@
 
             if (peerId !== userId && !peerConnections[peerId]) {
               const stateObj = createPeerConnection(peerId, peerData);
-              // Deterministic initiator avoids dual simultaneous offers
               if (userId < peerId) {
                 stateObj.pc.onnegotiationneeded();
               }
@@ -2370,7 +2454,6 @@
           localStream.addTrack(newVideoTrack);
         }
 
-        // Update all active RTCPeerConnections
         for (const peerId of Object.keys(peerConnections)) {
           const pc = peerConnections[peerId].pc;
           const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video')
@@ -2439,6 +2522,7 @@
           messagesEl.style.display = 'none';
           document.getElementById('chat-input-wrapper').style.display = 'none';
           document.querySelector('.typing-bar').style.display = 'none';
+        } else {
           stage.classList.remove('active');
           messagesEl.style.display = 'flex';
           document.getElementById('chat-input-wrapper').style.display = 'flex';
@@ -2496,6 +2580,7 @@
           } catch (e) {
             showToast("Could not access webcam.", "error");
           }
+        } else {
           isCamEnabled = false;
           await replaceOrAddVideoTrack(null);
           updateVoiceControlButtons();
@@ -2521,6 +2606,7 @@
               updateVoiceControlButtons();
               showToast("Screen sharing stopped");
             };
+          } else {
             isScreenSharing = false;
             await replaceOrAddVideoTrack(null);
             updateVoiceControlButtons();
@@ -2531,7 +2617,6 @@
         }
       };
 
-      // Push-to-Talk Spacebar Listener
       window.addEventListener('keydown', (e) => {
         if (pttEnabled && connectedVoiceServer && e.code === 'Space' && document.activeElement !== chatInputEl && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
           e.preventDefault();
@@ -2559,9 +2644,6 @@
         }
       });
 
-      // ==========================================
-      // SERVERS & CHANNELS
-      // ==========================================
       function loadServersList() {
         db.ref('servers').on('value', (snap) => {
           const servers = snap.val() || { gaming: { title: 'Gaming Hub' }, dev: { title: 'Dev Squad' } };
@@ -2744,7 +2826,6 @@
         });
       }
 
-      // PERSISTENT DM & FRIENDS
       function openFriendsTab(preselectFriend = null) {
         showVoiceStage(false);
         isFriendsMode = true; isPrivateMode = false;
@@ -2909,7 +2990,6 @@
         loadMessages();
       }
 
-      // Admin Panel Lists
       function renderAdminPanelLists() {
         db.ref('servers').once('value', (snap) => {
           const sListEl = document.getElementById('admin-server-list');
@@ -3005,6 +3085,7 @@
                 showToast(`Kicked ${u.name}`, "info");
               };
               btnGroup.appendChild(kickBtn);
+            } else {
               btnGroup.innerHTML = '<span style="font-size:11px; color:var(--text-muted);">You</span>';
             }
             row.appendChild(btnGroup);
@@ -3053,7 +3134,6 @@
         showToast("Channel wiped.", "success");
       };
 
-      // Messages & Reply
       function setReplyTarget(author, text) {
         const shownAuthor = getEffectiveName(author);
         replyingTo = { author, displayName: shownAuthor, text: text.substring(0, 70) };
@@ -3091,7 +3171,6 @@
         return isPrivateMode ? 'private_typing/' + activePrivateRoom.key : 'typing/' + activeServer + '/' + activeChannel;
       }
 
-      // Check if a message pings the current logged-in user (@username, @DisplayName, @everyone, or @here)
       function doesMessagePingMe(rawText) {
         if (!rawText) return false;
         const lower = rawText.toLowerCase();
@@ -3104,7 +3183,6 @@
 
       function formatMessageBody(rawText) {
         let safe = escapeHTML(rawText);
-        // Highlight @mentions and mark self-pings distinctly
         safe = safe.replace(/@([a-zA-Z0-9_.-]+)/g, (match, token) => {
           const tLow = token.toLowerCase();
           const isMe = (
@@ -3141,9 +3219,6 @@
         return safe;
       }
 
-      // ==========================================
-      // CHANNEL PINS POPOVER
-      // ==========================================
       const pinsPopover = document.getElementById('pins-popover');
       document.getElementById('open-pins-btn').onclick = (e) => {
         e.stopPropagation();
@@ -3189,9 +3264,6 @@
         });
       }
 
-      // ==========================================
-      // CHANNEL SEARCH & JUMP TO PRESENT
-      // ==========================================
       let currentSearchFilter = '';
       document.getElementById('channel-search-input').addEventListener('input', (e) => {
         currentSearchFilter = e.target.value.trim().toLowerCase();
@@ -3208,15 +3280,12 @@
         jumpPresentBtn.classList.remove('visible');
       };
 
-      // ==========================================
-      // AUTOCOMPLETE (@MENTIONS & /SLASH COMMANDS)
-      // ==========================================
       const acPopover = document.getElementById('autocomplete-popover');
       const acHeader = document.getElementById('autocomplete-header');
       const acList = document.getElementById('autocomplete-list');
       let acItems = [];
       let acSelectedIndex = 0;
-      let acMode = null; // 'mention' or 'slash'
+      let acMode = null;
 
       function insertMentionIntoInput(targetUsername) {
         const cur = chatInputEl.value;
@@ -3287,7 +3356,6 @@
       function checkAutocompleteTrigger() {
         const val = chatInputEl.value;
 
-        // 1. Slash command trigger at start of input
         if (val.startsWith('/') && !val.includes(' ')) {
           const query = val.toLowerCase();
           const matches = slashCommandsCatalog.filter(c => c.cmd.startsWith(query));
@@ -3306,7 +3374,6 @@
           }
         }
 
-        // 2. @Mention trigger anywhere in input
         const mentionMatch = val.match(/(?:^|\s)@([a-zA-Z0-9_.-]*)$/);
         if (mentionMatch) {
           const query = mentionMatch[1].toLowerCase();
@@ -3315,7 +3382,6 @@
           acSelectedIndex = 0;
 
           const candidates = [];
-          // Special broadcast mentions
           candidates.push({
             title: '@everyone',
             subtitle: 'Notify all members in this channel',
@@ -3331,7 +3397,6 @@
             avatarHTML: `<div class="avatar" style="background:var(--green); width:24px; height:24px; font-size:12px;">@</div>`
           });
 
-          // Combine accounts + online users
           const seen = new Set();
           const allPeople = [];
           Object.values(onlineUsersMap).forEach(u => {
@@ -3410,7 +3475,6 @@
               lastOwnMessageRef = { key: msgKey, text: msg.text || '' };
             }
 
-            // Apply search filter if active
             if (currentSearchFilter) {
               const haystack = `${msg.author || ''} ${msg.displayName || ''} ${msg.text || ''}`.toLowerCase();
               if (!haystack.includes(currentSearchFilter)) return;
@@ -3458,7 +3522,6 @@
             const editedHTML = msg.edited ? `<span class="msg-edited-tag">(edited)</span>` : '';
             const isMine = (msg.author === username);
 
-            // Clean Word-Based Hover Actions
             div.innerHTML = `
               ${avatarHTML}
               <div style="flex:1; min-width:0;">
@@ -3479,13 +3542,11 @@
             div.querySelector('.reply-btn').onclick = () => setReplyTarget(msg.author, msg.text || '');
             div.querySelector('.mention-btn').onclick = () => insertMentionIntoInput(msg.author);
 
-            // Inline Message Editing
             const editBtn = div.querySelector('.edit-btn');
             if (editBtn) {
               editBtn.onclick = () => startInlineMessageEdit(div, path, msgKey, msg.text || '');
             }
 
-            // Pin Message
             div.querySelector('.pin-btn').onclick = () => {
               const pPath = getPinsPath();
               if (!pPath) return;
@@ -3562,16 +3623,16 @@
             loadMessages();
           } else if (e.key === 'Enter') {
             const updated = inp.value.trim();
-            if (!updated) {
-              db.ref(`${chatPath}/${msgKey}`).remove();
+            if (updated) {
               db.ref(`${chatPath}/${msgKey}`).update({ text: updated, edited: true });
               showToast("Message edited.", "success");
+            } else {
+              db.ref(`${chatPath}/${msgKey}`).remove();
             }
           }
         });
       }
 
-      // Global keyboard shortcuts
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (acPopover.classList.contains('open')) {
@@ -3607,7 +3668,6 @@
       });
 
       chatInputEl.addEventListener('keydown', (e) => {
-        // Autocomplete Navigation (ArrowUp, ArrowDown, Tab, Enter)
         if (acPopover.classList.contains('open') && acItems.length > 0) {
           if (e.key === 'ArrowDown') {
             e.preventDefault();
@@ -3628,7 +3688,6 @@
           }
         }
 
-        // Up Arrow in empty input quickly edits your last sent message
         if (e.key === 'ArrowUp' && chatInputEl.value === '' && lastOwnMessageRef) {
           e.preventDefault();
           const allMsgDivs = messagesEl.querySelectorAll('.message');
@@ -3656,6 +3715,7 @@
               loadMessages();
               showToast("Admin Mode Unlocked", "success");
               return;
+            } else {
               showToast("Incorrect Admin PIN.", "error");
               chatInputEl.value = '';
               updateCharCounter();
@@ -3663,7 +3723,6 @@
             }
           }
 
-          // Slash Commands Processing
           if (val === '/clear') {
             messagesEl.innerHTML = '';
             chatInputEl.value = '';
@@ -3689,6 +3748,7 @@
             if (newNick) {
               db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).set(newNick);
               showToast(`Set nickname for @${targetUser} to "${newNick}"`, "success");
+            } else {
               db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).remove();
               showToast(`Cleared nickname for @${targetUser}`);
             }
@@ -3746,5 +3806,6 @@
       loadServersList();
       loadChannels();
     }
+  </script>
 </body>
 </html>
