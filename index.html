@@ -1101,11 +1101,9 @@
             localStorage.setItem('minicord_user', JSON.stringify(accountPayload));
             loginUser(uName, newId, uName, newColor, defaultBio, "", "", "");
           }
-        } else {
           if (!data || data.password !== uPass) {
             authErrorEl.textContent = "Login or password is invalid.";
             authErrorEl.style.display = 'block';
-          } else {
             const dispName = data.displayName || data.username;
             const bio = data.bio || "Hanging out on MiniCord!";
             const banner = data.banner || "";
@@ -1223,7 +1221,6 @@
         if (draftBanner) {
           previewBanner.style.backgroundImage = `url('${draftBanner}')`;
           previewBanner.style.backgroundColor = 'transparent';
-        } else {
           previewBanner.style.backgroundImage = 'none';
           previewBanner.style.backgroundColor = draftColor;
         }
@@ -1290,7 +1287,6 @@
         if (text && text.trim()) {
           document.getElementById('global-announcement-text').textContent = text;
           bar.classList.add('active');
-        } else {
           bar.classList.remove('active');
         }
       });
@@ -1346,7 +1342,6 @@
         if (globalSpamLimit > 0) {
           smBadge.style.display = 'inline-flex';
           document.getElementById('slowmode-sec-label').textContent = globalSpamLimit;
-        } else {
           smBadge.style.display = 'none';
         }
       });
@@ -1536,7 +1531,6 @@
             gain.connect(audioCtx.destination);
             osc.start();
             osc.stop(audioCtx.currentTime + 0.36);
-          } else {
             osc.frequency.setValueAtTime(880, audioCtx.currentTime);
             osc.frequency.setValueAtTime(1320, audioCtx.currentTime + 0.08);
             gain.gain.setValueAtTime(0.11, audioCtx.currentTime);
@@ -1559,7 +1553,6 @@
         if (userBanner) {
           bannerBox.style.backgroundImage = `url('${userBanner}')`;
           bannerBox.style.backgroundColor = 'transparent';
-        } else {
           bannerBox.style.backgroundImage = 'none';
           bannerBox.style.backgroundColor = userColor;
         }
@@ -1567,7 +1560,6 @@
         if (userCustomStatus) {
           statusEl.textContent = `"${userCustomStatus}"`;
           statusEl.style.display = 'block';
-        } else {
           statusEl.style.display = 'none';
         }
         document.getElementById('modal-profile-bio').textContent = userBio;
@@ -1612,7 +1604,6 @@
         if (targetBanner) {
           bannerBox.style.backgroundImage = `url('${targetBanner}')`;
           bannerBox.style.backgroundColor = 'transparent';
-        } else {
           bannerBox.style.backgroundImage = 'none';
           bannerBox.style.backgroundColor = targetColor;
         }
@@ -1621,7 +1612,6 @@
         if (targetCustomStatus) {
           statusEl.textContent = `"${targetCustomStatus}"`;
           statusEl.style.display = 'block';
-        } else {
           statusEl.style.display = 'none';
         }
 
@@ -1640,7 +1630,6 @@
           if (val) {
             db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).set(val);
             showToast(`Nickname set to "${val}"`, "success");
-          } else {
             db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).remove();
             showToast("Friend nickname cleared.");
           }
@@ -1670,7 +1659,6 @@
             addBtn.textContent = "Friends ✓";
             addBtn.className = "btn btn-secondary";
             addBtn.onclick = null;
-          } else {
             addBtn.textContent = "Add Friend";
             addBtn.className = "btn btn-success";
             addBtn.onclick = () => {
@@ -2160,7 +2148,6 @@
           localStream.getTracks().forEach(track => {
             pc.addTrack(track, localStream);
           });
-        } else {
           // Ensure recvonly transceivers exist so listen-only users still receive audio/video
           pc.addTransceiver('audio', { direction: 'recvonly' });
           pc.addTransceiver('video', { direction: 'recvonly' });
@@ -2185,7 +2172,6 @@
           }
           if (event.streams && event.streams[0]) {
             remoteStreams[remoteId] = event.streams[0];
-          } else {
             rStream.addTrack(event.track);
           }
 
@@ -2263,7 +2249,6 @@
           } else if (msg.type === 'candidate' && msg.candidate) {
             if (pc.remoteDescription && pc.remoteDescription.type) {
               await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
-            } else {
               stateObj.iceQueue.push(msg.candidate);
             }
           }
@@ -2458,7 +2443,6 @@
           messagesEl.style.display = 'none';
           document.getElementById('chat-input-wrapper').style.display = 'none';
           document.querySelector('.typing-bar').style.display = 'none';
-        } else {
           stage.classList.remove('active');
           messagesEl.style.display = 'flex';
           document.getElementById('chat-input-wrapper').style.display = 'flex';
@@ -2516,7 +2500,6 @@
           } catch (e) {
             showToast("Could not access webcam.", "error");
           }
-        } else {
           isCamEnabled = false;
           await replaceOrAddVideoTrack(null);
           updateVoiceControlButtons();
@@ -2542,7 +2525,6 @@
               updateVoiceControlButtons();
               showToast("Screen sharing stopped");
             };
-          } else {
             isScreenSharing = false;
             await replaceOrAddVideoTrack(null);
             updateVoiceControlButtons();
@@ -3027,7 +3009,6 @@
                 showToast(`Kicked ${u.name}`, "info");
               };
               btnGroup.appendChild(kickBtn);
-            } else {
               btnGroup.innerHTML = '<span style="font-size:11px; color:var(--text-muted);">You</span>';
             }
             row.appendChild(btnGroup);
@@ -3587,7 +3568,6 @@
             const updated = inp.value.trim();
             if (!updated) {
               db.ref(`${chatPath}/${msgKey}`).remove();
-            } else {
               db.ref(`${chatPath}/${msgKey}`).update({ text: updated, edited: true });
               showToast("Message edited.", "success");
             }
@@ -3680,7 +3660,6 @@
               loadMessages();
               showToast("Admin Mode Unlocked", "success");
               return;
-            } else {
               showToast("Incorrect Admin PIN.", "error");
               chatInputEl.value = '';
               updateCharCounter();
@@ -3714,7 +3693,6 @@
             if (newNick) {
               db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).set(newNick);
               showToast(`Set nickname for @${targetUser} to "${newNick}"`, "success");
-            } else {
               db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).remove();
               showToast(`Cleared nickname for @${targetUser}`);
             }
