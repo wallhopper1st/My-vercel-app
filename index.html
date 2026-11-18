@@ -748,8 +748,15 @@
     window.addEventListener('DOMContentLoaded', () => {
       const savedUser = localStorage.getItem('minicord_user');
       if (savedUser) {
-        const uData = JSON.parse(savedUser);
-        loginUser(uData.username, uData.userId, uData.color, uData.bio || "Hanging out on MiniCord!", uData.banner || "");
+        try {
+          const uData = JSON.parse(savedUser);
+          if (uData && uData.username && uData.userId) {
+            loginUser(uData.username, uData.userId, uData.color || '#5865f2', uData.bio || "Hanging out on MiniCord!", uData.banner || "");
+            return;
+          }
+        } catch (e) {
+          localStorage.removeItem('minicord_user');
+        }
       }
     });
 
@@ -774,7 +781,9 @@
         return;
       }
 
-      const userRef = db.ref('accounts/' + uName.toLowerCase());
+      const safeKey = uName.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
+      const userRef = db.ref('accounts/' + safeKey);
+      
       userRef.once('value', (snap) => {
         const data = snap.val();
         if (isSignUpMode) {
@@ -986,7 +995,9 @@
         userBanner = newBanner;
         userColor = newColor;
         document.getElementById('my-avatar').style.backgroundColor = userColor;
-        db.ref('accounts/' + username.toLowerCase()).update({ bio: userBio, banner: userBanner, color: userColor });
+        
+        const safeKey = username.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
+        db.ref('accounts/' + safeKey).update({ bio: userBio, banner: userBanner, color: userColor });
         localStorage.setItem('minicord_user', JSON.stringify({ username, userId, color: userColor, bio: userBio, banner: userBanner }));
         updatePresence();
         showToast("Profile & banner updated!", "success");
@@ -1383,9 +1394,7 @@
           const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
           
           let formattedText = `[Attachment]: ${fileDataUrl}`;
-          if (file.type.startsWith('image/')) {
-            formattedText = `[Attachment]: ${fileDataUrl}`;
-          } else {
+          if (!file.type.startsWith('image/')) {
             formattedText = `[File Upload]: ${file.name} (${Math.round(file.size/1024)} KB) - ${fileDataUrl}`;
           }
 
@@ -1555,14 +1564,14 @@
             screenTrack.onended = () => {
               isScreenSharing = false;
               document.getElementById('share-screen-btn').classList.remove('active-share');
-              document.querySelectorAll('#video-grid video').forEach(v => v.style.display = 'none';
+              document.querySelectorAll('#video-grid video').forEach(v => { v.style.display = 'none'; });
             };
           } else {
             const vTrack = localStream && localStream.getVideoTracks()[0];
             if (vTrack) vTrack.stop();
             isScreenSharing = false;
             document.getElementById('share-screen-btn').classList.remove('active-share');
-            document.querySelectorAll('#video-grid video').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('#video-grid video').forEach(v => { v.style.display = 'none'; });
           }
         } catch (e) {
           showToast("Screen share cancelled.", "info");
@@ -1755,7 +1764,6 @@
 
         if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
 
-        // Fetch both explicit friends AND active DM message histories so tabs never vanish
         db.ref('friends/' + userId).once('value', (friendSnap) => {
           db.ref('dm_messages').once('value', (dmSnap) => {
             if (!isFriendsMode) return;
@@ -1773,7 +1781,6 @@
             const friendList = [];
             friendSnap.forEach(c => friendList.push(c.val()));
             
-            // Combine unique friend list and active DM history threads
             const allPeers = Array.from(new Set([...friendList, ...Array.from(dmChannels)]));
             if (preselectFriend && !allPeers.includes(preselectFriend)) allPeers.push(preselectFriend);
 
