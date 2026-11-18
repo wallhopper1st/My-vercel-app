@@ -507,7 +507,28 @@
       userColor = color;
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('app-container').style.display = 'flex';
-      initApp();
+      initApp(document.getElementById('add-friend-btn').onclick = () => {
+  const friendName = prompt("Enter friend's exact username:");
+  if (!friendName || !friendName.trim()) return;
+
+  const name = friendName.trim();
+
+  db.ref('friends/' + userId).once('value', (snap) => {
+    let exists = false;
+
+    snap.forEach((child) => {
+      if (child.val() === name) exists = true;
+    });
+
+    if (exists) {
+      alert("Already on your friends list!");
+      return;
+    }
+
+    db.ref('friends/' + userId).push(name);
+    alert("Added " + name);
+  });
+};);
     }
 
     function escapeHTML(str) {
