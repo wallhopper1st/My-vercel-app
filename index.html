@@ -25,6 +25,7 @@
       --divider: #3f4147;
       --chat-font-size: 15px;
       --msg-gap: 16px;
+      --avatar-radius: 50%;
     }
 
     body.theme-light {
@@ -48,6 +49,7 @@
     }
 
     body.compact-mode { --msg-gap: 4px; }
+    body.avatar-squircle { --avatar-radius: 28%; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'gg sans', 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: var(--chat-font-size); }
     body { display: flex; height: 100vh; background-color: var(--bg-chat); color: var(--text-main); overflow: hidden; }
@@ -61,10 +63,10 @@
 
     /* Auth Screen */
     #auth-screen { position: fixed; inset: 0; background: radial-gradient(circle at top left, #5865f2 0%, #1e1f22 65%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .auth-card { background: #313338; width: 420px; max-width: 92vw; padding: 32px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+    .auth-card { background: #313338; width: 420px; max-width: 92vw; padding: 32px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
     .auth-title { font-size: 24px; font-weight: 700; color: white; margin-bottom: 8px; text-align: center; }
     .auth-subtitle { font-size: 14px; color: #b5bac1; text-align: center; margin-bottom: 24px; }
-    .auth-label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #b5bac1; margin-bottom: 8px; letter-spacing: 0.02em; }
+    .auth-label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #b5bac1; margin-bottom: 6px; letter-spacing: 0.02em; }
 
     /* App Layout */
     #app-container { display: none; width: 100vw; height: 100vh; }
@@ -88,7 +90,7 @@
     .sidebar-scroll { flex: 1; overflow-y: auto; padding-bottom: 12px; }
     .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 16px 12px 4px 12px; letter-spacing: 0.03em; display: flex; align-items: center; justify-content: space-between; }
     .channel-list { padding: 2px 8px; display: flex; flex-direction: column; gap: 2px; }
-    .channel-item { padding: 7px 10px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; font-weight: 500; transition: background 0.1s, color 0.1s; position: relative; }
+    .channel-item { padding: 7px 10px; border-radius: 6px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; font-weight: 500; transition: background 0.1s, color 0.1s; position: relative; }
     .channel-item:hover { background: var(--bg-hover); color: var(--text-main); }
     .channel-item.active { background: var(--bg-active); color: var(--text-header); font-weight: 600; }
     .channel-item.unread { color: var(--text-header); font-weight: 700; }
@@ -99,22 +101,33 @@
 
     .voice-users-sublist { padding-left: 26px; display: flex; flex-direction: column; gap: 4px; margin: 2px 0 6px 0; }
     .voice-sub-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); padding: 2px 6px; border-radius: 4px; }
-    .voice-live-badge { font-size: 10px; background: var(--green); color: white; padding: 1px 5px; border-radius: 8px; font-weight: 700; }
+    .voice-live-badge { font-size: 10px; background: var(--green); color: white; padding: 1px 6px; border-radius: 8px; font-weight: 700; }
 
     .voice-status-bar { display: none; background: #1e1f22; border-bottom: 1px solid var(--divider); padding: 8px 12px; align-items: center; justify-content: space-between; }
     .voice-status-bar.connected { display: flex; }
 
-    /* Bottom User Panel */
-    .user-panel { height: 52px; background: var(--bg-user); padding: 0 8px; display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-shrink: 0; }
-    .user-info { display: flex; align-items: center; gap: 8px; overflow: hidden; cursor: pointer; padding: 4px 6px; border-radius: 4px; flex: 1; min-width: 0; }
-    .user-info:hover { background: var(--bg-hover); }
+    /* Universal Avatar Styles */
     .avatar-container { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
-    .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 14px; text-transform: uppercase; }
-    .status-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-user); position: absolute; bottom: -1px; right: -1px; }
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: var(--avatar-radius);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: white; font-size: 14px;
+      text-transform: uppercase; overflow: hidden;
+      background-size: cover; background-position: center;
+      flex-shrink: 0;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-user); position: absolute; bottom: -1px; right: -1px; z-index: 2; }
     .status-online { background: #23a55a; }
     .status-idle { background: #f0b232; }
     .status-dnd { background: #f23f43; }
     .status-offline { background: #80848e; }
+
+    /* Bottom User Panel */
+    .user-panel { height: 54px; background: var(--bg-user); padding: 0 8px; display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-shrink: 0; }
+    .user-info { display: flex; align-items: center; gap: 8px; overflow: hidden; cursor: pointer; padding: 4px 6px; border-radius: 6px; flex: 1; min-width: 0; }
+    .user-info:hover { background: var(--bg-hover); }
 
     /* 3. Main Chat Area */
     .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); min-width: 0; position: relative; }
@@ -126,49 +139,88 @@
     .private-badge { background: var(--yellow); color: #1e1f22; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800; letter-spacing: 0.04em; }
     .slowmode-badge { background: var(--bg-chat-input); color: var(--text-muted); font-size: 11px; padding: 3px 8px; border-radius: 12px; display: none; align-items: center; gap: 4px; font-weight: 600; }
 
-    /* Voice Channel Stage */
-    .voice-stage { display: none; flex: 1; background: #111214; padding: 20px; flex-direction: column; gap: 16px; }
+    /* Voice Channel Stage (WebRTC Video Grid) */
+    .voice-stage { display: none; flex: 1; background: #111214; padding: 20px; flex-direction: column; gap: 16px; overflow: hidden; }
     .voice-stage.active { display: flex; }
-    .voice-stage-header { display: flex; align-items: center; justify-content: space-between; color: white; }
-    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-content: center; justify-content: center; }
-    .video-tile { background: #2b2d31; border-radius: 10px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 16px rgba(0,0,0,0.5); border: 2px solid transparent; }
-    .video-tile.speaking { border-color: var(--green); }
-    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: black; position: absolute; inset: 0; }
-    .video-avatar-fallback { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: white; z-index: 1; }
-    .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.75); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; z-index: 2; }
-    .video-controls { height: 68px; background: #1e1f22; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 16px; }
-    .v-btn { background: #2b2d31; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: 0.15s; font-size: 18px; }
+    .voice-stage-header { display: flex; align-items: center; justify-content: space-between; color: white; flex-shrink: 0; }
+    .video-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-content: center; justify-content: center; overflow-y: auto; }
+    .video-tile { background: #2b2d31; border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: 16/9; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 16px rgba(0,0,0,0.5); border: 2px solid #1e1f22; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+    .video-tile.speaking { border-color: var(--green); box-shadow: 0 0 0 2px rgba(35, 165, 90, 0.35); }
+    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: #000; position: absolute; inset: 0; z-index: 1; }
+    .video-tile video.mirrored { transform: scaleX(-1); }
+    .video-avatar-fallback { width: 74px; height: 74px; border-radius: var(--avatar-radius); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: white; z-index: 0; overflow: hidden; background-size: cover; background-position: center; }
+    .video-avatar-fallback img { width: 100%; height: 100%; object-fit: cover; }
+    .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.78); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; z-index: 3; display: flex; align-items: center; gap: 6px; }
+    .video-status-pill { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 6px; font-size: 11px; color: #b5bac1; z-index: 3; }
+    .video-controls { height: 70px; background: #1e1f22; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-shrink: 0; padding: 0 16px; }
+    .v-btn { background: #2b2d31; border: none; border-radius: 24px; height: 44px; padding: 0 16px; display: flex; align-items: center; justify-content: center; gap: 8px; color: white; cursor: pointer; transition: 0.15s; font-size: 13px; font-weight: 600; }
     .v-btn:hover { background: #35373c; }
     .v-btn.muted { background: var(--red); }
     .v-btn.active-share { background: var(--green); }
-    .v-btn.danger { background: var(--red); width: 56px; border-radius: 24px; }
+    .v-btn.danger { background: var(--red); }
+    .v-btn.danger:hover { background: #b82d32; }
 
     /* Messages Stream */
     .messages { flex: 1; padding: 16px 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--msg-gap); }
     .welcome-banner { padding: 16px 16px 12px 16px; border-bottom: 1px solid var(--divider); margin: 0 16px 8px 16px; }
     .welcome-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--bg-active); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--text-header); margin-bottom: 12px; }
     .message { display: flex; gap: 16px; position: relative; padding: 4px 16px; transition: background 0.08s; }
-    .message:hover { background: rgba(0, 0, 0, 0.08); }
+    .message:hover { background: rgba(0, 0, 0, 0.1); }
     .message.compact-followup { margin-top: calc(var(--msg-gap) * -0.75); padding-left: 72px; }
     .message.mentioned { background: rgba(240, 178, 50, 0.1); border-left: 3px solid var(--yellow); padding-left: 13px; }
-    .msg-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 16px; flex-shrink: 0; cursor: pointer; margin-top: 2px; }
+    .msg-avatar {
+      width: 40px; height: 40px;
+      border-radius: var(--avatar-radius);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: white; font-size: 16px;
+      flex-shrink: 0; cursor: pointer; margin-top: 2px;
+      overflow: hidden; background-size: cover; background-position: center;
+    }
+    .msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .msg-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
     .msg-author { font-weight: 600; color: var(--text-header); cursor: pointer; }
     .msg-author:hover { text-decoration: underline; }
     .admin-tag { background: var(--accent); color: white; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
     .msg-time { font-size: 11px; color: var(--text-muted); }
-    .msg-reply-quote { font-size: 12px; color: var(--text-muted); border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 4px; opacity: 0.85; }
+    .msg-reply-quote { font-size: 12px; color: var(--text-muted); border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 4px; opacity: 0.9; }
     .msg-body { line-height: 1.45; word-break: break-word; color: var(--text-main); }
     .msg-body a { color: #00a8fc; text-decoration: none; }
     .msg-body a:hover { text-decoration: underline; }
     .msg-img { max-width: 340px; max-height: 240px; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer; }
     .mention-pill { background: rgba(88, 101, 242, 0.3); color: #c9cdfb; padding: 0 4px; border-radius: 3px; font-weight: 500; }
 
-    /* Message Actions */
-    .msg-actions { display: none; position: absolute; right: 16px; top: -14px; background: var(--bg-chat); border: 1px solid var(--divider); border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.25); overflow: hidden; z-index: 5; }
-    .message:hover .msg-actions { display: flex; }
-    .msg-action-btn { background: none; border: none; color: var(--text-muted); padding: 6px 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+    /* Message Hover Actions - Clean Text Words Toolbar */
+    .msg-actions {
+      display: none;
+      position: absolute;
+      right: 16px;
+      top: -14px;
+      background: var(--bg-floating);
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+      overflow: hidden;
+      z-index: 5;
+    }
+    .message:hover .msg-actions { display: flex; align-items: center; }
+    .msg-action-btn {
+      background: none;
+      border: none;
+      border-right: 1px solid var(--divider);
+      color: var(--text-main);
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s, color 0.1s;
+    }
+    .msg-action-btn:last-child { border-right: none; }
     .msg-action-btn:hover { background: var(--bg-hover); color: var(--text-header); }
+    .msg-action-btn.danger { color: #f23f43; }
     .msg-action-btn.danger:hover { background: var(--red); color: white; }
 
     /* Chat Input Bar */
@@ -207,9 +259,9 @@
     .members { width: 240px; background: var(--bg-channels); padding: 16px 8px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; overflow-y: auto; }
     .members.hidden { display: none; }
     .member-group-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 12px 8px 4px 8px; letter-spacing: 0.02em; }
-    .member-item { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 4px; cursor: pointer; transition: background 0.1s; }
+    .member-item { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.1s; }
     .member-item:hover { background: var(--bg-hover); }
-    .member-item.offline { opacity: 0.45; }
+    .member-item.offline { opacity: 0.48; }
     .member-item.offline:hover { opacity: 1; }
     .member-info { min-width: 0; flex: 1; }
     .member-name { font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; display: flex; align-items: center; gap: 4px; }
@@ -218,16 +270,16 @@
     /* Modals */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(2px); }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--bg-chat); width: 480px; max-width: 94vw; max-height: 90vh; overflow-y: auto; border-radius: 8px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); color: var(--text-main); }
+    .modal { background: var(--bg-chat); width: 480px; max-width: 94vw; max-height: 90vh; overflow-y: auto; border-radius: 10px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); color: var(--text-main); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--text-header); }
-    .modal-input { width: 100%; padding: 10px 12px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.3); background: var(--bg-servers); color: var(--text-main); margin-bottom: 14px; outline: none; }
+    .modal-input { width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.3); background: var(--bg-servers); color: var(--text-main); margin-bottom: 12px; outline: none; }
     .modal-input:focus { border-color: var(--accent); }
 
     /* Settings Modal */
-    .settings-modal-box { width: 740px; max-width: 95vw; height: 540px; max-height: 90vh; padding: 0; display: flex; overflow: hidden; }
-    .settings-sidebar { width: 210px; background: var(--bg-channels); padding: 24px 12px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-    .settings-nav-item { padding: 8px 12px; border-radius: 4px; cursor: pointer; color: var(--text-muted); font-weight: 600; font-size: 14px; }
+    .settings-modal-box { width: 820px; max-width: 95vw; height: 600px; max-height: 92vh; padding: 0; display: flex; overflow: hidden; }
+    .settings-sidebar { width: 215px; background: var(--bg-channels); padding: 24px 12px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+    .settings-nav-item { padding: 9px 12px; border-radius: 6px; cursor: pointer; color: var(--text-muted); font-weight: 600; font-size: 14px; }
     .settings-nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
     .settings-nav-item.active { background: var(--bg-active); color: var(--text-header); }
     .settings-content { flex: 1; padding: 28px 32px; overflow-y: auto; position: relative; }
@@ -236,18 +288,23 @@
     .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--divider); gap: 16px; }
     .setting-row-title { font-weight: 600; color: var(--text-header); font-size: 15px; }
     .setting-row-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .upload-inline-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .upload-inline-row .modal-input { margin-bottom: 0; flex: 1; }
 
-    /* Profile Card */
-    .profile-card { background: var(--bg-floating); width: 350px; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.7); }
-    .profile-banner { height: 105px; background: #5865f2; position: relative; background-size: cover; background-position: center; }
-    .profile-avatar-wrapper { position: absolute; bottom: -38px; left: 16px; border: 6px solid var(--bg-floating); border-radius: 50%; background: var(--bg-floating); }
-    .profile-body { padding: 46px 16px 16px 16px; background: var(--bg-channels); }
+    /* Profile Card & Settings Live Preview */
+    .profile-card { background: var(--bg-floating); width: 360px; max-width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.7); border: 1px solid var(--divider); }
+    .profile-banner { height: 115px; background: #5865f2; position: relative; background-size: cover; background-position: center; }
+    .profile-avatar-wrapper { position: absolute; bottom: -40px; left: 16px; border: 6px solid var(--bg-channels); border-radius: var(--avatar-radius); background: var(--bg-channels); }
+    .profile-body { padding: 48px 16px 16px 16px; background: var(--bg-channels); }
     .profile-username { font-size: 20px; font-weight: 700; color: var(--text-header); }
     .profile-tag { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
-    .profile-bio-box { background: var(--bg-servers); padding: 12px; border-radius: 6px; font-size: 13px; color: var(--text-main); margin-bottom: 14px; line-height: 1.4; }
+    .profile-bio-box { background: var(--bg-servers); padding: 12px; border-radius: 8px; font-size: 13px; color: var(--text-main); margin-bottom: 14px; line-height: 1.45; white-space: pre-wrap; }
+
+    .shortcut-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--divider); }
+    .kbd-badge { background: var(--bg-servers); border: 1px solid var(--divider); padding: 3px 8px; border-radius: 5px; font-family: monospace; font-size: 12px; font-weight: 700; color: var(--text-header); }
 
     /* Buttons */
-    .btn { padding: 9px 16px; border: none; border-radius: 4px; font-weight: 600; font-size: 14px; cursor: pointer; color: white; transition: background 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn { padding: 9px 15px; border: none; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; color: white; transition: background 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
     .btn-primary { background: var(--accent); }
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-success { background: var(--green); }
@@ -257,7 +314,7 @@
     .btn-secondary { background: var(--bg-active); color: var(--text-header); }
     .btn-secondary:hover { background: var(--bg-hover); }
 
-    .admin-ch-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-channels); padding: 8px 12px; border-radius: 4px; margin-bottom: 6px; gap: 8px; }
+    .admin-ch-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-channels); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; gap: 8px; }
     .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
     .icon-btn:hover { color: var(--text-header); background: var(--bg-hover); }
     .icon-btn.active { color: var(--text-header); }
@@ -272,6 +329,8 @@
     @media (max-width: 768px) {
       .members { position: fixed; right: 0; top: 48px; bottom: 0; z-index: 40; box-shadow: -4px 0 16px rgba(0,0,0,0.4); }
       .channels { width: 205px; }
+      .settings-modal-box { flex-direction: column; height: 88vh; }
+      .settings-sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; }
     }
   </style>
 
@@ -333,7 +392,7 @@
       <!-- Connected Voice Status Bar -->
       <div class="voice-status-bar" id="voice-status-bar">
         <div style="min-width:0;">
-          <div style="color:var(--green); font-size:12px; font-weight:700;">🔊 Voice Connected</div>
+          <div style="color:var(--green); font-size:12px; font-weight:700;">Voice Connected</div>
           <div id="voice-connected-label" style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">General Voice</div>
         </div>
         <button class="icon-btn" id="disconnect-voice-sidebar-btn" title="Disconnect Voice" style="color:var(--red);">
@@ -368,7 +427,7 @@
     <div class="chat-area">
       <!-- Global Broadcast Banner -->
       <div class="global-announcement" id="global-announcement-bar">
-        <span id="global-announcement-text">📢 Announcement</span>
+        <span id="global-announcement-text">Announcement</span>
         <button class="icon-btn" id="dismiss-announcement-btn" style="color:white; padding:2px 6px;">✕</button>
       </div>
 
@@ -377,7 +436,7 @@
           <span style="color: var(--text-muted); font-size: 22px; font-weight:400;" id="header-symbol">#</span>
           <span id="channel-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">general</span>
           <span id="private-badge" class="private-badge" style="display:none;">PRIVATE ROOM</span>
-          <span id="slowmode-badge" class="slowmode-badge" title="Slowmode is enabled">⏱️ <span id="slowmode-sec-label">0</span>s</span>
+          <span id="slowmode-badge" class="slowmode-badge" title="Slowmode is enabled">Slowmode: <span id="slowmode-sec-label">0</span>s</span>
         </div>
         <div class="header-right">
           <button class="icon-btn active" id="toggle-members-btn" title="Toggle Member List">
@@ -386,21 +445,21 @@
         </div>
       </div>
 
-      <!-- Voice Stage -->
+      <!-- Voice Stage (Real Multi-Peer WebRTC Video & Voice) -->
       <div class="voice-stage" id="voice-stage">
         <div class="voice-stage-header">
           <div>
-            <span style="font-size:18px; font-weight:700;" id="voice-stage-title">🔊 General Voice</span>
-            <span style="font-size:12px; color:#949ba4; margin-left:8px;">Server Voice Channel</span>
+            <span style="font-size:18px; font-weight:700;" id="voice-stage-title">General Voice</span>
+            <span style="font-size:12px; color:#949ba4; margin-left:8px;" id="webrtc-connection-state">WebRTC Peer-to-Peer</span>
           </div>
           <button class="btn btn-secondary" id="back-to-text-btn" style="padding:6px 12px; font-size:12px;">View Text Chat</button>
         </div>
         <div class="video-grid" id="video-grid"></div>
         <div class="video-controls">
-          <button class="v-btn" id="mute-mic-btn" title="Mute / Unmute Mic">🎤</button>
-          <button class="v-btn" id="toggle-cam-btn" title="Toggle Camera">📹</button>
-          <button class="v-btn" id="share-screen-btn" title="Share Screen">🖥️</button>
-          <button class="v-btn danger" id="leave-call-btn" title="Disconnect Voice">📞</button>
+          <button class="v-btn" id="mute-mic-btn" title="Mute / Unmute Mic">Mute Mic</button>
+          <button class="v-btn muted" id="toggle-cam-btn" title="Toggle Camera">Camera Off</button>
+          <button class="v-btn" id="share-screen-btn" title="Share Screen">Share Screen</button>
+          <button class="v-btn danger" id="leave-call-btn" title="Disconnect Voice">Disconnect</button>
         </div>
       </div>
 
@@ -421,12 +480,12 @@
       <!-- GIF Picker Popover -->
       <div class="popover-panel gif-panel" id="gif-popover">
         <div class="gif-tabs" id="gif-tabs">
-          <button class="gif-tab active" data-cat="hype">🔥 Hype</button>
-          <button class="gif-tab" data-cat="funny">😂 Funny</button>
-          <button class="gif-tab" data-cat="gaming">🎮 Gaming</button>
-          <button class="gif-tab" data-cat="reactions">✨ Reactions</button>
-          <button class="gif-tab" data-cat="cats">🐱 Cats</button>
-          <button class="gif-tab" data-cat="memes">💀 Memes</button>
+          <button class="gif-tab active" data-cat="hype">Hype</button>
+          <button class="gif-tab" data-cat="funny">Funny</button>
+          <button class="gif-tab" data-cat="gaming">Gaming</button>
+          <button class="gif-tab" data-cat="reactions">Reactions</button>
+          <button class="gif-tab" data-cat="cats">Cats</button>
+          <button class="gif-tab" data-cat="memes">Memes</button>
         </div>
         <div class="gif-grid" id="gif-grid"></div>
         <div style="display:flex; gap:6px;">
@@ -462,16 +521,17 @@
 
   <!-- PROFILE POPOVER MODAL -->
   <div class="modal-overlay" id="profile-modal">
-    <div style="background:none; border:none; padding:0; box-shadow:none;" class="modal">
+    <div style="background:none; border:none; padding:0; box-shadow:none; width:auto;" class="modal">
       <div class="profile-card">
         <div class="profile-banner" id="modal-banner-color">
           <div class="profile-avatar-wrapper">
-            <div class="avatar" id="modal-profile-avatar" style="width:80px; height:80px; font-size:32px;">U</div>
+            <div class="avatar" id="modal-profile-avatar" style="width:82px; height:82px; font-size:32px;">U</div>
           </div>
         </div>
         <div class="profile-body">
           <div class="profile-username" id="modal-profile-name">Username</div>
           <div class="profile-tag" id="modal-profile-role">Member</div>
+          <div id="modal-profile-custom-status" style="font-size:12px; color:var(--text-main); margin-bottom:10px; display:none; font-style:italic;"></div>
           <div class="section-label" style="padding:0 0 6px 0;">About Me</div>
           <div class="profile-bio-box" id="modal-profile-bio">Hanging out on MiniCord!</div>
           <div id="profile-action-container" style="margin-bottom:12px; display:flex; gap:8px;">
@@ -481,13 +541,14 @@
           <div id="my-profile-status-box">
             <div class="section-label" style="padding:0 0 6px 0;">Set Status</div>
             <select class="modal-input" id="status-selector" style="margin-bottom:10px;">
-              <option value="online">🟢 Online</option>
-              <option value="idle">🟡 Idle</option>
-              <option value="dnd">🔴 Do Not Disturb</option>
-              <option value="offline">⚫ Invisible</option>
+              <option value="online">Online</option>
+              <option value="idle">Idle</option>
+              <option value="dnd">Do Not Disturb</option>
+              <option value="offline">Invisible</option>
             </select>
           </div>
-          <div style="display:flex; justify-content:flex-end;">
+          <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button class="btn btn-primary" id="edit-profile-from-modal-btn" style="display:none;">Edit Profile</button>
             <button class="btn btn-secondary" onclick="closeModal('profile-modal')">Close</button>
           </div>
         </div>
@@ -548,9 +609,11 @@
     <div class="modal settings-modal-box">
       <div class="settings-sidebar">
         <div class="section-label" style="padding:0 12px 6px 12px;">User Settings</div>
-        <div class="settings-nav-item active" data-tab="tab-account">My Account</div>
+        <div class="settings-nav-item active" data-tab="tab-account">My Account & Profile</div>
         <div class="settings-nav-item" data-tab="tab-appearance">Appearance</div>
+        <div class="settings-nav-item" data-tab="tab-voice">Voice & Video</div>
         <div class="settings-nav-item" data-tab="tab-notifications">Notifications & Chat</div>
+        <div class="settings-nav-item" data-tab="tab-keybinds">Keybinds & Shortcuts</div>
         <div style="flex:1;"></div>
         <div class="divider" style="width:100%;"></div>
         <div class="settings-nav-item" id="logout-btn" style="color:var(--red);">Log Out</div>
@@ -559,22 +622,59 @@
       <div class="settings-content">
         <button class="icon-btn" onclick="closeModal('settings-modal')" style="position:absolute; right:18px; top:18px; border:1px solid var(--divider); border-radius:50%; width:32px; height:32px;">✕</button>
 
+        <!-- TAB 1: MY ACCOUNT & PROFILE -->
         <div class="settings-tab active" id="tab-account">
-          <div class="modal-title" style="margin-bottom:16px;">My Account & Profile</div>
-          <label class="auth-label">About Me / Custom Bio</label>
-          <textarea class="modal-input" id="settings-bio-input" rows="2" maxlength="160" placeholder="Tell others about yourself..."></textarea>
-          
-          <label class="auth-label">Profile Banner Image URL</label>
-          <input type="text" class="modal-input" id="settings-banner-input" placeholder="https://example.com/banner.jpg" />
+          <div class="modal-title" style="margin-bottom:14px;">My Account & Profile</div>
 
-          <label class="auth-label">Avatar & Accent Color</label>
+          <!-- Live Profile Preview Card -->
+          <div style="margin-bottom:18px;">
+            <div class="section-label" style="padding:0 0 6px 0;">Live Profile Preview</div>
+            <div class="profile-card" style="width:100%;">
+              <div class="profile-banner" id="preview-banner-box" style="height:95px;">
+                <div class="profile-avatar-wrapper" style="bottom:-34px;">
+                  <div class="avatar" id="preview-avatar-box" style="width:70px; height:70px; font-size:28px;">U</div>
+                </div>
+              </div>
+              <div class="profile-body" style="padding:40px 16px 12px 16px;">
+                <div class="profile-username" id="preview-username-text" style="font-size:17px;">Username</div>
+                <div class="profile-tag" id="preview-status-text" style="margin-bottom:8px;">Hanging out on MiniCord!</div>
+                <div class="profile-bio-box" id="preview-bio-text" style="margin-bottom:0; padding:8px 10px; font-size:12px;">Hanging out on MiniCord!</div>
+              </div>
+            </div>
+          </div>
+
+          <label class="auth-label">Profile Picture (Upload Image or Paste URL)</label>
+          <input type="file" id="pfp-file-input" accept="image/*" style="display:none;" />
+          <div class="upload-inline-row">
+            <input type="text" class="modal-input" id="settings-pfp-input" placeholder="Paste image URL or click Upload..." />
+            <button class="btn btn-primary" id="upload-pfp-btn" type="button">Upload</button>
+            <button class="btn btn-secondary" id="clear-pfp-btn" type="button">Clear</button>
+          </div>
+
+          <label class="auth-label">Profile Banner (Upload Image or Paste URL)</label>
+          <input type="file" id="banner-file-input" accept="image/*" style="display:none;" />
+          <div class="upload-inline-row">
+            <input type="text" class="modal-input" id="settings-banner-input" placeholder="Paste banner image URL or click Upload..." />
+            <button class="btn btn-primary" id="upload-banner-btn" type="button">Upload</button>
+            <button class="btn btn-secondary" id="clear-banner-btn" type="button">Clear</button>
+          </div>
+
+          <label class="auth-label">Custom Status Text</label>
+          <input type="text" class="modal-input" id="settings-custom-status-input" maxlength="60" placeholder="What are you up to right now?" />
+
+          <label class="auth-label">About Me / Profile Description</label>
+          <textarea class="modal-input" id="settings-bio-input" rows="3" maxlength="200" placeholder="Tell others about yourself..."></textarea>
+
+          <label class="auth-label">Avatar Fallback & Accent Color</label>
           <div style="display:flex; gap:10px; align-items:center; margin-bottom:18px;">
             <input type="color" id="settings-color-input" style="width:48px; height:36px; border:none; background:none; cursor:pointer;" />
-            <span style="font-size:13px; color:var(--text-muted);">Pick your accent color</span>
+            <span style="font-size:13px; color:var(--text-muted);">Used when no profile picture or banner image is set</span>
           </div>
+
           <button class="btn btn-success" id="save-profile-settings-btn">Save Profile Changes</button>
         </div>
 
+        <!-- TAB 2: APPEARANCE -->
         <div class="settings-tab" id="tab-appearance">
           <div class="modal-title" style="margin-bottom:16px;">Appearance</div>
           <div class="setting-row">
@@ -582,7 +682,7 @@
               <div class="setting-row-title">Theme</div>
               <div class="setting-row-desc">Choose your preferred color palette</div>
             </div>
-            <select class="modal-input" id="theme-select" style="width:170px; margin:0;">
+            <select class="modal-input" id="theme-select" style="width:180px; margin:0;">
               <option value="theme-dark">Discord Dark</option>
               <option value="theme-light">Light Mode</option>
               <option value="theme-amoled">Midnight AMOLED</option>
@@ -594,9 +694,19 @@
               <div class="setting-row-title">Message Display</div>
               <div class="setting-row-desc">Switch between Cozy and Compact spacing</div>
             </div>
-            <select class="modal-input" id="density-select" style="width:170px; margin:0;">
+            <select class="modal-input" id="density-select" style="width:180px; margin:0;">
               <option value="cozy">Cozy (Default)</option>
               <option value="compact">Compact</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Avatar Shape</div>
+              <div class="setting-row-desc">Display user avatars as circles or rounded squares</div>
+            </div>
+            <select class="modal-input" id="avatarshape-select" style="width:180px; margin:0;">
+              <option value="circle">Circle (Default)</option>
+              <option value="squircle">Rounded Square</option>
             </select>
           </div>
           <div class="setting-row">
@@ -604,35 +714,139 @@
               <div class="setting-row-title">Chat Font Scaling</div>
               <div class="setting-row-desc">Adjust text size across channels</div>
             </div>
-            <select class="modal-input" id="fontsize-select" style="width:170px; margin:0;">
+            <select class="modal-input" id="fontsize-select" style="width:180px; margin:0;">
+              <option value="13px">Extra Small (13px)</option>
               <option value="14px">Small (14px)</option>
               <option value="15px" selected>Normal (15px)</option>
-              <option value="17px">Large (17px)</option>
+              <option value="16px">Medium Large (16px)</option>
+              <option value="18px">Large (18px)</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Member List Sidebar</div>
+              <div class="setting-row-desc">Show the online/offline member list on load</div>
+            </div>
+            <select class="modal-input" id="memberlist-default-select" style="width:180px; margin:0;">
+              <option value="shown">Shown</option>
+              <option value="hidden">Hidden</option>
             </select>
           </div>
         </div>
 
+        <!-- TAB 3: VOICE & VIDEO -->
+        <div class="settings-tab" id="tab-voice">
+          <div class="modal-title" style="margin-bottom:16px;">Voice & Video</div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Microphone Input Device</div>
+              <div class="setting-row-desc">Select audio input source for voice channels</div>
+            </div>
+            <select class="modal-input" id="mic-device-select" style="width:200px; margin:0;">
+              <option value="default">Default Microphone</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Camera Input Device</div>
+              <div class="setting-row-desc">Select video camera source for video calls</div>
+            </div>
+            <select class="modal-input" id="cam-device-select" style="width:200px; margin:0;">
+              <option value="default">Default Camera</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Mirror Local Camera</div>
+              <div class="setting-row-desc">Flip your own webcam preview horizontally</div>
+            </div>
+            <select class="modal-input" id="mirror-cam-select" style="width:180px; margin:0;">
+              <option value="enabled">Mirrored</option>
+              <option value="disabled">Normal</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Push-to-Talk Mode (Hold Spacebar)</div>
+              <div class="setting-row-desc">Mute mic unless holding Spacebar while in voice</div>
+            </div>
+            <select class="modal-input" id="ptt-select" style="width:180px; margin:0;">
+              <option value="disabled">Voice Activity (Open Mic)</option>
+              <option value="enabled">Push-to-Talk (Space)</option>
+            </select>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn-secondary" id="refresh-devices-btn">Refresh Audio/Video Devices</button>
+          </div>
+        </div>
+
+        <!-- TAB 4: NOTIFICATIONS & CHAT -->
         <div class="settings-tab" id="tab-notifications">
           <div class="modal-title" style="margin-bottom:16px;">Notifications & Chat</div>
           <div class="setting-row">
             <div>
               <div class="setting-row-title">Message Audio Chime</div>
-              <div class="setting-row-desc">Play a sound when new messages arrive</div>
+              <div class="setting-row-desc">Play a subtle sound when new messages arrive</div>
             </div>
-            <select class="modal-input" id="sound-select" style="width:170px; margin:0;">
+            <select class="modal-input" id="sound-select" style="width:180px; margin:0;">
               <option value="enabled">Enabled</option>
               <option value="disabled">Muted</option>
             </select>
           </div>
           <div class="setting-row">
             <div>
-              <div class="setting-row-title">24-Hour Timestamps</div>
-              <div class="setting-row-desc">Use 24-hour clock format instead of AM/PM</div>
+              <div class="setting-row-title">Desktop Browser Notifications</div>
+              <div class="setting-row-desc">Show system popup alerts when tab is in background</div>
             </div>
-            <select class="modal-input" id="timeformat-select" style="width:170px; margin:0;">
+            <select class="modal-input" id="desktop-notif-select" style="width:180px; margin:0;">
+              <option value="disabled">Disabled</option>
+              <option value="enabled">Enabled</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Timestamp Format</div>
+              <div class="setting-row-desc">Choose 12-hour AM/PM or 24-hour military clock</div>
+            </div>
+            <select class="modal-input" id="timeformat-select" style="width:180px; margin:0;">
               <option value="12h">12-Hour (AM/PM)</option>
               <option value="24h">24-Hour</option>
             </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-row-title">Link & Image Auto-Embeds</div>
+              <div class="setting-row-desc">Automatically render inline previews for image/GIF links</div>
+            </div>
+            <select class="modal-input" id="autoembed-select" style="width:180px; margin:0;">
+              <option value="enabled">Enabled</option>
+              <option value="disabled">Links Only</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TAB 5: KEYBINDS & SHORTCUTS -->
+        <div class="settings-tab" id="tab-keybinds">
+          <div class="modal-title" style="margin-bottom:16px;">Keybinds & Shortcuts</div>
+          <div class="shortcut-row">
+            <span>Send Message</span>
+            <span class="kbd-badge">Enter</span>
+          </div>
+          <div class="shortcut-row">
+            <span>Cancel Active Reply</span>
+            <span class="kbd-badge">Escape</span>
+          </div>
+          <div class="shortcut-row">
+            <span>Focus Chat Input</span>
+            <span class="kbd-badge">/</span>
+          </div>
+          <div class="shortcut-row">
+            <span>Push-to-Talk (when enabled)</span>
+            <span class="kbd-badge">Hold Space</span>
+          </div>
+          <div class="shortcut-row">
+            <span>Unlock Admin Panel</span>
+            <span class="kbd-badge">/admin [PIN]</span>
           </div>
         </div>
       </div>
@@ -643,13 +857,13 @@
   <div class="modal-overlay" id="admin-modal">
     <div class="modal" style="width:540px;">
       <div class="modal-header">
-        <span class="modal-title">Admin Control Center 👑</span>
+        <span class="modal-title">Admin Control Center</span>
         <button class="icon-btn" onclick="closeModal('admin-modal')">✕</button>
       </div>
 
       <!-- Global Broadcast Announcement -->
       <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:14px; border:1px solid var(--divider);">
-        <div class="section-label" style="padding:0 0 8px 0; color:var(--text-header);">📢 Global Server Announcement Banner</div>
+        <div class="section-label" style="padding:0 0 8px 0; color:var(--text-header);">Global Server Announcement Banner</div>
         <div style="display:flex; gap:8px;">
           <input type="text" class="modal-input" id="admin-announcement-input" placeholder="Broadcast message to all users..." style="margin:0;" />
           <button class="btn btn-primary" id="post-announcement-btn">Post</button>
@@ -659,7 +873,7 @@
 
       <!-- Global Chat Limits -->
       <div style="background:var(--bg-channels); padding:14px; border-radius:6px; margin-bottom:14px; border:1px solid var(--divider);">
-        <div class="section-label" style="padding:0 0 10px 0; color:var(--text-header);">⏱️ Global Chat & Anti-Spam Limits</div>
+        <div class="section-label" style="padding:0 0 10px 0; color:var(--text-header);">Global Chat & Anti-Spam Limits</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:10px;">
           <div>
             <label class="auth-label">Max Text Length (Chars)</label>
@@ -695,7 +909,7 @@
 
       <!-- Manage Voice Channels -->
       <div style="margin-bottom: 14px;">
-        <div class="section-label" style="padding:0 0 6px 0;">🔊 Voice Channels (Current Server)</div>
+        <div class="section-label" style="padding:0 0 6px 0;">Voice Channels (Current Server)</div>
         <div style="display:flex; gap:8px; margin-bottom:8px;">
           <input type="text" class="modal-input" id="new-voice-channel-input" placeholder="e.g. Squad Lounge" style="margin:0;" />
           <button class="btn btn-primary" id="create-voice-channel-submit">Create</button>
@@ -705,7 +919,7 @@
 
       <!-- User Moderation -->
       <div style="margin-bottom: 14px;">
-        <div class="section-label" style="padding:0 0 6px 0;">🛡️ Online Users Moderation</div>
+        <div class="section-label" style="padding:0 0 6px 0;">Online Users Moderation</div>
         <div id="admin-users-list" style="max-height: 110px; overflow-y: auto;"></div>
       </div>
 
@@ -737,6 +951,52 @@
       setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.2s'; setTimeout(() => t.remove(), 200); }, 2800);
     }
 
+    // Helper: Compress image file via canvas for lightweight RTDB storage
+    function compressImageFile(file, maxWidth, maxHeight, quality = 0.8) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            let w = img.width;
+            let h = img.height;
+            if (w > maxWidth || h > maxHeight) {
+              const ratio = Math.min(maxWidth / w, maxHeight / h);
+              w = Math.round(w * ratio);
+              h = Math.round(h * ratio);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Helper: Render avatar content (custom PFP image or initial letter)
+    function applyAvatarStyle(el, name, color, pfpUrl) {
+      if (!el) return;
+      el.style.backgroundColor = color || '#5865f2';
+      if (pfpUrl && pfpUrl.trim()) {
+        el.innerHTML = `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML((name || 'U')[0].toUpperCase())}';" />`;
+      } else {
+        el.innerHTML = '';
+        el.textContent = (name || 'U')[0].toUpperCase();
+      }
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>'"]/g, t => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[t]));
+    }
+
     // AUTHENTICATION LOGIC
     let isSignUpMode = false;
     const authSwitchBtn = document.getElementById('auth-switch-mode');
@@ -751,7 +1011,20 @@
         try {
           const uData = JSON.parse(savedUser);
           if (uData && uData.username && uData.userId) {
-            loginUser(uData.username, uData.userId, uData.color || '#5865f2', uData.bio || "Hanging out on MiniCord!", uData.banner || "");
+            // Sync latest profile fields from Firebase if available
+            const safeKey = uData.username.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
+            db.ref('accounts/' + safeKey).once('value', (snap) => {
+              const dbAcc = snap.val() || {};
+              loginUser(
+                uData.username,
+                uData.userId,
+                dbAcc.color || uData.color || '#5865f2',
+                dbAcc.bio || uData.bio || "Hanging out on MiniCord!",
+                dbAcc.banner || uData.banner || "",
+                dbAcc.pfp || uData.pfp || "",
+                dbAcc.customStatus || uData.customStatus || ""
+              );
+            });
             return;
           }
         } catch (e) {
@@ -795,10 +1068,19 @@
             const newColor = palette[Math.floor(Math.random() * palette.length)];
             const newId = 'u_' + Date.now();
             const defaultBio = "Hanging out on MiniCord!";
-            const defaultBanner = "";
-            userRef.set({ username: uName, password: uPass, userId: newId, color: newColor, bio: defaultBio, banner: defaultBanner });
-            localStorage.setItem('minicord_user', JSON.stringify({ username: uName, userId: newId, color: newColor, bio: defaultBio, banner: defaultBanner }));
-            loginUser(uName, newId, newColor, defaultBio, defaultBanner);
+            const accountPayload = {
+              username: uName,
+              password: uPass,
+              userId: newId,
+              color: newColor,
+              bio: defaultBio,
+              banner: "",
+              pfp: "",
+              customStatus: ""
+            };
+            userRef.set(accountPayload);
+            localStorage.setItem('minicord_user', JSON.stringify(accountPayload));
+            loginUser(uName, newId, newColor, defaultBio, "", "", "");
           }
         } else {
           if (!data || data.password !== uPass) {
@@ -807,8 +1089,12 @@
           } else {
             const bio = data.bio || "Hanging out on MiniCord!";
             const banner = data.banner || "";
-            localStorage.setItem('minicord_user', JSON.stringify({ username: data.username, userId: data.userId, color: data.color, bio, banner }));
-            loginUser(data.username, data.userId, data.color, bio, banner);
+            const pfp = data.pfp || "";
+            const customStatus = data.customStatus || "";
+            localStorage.setItem('minicord_user', JSON.stringify({
+              username: data.username, userId: data.userId, color: data.color, bio, banner, pfp, customStatus
+            }));
+            loginUser(data.username, data.userId, data.color, bio, banner, pfp, customStatus);
           }
         }
       });
@@ -827,6 +1113,8 @@
     let userId = "";
     let userBio = "Hanging out on MiniCord!";
     let userBanner = "";
+    let userPfp = "";
+    let userCustomStatus = "";
     let isAdmin = false;
     let currentStatus = 'online';
 
@@ -835,31 +1123,115 @@
     let lastMessageSentTime = 0;
     let replyingTo = null;
 
-    function loginUser(name, id, color, bio, banner) {
+    function loginUser(name, id, color, bio, banner, pfp, customStatus) {
       username = name;
       userId = id;
       userColor = color;
       userBio = bio || "Hanging out on MiniCord!";
       userBanner = banner || "";
+      userPfp = pfp || "";
+      userCustomStatus = customStatus || "";
       document.getElementById('auth-screen').style.display = 'none';
       document.getElementById('app-container').style.display = 'flex';
       initApp();
     }
 
     function initApp() {
-      document.getElementById('my-name').textContent = username;
-      document.getElementById('my-avatar').textContent = username[0].toUpperCase();
-      document.getElementById('my-avatar').style.backgroundColor = userColor;
-      document.getElementById('settings-bio-input').value = userBio;
+      function refreshMyDockUI() {
+        document.getElementById('my-name').textContent = username;
+        applyAvatarStyle(document.getElementById('my-avatar'), username, userColor, userPfp);
+        const subText = isAdmin
+          ? 'Admin 👑'
+          : (userCustomStatus || (currentStatus === 'dnd' ? 'Do Not Disturb' : currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)));
+        document.getElementById('role-label').textContent = subText;
+      }
+
+      function updateSettingsLivePreview() {
+        const previewName = document.getElementById('preview-username-text');
+        const previewStatus = document.getElementById('preview-status-text');
+        const previewBio = document.getElementById('preview-bio-text');
+        const previewAvatar = document.getElementById('preview-avatar-box');
+        const previewBanner = document.getElementById('preview-banner-box');
+
+        const draftPfp = document.getElementById('settings-pfp-input').value.trim();
+        const draftBanner = document.getElementById('settings-banner-input').value.trim();
+        const draftBio = document.getElementById('settings-bio-input').value.trim() || "Hanging out on MiniCord!";
+        const draftStatus = document.getElementById('settings-custom-status-input').value.trim();
+        const draftColor = document.getElementById('settings-color-input').value;
+
+        previewName.textContent = username;
+        previewStatus.textContent = draftStatus || (isAdmin ? 'Administrator' : 'Member');
+        previewBio.textContent = draftBio;
+        applyAvatarStyle(previewAvatar, username, draftColor, draftPfp);
+
+        if (draftBanner) {
+          previewBanner.style.backgroundImage = `url('${draftBanner}')`;
+          previewBanner.style.backgroundColor = 'transparent';
+        } else {
+          previewBanner.style.backgroundImage = 'none';
+          previewBanner.style.backgroundColor = draftColor;
+        }
+      }
+
+      refreshMyDockUI();
+      document.getElementById('settings-pfp-input').value = userPfp;
       document.getElementById('settings-banner-input').value = userBanner;
+      document.getElementById('settings-bio-input').value = userBio;
+      document.getElementById('settings-custom-status-input').value = userCustomStatus;
       document.getElementById('settings-color-input').value = userColor;
+      updateSettingsLivePreview();
+
+      ['settings-pfp-input', 'settings-banner-input', 'settings-bio-input', 'settings-custom-status-input', 'settings-color-input'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateSettingsLivePreview);
+      });
+
+      // Profile Picture & Banner Local File Upload Handlers
+      const pfpFileInput = document.getElementById('pfp-file-input');
+      document.getElementById('upload-pfp-btn').onclick = () => pfpFileInput.click();
+      document.getElementById('clear-pfp-btn').onclick = () => {
+        document.getElementById('settings-pfp-input').value = '';
+        updateSettingsLivePreview();
+      };
+      pfpFileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          const compressed = await compressImageFile(file, 200, 200, 0.82);
+          document.getElementById('settings-pfp-input').value = compressed;
+          updateSettingsLivePreview();
+          showToast("Profile picture loaded! Click Save Profile Changes.", "success");
+        } catch (err) {
+          showToast("Could not process image file.", "error");
+        }
+        pfpFileInput.value = '';
+      };
+
+      const bannerFileInput = document.getElementById('banner-file-input');
+      document.getElementById('upload-banner-btn').onclick = () => bannerFileInput.click();
+      document.getElementById('clear-banner-btn').onclick = () => {
+        document.getElementById('settings-banner-input').value = '';
+        updateSettingsLivePreview();
+      };
+      bannerFileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          const compressed = await compressImageFile(file, 680, 240, 0.78);
+          document.getElementById('settings-banner-input').value = compressed;
+          updateSettingsLivePreview();
+          showToast("Profile banner loaded! Click Save Profile Changes.", "success");
+        } catch (err) {
+          showToast("Could not process banner file.", "error");
+        }
+        bannerFileInput.value = '';
+      };
 
       // Sync Global Announcement Banner
       db.ref('config/announcement').on('value', (snap) => {
         const text = snap.val();
         const bar = document.getElementById('global-announcement-bar');
         if (text && text.trim()) {
-          document.getElementById('global-announcement-text').textContent = '📢 ' + text;
+          document.getElementById('global-announcement-text').textContent = text;
           bar.classList.add('active');
         } else {
           bar.classList.remove('active');
@@ -891,15 +1263,15 @@
         if (act.type === 'kick') {
           db.ref('mod_actions/' + userId).remove();
           myPresenceRef.remove();
-          alert("You were kicked by an Administrator.");
-          location.reload();
+          showToast("You were kicked by an Administrator.", "error");
+          setTimeout(() => location.reload(), 1200);
         } else if (act.type === 'promote') {
           db.ref('mod_actions/' + userId).remove();
           isAdmin = true;
-          document.getElementById('role-label').textContent = 'Admin 👑';
+          refreshMyDockUI();
           document.getElementById('open-admin-quick-btn').style.display = 'flex';
           updatePresence();
-          showToast("An Admin granted you Admin privileges! 👑", "success");
+          showToast("An Admin granted you Admin privileges!", "success");
         }
       });
 
@@ -930,46 +1302,81 @@
         showToast(`Limits updated: ${tLim} chars, ${sLim}s cooldown`, 'success');
       };
 
+      // Settings Preferences State
       let soundEnabled = localStorage.getItem('minicord_sound') !== 'disabled';
+      let desktopNotifEnabled = localStorage.getItem('minicord_desktop_notif') === 'enabled';
       let use24Hour = localStorage.getItem('minicord_time') === '24h';
+      let autoEmbedEnabled = localStorage.getItem('minicord_autoembed') !== 'disabled';
+      let mirrorLocalCam = localStorage.getItem('minicord_mirrorcam') !== 'disabled';
+      let pttEnabled = localStorage.getItem('minicord_ptt') === 'enabled';
+      let selectedMicId = localStorage.getItem('minicord_mic_id') || 'default';
+      let selectedCamId = localStorage.getItem('minicord_cam_id') || 'default';
 
       const savedTheme = localStorage.getItem('minicord_theme') || 'theme-dark';
-      document.body.className = savedTheme;
-      document.getElementById('theme-select').value = savedTheme;
-
       const savedDensity = localStorage.getItem('minicord_density') || 'cozy';
-      if (savedDensity === 'compact') document.body.classList.add('compact-mode');
-      document.getElementById('density-select').value = savedDensity;
-
+      const savedAvatarShape = localStorage.getItem('minicord_avatar_shape') || 'circle';
       const savedFont = localStorage.getItem('minicord_font') || '15px';
+      const savedMemberListDefault = localStorage.getItem('minicord_memberlist') || 'shown';
+
+      function applyBodyClasses() {
+        const themeVal = document.getElementById('theme-select').value;
+        const densityVal = document.getElementById('density-select').value;
+        const shapeVal = document.getElementById('avatarshape-select').value;
+        document.body.className = themeVal
+          + (densityVal === 'compact' ? ' compact-mode' : '')
+          + (shapeVal === 'squircle' ? ' avatar-squircle' : '');
+      }
+
+      document.getElementById('theme-select').value = savedTheme;
+      document.getElementById('density-select').value = savedDensity;
+      document.getElementById('avatarshape-select').value = savedAvatarShape;
+      applyBodyClasses();
+
       document.documentElement.style.setProperty('--chat-font-size', savedFont);
       document.getElementById('fontsize-select').value = savedFont;
+      document.getElementById('memberlist-default-select').value = savedMemberListDefault;
+      if (savedMemberListDefault === 'hidden') {
+        document.getElementById('members-sidebar').classList.add('hidden');
+        document.getElementById('toggle-members-btn').classList.remove('active');
+      }
 
       document.getElementById('sound-select').value = soundEnabled ? 'enabled' : 'disabled';
+      document.getElementById('desktop-notif-select').value = desktopNotifEnabled ? 'enabled' : 'disabled';
       document.getElementById('timeformat-select').value = use24Hour ? '24h' : '12h';
+      document.getElementById('autoembed-select').value = autoEmbedEnabled ? 'enabled' : 'disabled';
+      document.getElementById('mirror-cam-select').value = mirrorLocalCam ? 'enabled' : 'disabled';
+      document.getElementById('ptt-select').value = pttEnabled ? 'enabled' : 'disabled';
 
+      // Settings Tabs Navigation
       document.querySelectorAll('.settings-nav-item[data-tab]').forEach(nav => {
         nav.onclick = () => {
           document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
           document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
           nav.classList.add('active');
           document.getElementById(nav.dataset.tab).classList.add('active');
+          if (nav.dataset.tab === 'tab-voice') populateMediaDevices();
         };
       });
 
-      document.getElementById('open-settings-btn').onclick = () => openModal('settings-modal');
+      document.getElementById('open-settings-btn').onclick = () => {
+        updateSettingsLivePreview();
+        openModal('settings-modal');
+      };
       document.getElementById('open-admin-quick-btn').onclick = () => { renderAdminPanelLists(); openModal('admin-modal'); };
 
       document.getElementById('theme-select').onchange = (e) => {
-        const isCompact = document.body.classList.contains('compact-mode');
-        document.body.className = e.target.value + (isCompact ? ' compact-mode' : '');
+        applyBodyClasses();
         localStorage.setItem('minicord_theme', e.target.value);
       };
 
       document.getElementById('density-select').onchange = (e) => {
-        if (e.target.value === 'compact') document.body.classList.add('compact-mode');
-        else document.body.classList.remove('compact-mode');
+        applyBodyClasses();
         localStorage.setItem('minicord_density', e.target.value);
+      };
+
+      document.getElementById('avatarshape-select').onchange = (e) => {
+        applyBodyClasses();
+        localStorage.setItem('minicord_avatar_shape', e.target.value);
       };
 
       document.getElementById('fontsize-select').onchange = (e) => {
@@ -977,30 +1384,132 @@
         localStorage.setItem('minicord_font', e.target.value);
       };
 
+      document.getElementById('memberlist-default-select').onchange = (e) => {
+        localStorage.setItem('minicord_memberlist', e.target.value);
+        const hidden = e.target.value === 'hidden';
+        document.getElementById('members-sidebar').classList.toggle('hidden', hidden);
+        document.getElementById('toggle-members-btn').classList.toggle('active', !hidden);
+      };
+
       document.getElementById('sound-select').onchange = (e) => {
         soundEnabled = (e.target.value === 'enabled');
         localStorage.setItem('minicord_sound', e.target.value);
       };
 
+      document.getElementById('desktop-notif-select').onchange = async (e) => {
+        if (e.target.value === 'enabled' && 'Notification' in window) {
+          const perm = await Notification.requestPermission();
+          if (perm !== 'granted') {
+            e.target.value = 'disabled';
+            desktopNotifEnabled = false;
+            showToast("Browser notification permission denied.", "error");
+            return;
+          }
+        }
+        desktopNotifEnabled = (e.target.value === 'enabled');
+        localStorage.setItem('minicord_desktop_notif', e.target.value);
+      };
+
       document.getElementById('timeformat-select').onchange = (e) => {
         use24Hour = (e.target.value === '24h');
         localStorage.setItem('minicord_time', e.target.value);
+        loadMessages();
       };
 
+      document.getElementById('autoembed-select').onchange = (e) => {
+        autoEmbedEnabled = (e.target.value === 'enabled');
+        localStorage.setItem('minicord_autoembed', e.target.value);
+        loadMessages();
+      };
+
+      document.getElementById('mirror-cam-select').onchange = (e) => {
+        mirrorLocalCam = (e.target.value === 'enabled');
+        localStorage.setItem('minicord_mirrorcam', e.target.value);
+        const localVid = document.getElementById(`video_${userId}`);
+        if (localVid) localVid.classList.toggle('mirrored', mirrorLocalCam);
+      };
+
+      document.getElementById('ptt-select').onchange = (e) => {
+        pttEnabled = (e.target.value === 'enabled');
+        localStorage.setItem('minicord_ptt', e.target.value);
+        if (pttEnabled && localStream) {
+          localStream.getAudioTracks().forEach(t => t.enabled = false);
+          updateVoiceControlButtons();
+          showToast("Push-to-Talk enabled: Hold Spacebar to speak.");
+        }
+      };
+
+      async function populateMediaDevices() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const micSel = document.getElementById('mic-device-select');
+          const camSel = document.getElementById('cam-device-select');
+          micSel.innerHTML = '<option value="default">Default Microphone</option>';
+          camSel.innerHTML = '<option value="default">Default Camera</option>';
+          devices.forEach(d => {
+            if (d.kind === 'audioinput' && d.deviceId) {
+              const opt = document.createElement('option');
+              opt.value = d.deviceId;
+              opt.textContent = d.label || `Microphone (${d.deviceId.slice(0, 6)})`;
+              micSel.appendChild(opt);
+            } else if (d.kind === 'videoinput' && d.deviceId) {
+              const opt = document.createElement('option');
+              opt.value = d.deviceId;
+              opt.textContent = d.label || `Camera (${d.deviceId.slice(0, 6)})`;
+              camSel.appendChild(opt);
+            }
+          });
+          micSel.value = selectedMicId;
+          camSel.value = selectedCamId;
+        } catch (e) {}
+      }
+
+      document.getElementById('refresh-devices-btn').onclick = () => {
+        populateMediaDevices();
+        showToast("Media devices refreshed.");
+      };
+      document.getElementById('mic-device-select').onchange = (e) => {
+        selectedMicId = e.target.value;
+        localStorage.setItem('minicord_mic_id', selectedMicId);
+      };
+      document.getElementById('cam-device-select').onchange = (e) => {
+        selectedCamId = e.target.value;
+        localStorage.setItem('minicord_cam_id', selectedCamId);
+      };
+
+      // Save Profile Picture, Banner, Description, Custom Status, and Accent Color
       document.getElementById('save-profile-settings-btn').onclick = () => {
+        const newPfp = document.getElementById('settings-pfp-input').value.trim();
+        const newBanner = document.getElementById('settings-banner-input').value.trim();
         const newBio = document.getElementById('settings-bio-input').value.trim() || "Hanging out on MiniCord!";
-        const newBanner = document.getElementById('settings-banner-input').value.trim() || "";
+        const newCustomStatus = document.getElementById('settings-custom-status-input').value.trim();
         const newColor = document.getElementById('settings-color-input').value;
-        userBio = newBio;
+
+        userPfp = newPfp;
         userBanner = newBanner;
+        userBio = newBio;
+        userCustomStatus = newCustomStatus;
         userColor = newColor;
-        document.getElementById('my-avatar').style.backgroundColor = userColor;
+
+        refreshMyDockUI();
+        updateSettingsLivePreview();
         
         const safeKey = username.toLowerCase().replace(/[\.#$\[\]\/]/g, '_');
-        db.ref('accounts/' + safeKey).update({ bio: userBio, banner: userBanner, color: userColor });
-        localStorage.setItem('minicord_user', JSON.stringify({ username, userId, color: userColor, bio: userBio, banner: userBanner }));
+        db.ref('accounts/' + safeKey).update({
+          pfp: userPfp,
+          banner: userBanner,
+          bio: userBio,
+          customStatus: userCustomStatus,
+          color: userColor
+        });
+        localStorage.setItem('minicord_user', JSON.stringify({
+          username, userId, color: userColor, bio: userBio, banner: userBanner, pfp: userPfp, customStatus: userCustomStatus
+        }));
         updatePresence();
-        showToast("Profile & banner updated!", "success");
+        renderMemberSidebar();
+        loadMessages();
+        showToast("Profile picture, banner & description saved!", "success");
       };
 
       function playNotificationSound() {
@@ -1021,12 +1530,11 @@
         } catch (e) {}
       }
 
-      // Profile Modal with Banner Support
+      // Profile Modal with Banner, PFP & Description Support
       document.getElementById('open-my-profile-btn').onclick = () => {
         document.getElementById('modal-profile-name').textContent = username;
-        document.getElementById('modal-profile-role').textContent = isAdmin ? 'Administrator 👑' : 'Member';
-        document.getElementById('modal-profile-avatar').textContent = username[0].toUpperCase();
-        document.getElementById('modal-profile-avatar').style.backgroundColor = userColor;
+        document.getElementById('modal-profile-role').textContent = isAdmin ? 'Administrator' : 'Member';
+        applyAvatarStyle(document.getElementById('modal-profile-avatar'), username, userColor, userPfp);
         const bannerBox = document.getElementById('modal-banner-color');
         if (userBanner) {
           bannerBox.style.backgroundImage = `url('${userBanner}')`;
@@ -1035,31 +1543,67 @@
           bannerBox.style.backgroundImage = 'none';
           bannerBox.style.backgroundColor = userColor;
         }
+        const statusEl = document.getElementById('modal-profile-custom-status');
+        if (userCustomStatus) {
+          statusEl.textContent = `"${userCustomStatus}"`;
+          statusEl.style.display = 'block';
+        } else {
+          statusEl.style.display = 'none';
+        }
         document.getElementById('modal-profile-bio').textContent = userBio;
         document.getElementById('profile-action-container').style.display = 'none';
         document.getElementById('my-profile-status-box').style.display = 'block';
+        const editBtn = document.getElementById('edit-profile-from-modal-btn');
+        editBtn.style.display = 'inline-flex';
+        editBtn.onclick = () => {
+          closeModal('profile-modal');
+          openModal('settings-modal');
+        };
         openModal('profile-modal');
       };
 
-      window.openPeerProfile = function(targetName, targetColor, targetIsAdmin, targetBio, targetBanner) {
+      window.openPeerProfile = function(targetName) {
         if (targetName === username) {
           document.getElementById('open-my-profile-btn').click();
           return;
         }
+
+        // Look up latest profile data from onlineUsersMap or allAccountsMap
+        const lower = targetName.toLowerCase();
+        const onlineInfo = Object.values(onlineUsersMap).find(u => u && u.name && u.name.toLowerCase() === lower);
+        const accInfo = Object.values(allAccountsMap).find(a => a && a.username && a.username.toLowerCase() === lower);
+
+        const targetColor = (onlineInfo && onlineInfo.color) || (accInfo && accInfo.color) || '#5865f2';
+        const targetIsAdmin = !!(onlineInfo && onlineInfo.isAdmin);
+        const targetBio = (onlineInfo && onlineInfo.bio) || (accInfo && accInfo.bio) || "MiniCord Member";
+        const targetBanner = (onlineInfo && onlineInfo.banner) || (accInfo && accInfo.banner) || "";
+        const targetPfp = (onlineInfo && onlineInfo.pfp) || (accInfo && accInfo.pfp) || "";
+        const targetCustomStatus = (onlineInfo && onlineInfo.customStatus) || (accInfo && accInfo.customStatus) || "";
+
         document.getElementById('modal-profile-name').textContent = targetName;
-        document.getElementById('modal-profile-role').textContent = targetIsAdmin ? 'Administrator 👑' : 'Member';
-        document.getElementById('modal-profile-avatar').textContent = targetName[0].toUpperCase();
-        document.getElementById('modal-profile-avatar').style.backgroundColor = targetColor || '#5865f2';
+        document.getElementById('modal-profile-role').textContent = targetIsAdmin ? 'Administrator' : 'Member';
+        applyAvatarStyle(document.getElementById('modal-profile-avatar'), targetName, targetColor, targetPfp);
+
         const bannerBox = document.getElementById('modal-banner-color');
         if (targetBanner) {
           bannerBox.style.backgroundImage = `url('${targetBanner}')`;
           bannerBox.style.backgroundColor = 'transparent';
         } else {
           bannerBox.style.backgroundImage = 'none';
-          bannerBox.style.backgroundColor = targetColor || '#5865f2';
+          bannerBox.style.backgroundColor = targetColor;
         }
-        document.getElementById('modal-profile-bio').textContent = targetBio || "MiniCord Member";
+
+        const statusEl = document.getElementById('modal-profile-custom-status');
+        if (targetCustomStatus) {
+          statusEl.textContent = `"${targetCustomStatus}"`;
+          statusEl.style.display = 'block';
+        } else {
+          statusEl.style.display = 'none';
+        }
+
+        document.getElementById('modal-profile-bio').textContent = targetBio;
         document.getElementById('my-profile-status-box').style.display = 'none';
+        document.getElementById('edit-profile-from-modal-btn').style.display = 'none';
 
         const actionContainer = document.getElementById('profile-action-container');
         actionContainer.style.display = 'flex';
@@ -1096,9 +1640,7 @@
         currentStatus = e.target.value;
         const dot = document.getElementById('my-status-dot');
         dot.className = 'status-dot status-' + currentStatus;
-        document.getElementById('role-label').textContent = isAdmin
-          ? 'Admin 👑'
-          : (currentStatus === 'dnd' ? 'Do Not Disturb' : currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1));
+        refreshMyDockUI();
         updatePresence();
       };
 
@@ -1113,6 +1655,8 @@
           status: currentStatus,
           bio: userBio,
           banner: userBanner,
+          pfp: userPfp,
+          customStatus: userCustomStatus,
           lastSeen: firebase.database.ServerValue.TIMESTAMP
         });
         myPresenceRef.onDisconnect().remove();
@@ -1127,6 +1671,20 @@
       let onlineUsersMap = {};
       let allAccountsMap = {};
 
+      function getUserVisuals(authorName, fallbackColor) {
+        const lower = (authorName || '').toLowerCase();
+        if (lower === username.toLowerCase()) {
+          return { color: userColor, pfp: userPfp, isAdmin };
+        }
+        const onU = Object.values(onlineUsersMap).find(u => u && u.name && u.name.toLowerCase() === lower);
+        const accU = Object.values(allAccountsMap).find(a => a && a.username && a.username.toLowerCase() === lower);
+        return {
+          color: (onU && onU.color) || (accU && accU.color) || fallbackColor || '#5865f2',
+          pfp: (onU && onU.pfp) || (accU && accU.pfp) || '',
+          isAdmin: !!(onU && onU.isAdmin)
+        };
+      }
+
       function renderMemberSidebar() {
         const memberListEl = document.getElementById('member-list');
         memberListEl.innerHTML = '';
@@ -1140,7 +1698,9 @@
             isAdmin: false,
             status: 'offline',
             bio: acc.bio || 'MiniCord Member',
-            banner: acc.banner || ''
+            banner: acc.banner || '',
+            pfp: acc.pfp || '',
+            customStatus: acc.customStatus || ''
           };
         });
 
@@ -1152,7 +1712,9 @@
             isAdmin: !!u.isAdmin,
             status: u.status || 'online',
             bio: u.bio || 'Hanging out on MiniCord!',
-            banner: u.banner || ''
+            banner: u.banner || '',
+            pfp: u.pfp || '',
+            customStatus: u.customStatus || ''
           };
         });
 
@@ -1163,7 +1725,9 @@
             isAdmin: isAdmin,
             status: currentStatus,
             bio: userBio,
-            banner: userBanner
+            banner: userBanner,
+            pfp: userPfp,
+            customStatus: userCustomStatus
           };
         }
 
@@ -1182,9 +1746,13 @@
           users.sort((a, b) => a.name.localeCompare(b.name)).forEach(u => {
             const div = document.createElement('div');
             div.className = 'member-item' + (isOfflineGroup ? ' offline' : '');
+            const avatarInner = u.pfp
+              ? `<img src="${escapeHTML(u.pfp)}" alt="${escapeHTML(u.name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(u.name[0].toUpperCase())}';" />`
+              : escapeHTML(u.name[0].toUpperCase());
+
             div.innerHTML = `
               <div class="avatar-container" style="width:32px; height:32px;">
-                <div class="avatar" style="background:${u.color}; width:32px; height:32px; font-size:13px;">${u.name[0].toUpperCase()}</div>
+                <div class="avatar" style="background:${u.color}; width:32px; height:32px; font-size:13px;">${avatarInner}</div>
                 <div class="status-dot status-${u.status}" style="width:10px; height:10px; border-color:var(--bg-channels);"></div>
               </div>
               <div class="member-info">
@@ -1192,10 +1760,10 @@
                   <span>${escapeHTML(u.name)}</span>
                   ${u.isAdmin ? '<span class="admin-tag" style="font-size:9px; padding:1px 4px;">ADMIN</span>' : ''}
                 </div>
-                <div class="member-subtext">${escapeHTML(u.bio || '')}</div>
+                <div class="member-subtext">${escapeHTML(u.customStatus || u.bio || '')}</div>
               </div>
             `;
-            div.onclick = () => openPeerProfile(u.name, u.color, u.isAdmin, u.bio, u.banner);
+            div.onclick = () => openPeerProfile(u.name);
             memberListEl.appendChild(div);
           });
         }
@@ -1230,14 +1798,6 @@
       let isFriendsMode = false;
       let activePrivateRoom = null;
       let activeDmUser = null;
-
-      // Voice State
-      let connectedVoiceServer = null;
-      let connectedVoiceChannel = null;
-      let localStream = null;
-      let isScreenSharing = false;
-      let activeVoicePeersRef = null;
-      let activeVoicePeersCb = null;
 
       let activeChannelRef = null, activeChannelCb = null;
       let activeVoiceListRef = null, activeVoiceListCb = null;
@@ -1377,9 +1937,7 @@
         if (!gifPopover.contains(e.target) && e.target.id !== 'gif-btn') gifPopover.classList.remove('open');
       });
 
-      // ==========================================
       // FILE IMPORT / ATTACHMENT HANDLER
-      // ==========================================
       const fileInputEl = document.getElementById('hidden-file-input');
       document.getElementById('attach-btn').onclick = () => fileInputEl.click();
 
@@ -1412,8 +1970,251 @@
       };
 
       // ==========================================
-      // DEDICATED SERVER VOICE CHANNELS
+      // REAL MULTI-PEER WEBRTC VIDEO & VOICE CALLING
       // ==========================================
+      let connectedVoiceServer = null;
+      let connectedVoiceChannel = null;
+      let localStream = null;
+      let isMicMuted = false;
+      let isCamEnabled = false;
+      let isScreenSharing = false;
+      let activeVoicePeersRef = null;
+      let activeVoicePeersCb = null;
+      let signalInboxRef = null;
+
+      // Map<peerUserId, { pc: RTCPeerConnection, iceQueue: RTCIceCandidateInit[], makingOffer: boolean, ignoreOffer: boolean }>
+      const peerConnections = {};
+      // Map<peerUserId, MediaStream>
+      const remoteStreams = {};
+      // Map<peerUserId, { intervalId: number, audioCtx: AudioContext }>
+      const speakingMonitors = {};
+
+      const RTC_CONFIG = {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' }
+        ]
+      };
+
+      function getSignalBasePath(sId, vcName) {
+        return `webrtc_signals/${sId}/${vcName}`;
+      }
+
+      function updateVoiceControlButtons() {
+        const micBtn = document.getElementById('mute-mic-btn');
+        const camBtn = document.getElementById('toggle-cam-btn');
+        const shareBtn = document.getElementById('share-screen-btn');
+
+        micBtn.textContent = isMicMuted ? 'Unmute Mic' : 'Mute Mic';
+        micBtn.classList.toggle('muted', isMicMuted);
+
+        camBtn.textContent = isCamEnabled ? 'Camera On' : 'Camera Off';
+        camBtn.classList.toggle('muted', !isCamEnabled);
+
+        shareBtn.textContent = isScreenSharing ? 'Stop Sharing' : 'Share Screen';
+        shareBtn.classList.toggle('active-share', isScreenSharing);
+      }
+
+      function attachSpeakingMonitor(peerId, stream) {
+        if (speakingMonitors[peerId]) {
+          clearInterval(speakingMonitors[peerId].intervalId);
+          try { speakingMonitors[peerId].audioCtx.close(); } catch (e) {}
+          delete speakingMonitors[peerId];
+        }
+        if (!stream || stream.getAudioTracks().length === 0) return;
+
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const source = audioCtx.createMediaStreamSource(stream);
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          source.connect(analyser);
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+          const intervalId = setInterval(() => {
+            const tile = document.getElementById(`tile_${peerId}`);
+            if (!tile) return;
+            const audioTrack = stream.getAudioTracks()[0];
+            if (!audioTrack || !audioTrack.enabled) {
+              tile.classList.remove('speaking');
+              return;
+            }
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            const avg = sum / dataArray.length;
+            tile.classList.toggle('speaking', avg > 14);
+          }, 150);
+
+          speakingMonitors[peerId] = { intervalId, audioCtx };
+        } catch (e) {}
+      }
+
+      function renderVoiceTile(peerId, peerData) {
+        const vGrid = document.getElementById('video-grid');
+        let tile = document.getElementById(`tile_${peerId}`);
+        if (!tile) {
+          tile = document.createElement('div');
+          tile.id = `tile_${peerId}`;
+          tile.className = 'video-tile';
+          vGrid.appendChild(tile);
+        }
+
+        const isSelf = (peerId === userId);
+        const stream = isSelf ? localStream : remoteStreams[peerId];
+        const hasLiveVideo = stream && stream.getVideoTracks().some(t => t.enabled && t.readyState === 'live');
+        const visuals = getUserVisuals(peerData.name, peerData.color);
+        const pfpUrl = peerData.pfp || visuals.pfp;
+
+        const avatarInner = pfpUrl
+          ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(peerData.name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(peerData.name[0].toUpperCase())}';" />`
+          : escapeHTML(peerData.name[0].toUpperCase());
+
+        tile.innerHTML = `
+          <div class="video-avatar-fallback" style="background-color:${peerData.color || visuals.color};">${avatarInner}</div>
+          <video id="video_${peerId}" autoplay playsinline ${isSelf ? 'muted' : ''} class="${isSelf && mirrorLocalCam && !isScreenSharing ? 'mirrored' : ''}" style="display:${hasLiveVideo ? 'block' : 'none'};"></video>
+          <div class="video-status-pill">${peerData.videoActive ? 'Video Live' : 'Voice Only'}</div>
+          <div class="video-name">${escapeHTML(peerData.name)}${isSelf ? ' (You)' : ''}</div>
+        `;
+
+        const vidEl = tile.querySelector('video');
+        if (stream && vidEl) {
+          vidEl.srcObject = stream;
+          vidEl.play().catch(() => {});
+        }
+      }
+
+      function createPeerConnection(remoteId, remotePeerData) {
+        if (peerConnections[remoteId]) return peerConnections[remoteId];
+
+        const pc = new RTCPeerConnection(RTC_CONFIG);
+        const stateObj = {
+          pc,
+          iceQueue: [],
+          makingOffer: false,
+          ignoreOffer: false,
+          isPolite: userId > remoteId // Deterministic polite/impolite collision handling
+        };
+        peerConnections[remoteId] = stateObj;
+
+        // Add local tracks if available
+        if (localStream) {
+          localStream.getTracks().forEach(track => {
+            pc.addTrack(track, localStream);
+          });
+        } else {
+          // Ensure recvonly transceivers exist so listen-only users still receive audio/video
+          pc.addTransceiver('audio', { direction: 'recvonly' });
+          pc.addTransceiver('video', { direction: 'recvonly' });
+        }
+
+        pc.onicecandidate = (event) => {
+          if (event.candidate && connectedVoiceServer && connectedVoiceChannel) {
+            const inbox = `${getSignalBasePath(connectedVoiceServer, connectedVoiceChannel)}/${remoteId}`;
+            db.ref(inbox).push({
+              from: userId,
+              type: 'candidate',
+              candidate: event.candidate.toJSON()
+            });
+          }
+        };
+
+        pc.ontrack = (event) => {
+          let rStream = remoteStreams[remoteId];
+          if (!rStream) {
+            rStream = new MediaStream();
+            remoteStreams[remoteId] = rStream;
+          }
+          if (event.streams && event.streams[0]) {
+            remoteStreams[remoteId] = event.streams[0];
+          } else {
+            rStream.addTrack(event.track);
+          }
+
+          attachSpeakingMonitor(remoteId, remoteStreams[remoteId]);
+          renderVoiceTile(remoteId, remotePeerData || { name: 'Peer', color: '#5865f2' });
+
+          event.track.onunmute = () => {
+            renderVoiceTile(remoteId, remotePeerData || { name: 'Peer', color: '#5865f2' });
+          };
+          event.track.onended = () => {
+            renderVoiceTile(remoteId, remotePeerData || { name: 'Peer', color: '#5865f2' });
+          };
+        };
+
+        pc.onnegotiationneeded = async () => {
+          if (!connectedVoiceServer || !connectedVoiceChannel) return;
+          try {
+            stateObj.makingOffer = true;
+            await pc.setLocalDescription();
+            const inbox = `${getSignalBasePath(connectedVoiceServer, connectedVoiceChannel)}/${remoteId}`;
+            await db.ref(inbox).push({
+              from: userId,
+              type: 'description',
+              description: { type: pc.localDescription.type, sdp: pc.localDescription.sdp }
+            });
+          } catch (err) {
+            console.warn("WebRTC negotiation error:", err);
+          } finally {
+            stateObj.makingOffer = false;
+          }
+        };
+
+        pc.onconnectionstatechange = () => {
+          const statusEl = document.getElementById('webrtc-connection-state');
+          if (statusEl) {
+            statusEl.textContent = `WebRTC: ${pc.connectionState}`;
+          }
+          if (pc.connectionState === 'failed') {
+            pc.restartIce();
+          }
+        };
+
+        return stateObj;
+      }
+
+      async function handleIncomingSignal(msg) {
+        if (!msg || !msg.from || msg.from === userId) return;
+        const remoteId = msg.from;
+        const stateObj = createPeerConnection(remoteId, { name: msg.senderName || 'User', color: '#5865f2' });
+        const pc = stateObj.pc;
+
+        try {
+          if (msg.type === 'description' && msg.description) {
+            const desc = new RTCSessionDescription(msg.description);
+            const offerCollision = (desc.type === 'offer') && (stateObj.makingOffer || pc.signalingState !== 'stable');
+            stateObj.ignoreOffer = !stateObj.isPolite && offerCollision;
+            if (stateObj.ignoreOffer) return;
+
+            await pc.setRemoteDescription(desc);
+            while (stateObj.iceQueue.length > 0) {
+              const c = stateObj.iceQueue.shift();
+              await pc.addIceCandidate(new RTCIceCandidate(c));
+            }
+
+            if (desc.type === 'offer') {
+              await pc.setLocalDescription();
+              const inbox = `${getSignalBasePath(connectedVoiceServer, connectedVoiceChannel)}/${remoteId}`;
+              await db.ref(inbox).push({
+                from: userId,
+                senderName: username,
+                type: 'description',
+                description: { type: pc.localDescription.type, sdp: pc.localDescription.sdp }
+              });
+            }
+          } else if (msg.type === 'candidate' && msg.candidate) {
+            if (pc.remoteDescription && pc.remoteDescription.type) {
+              await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+            } else {
+              stateObj.iceQueue.push(msg.candidate);
+            }
+          }
+        } catch (err) {
+          if (!stateObj.ignoreOffer) console.warn("Signal handling error:", err);
+        }
+      }
+
       async function joinServerVoiceChannel(serverId, vcName) {
         if (connectedVoiceServer === serverId && connectedVoiceChannel === vcName) {
           showVoiceStage(true);
@@ -1424,81 +2225,167 @@
           await disconnectServerVoice(false);
         }
 
+        isMicMuted = pttEnabled;
+        isCamEnabled = false;
+        isScreenSharing = false;
+
+        // Request Audio (and optionally Video if available)
         try {
-          localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-          const videoTrack = localStream.getVideoTracks()[0];
-          if (videoTrack) videoTrack.enabled = false;
-          document.getElementById('toggle-cam-btn').classList.add('muted');
-          document.getElementById('mute-mic-btn').classList.remove('muted');
-          document.getElementById('share-screen-btn').classList.remove('active-share');
-          isScreenSharing = false;
+          const audioConstraints = selectedMicId !== 'default' ? { deviceId: { exact: selectedMicId } } : true;
+          localStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false });
+          localStream.getAudioTracks().forEach(t => t.enabled = !isMicMuted);
+          attachSpeakingMonitor(userId, localStream);
         } catch (err) {
-          showToast("Mic/camera unavailable — joined in listen-only mode.", "info");
+          showToast("Microphone unavailable — joined in listen-only mode.", "info");
           localStream = null;
         }
+
+        updateVoiceControlButtons();
 
         connectedVoiceServer = serverId;
         connectedVoiceChannel = vcName;
 
+        // Listen to incoming WebRTC signals addressed to my userId
+        const myInboxPath = `${getSignalBasePath(serverId, vcName)}/${userId}`;
+        signalInboxRef = db.ref(myInboxPath);
+        await signalInboxRef.remove();
+        signalInboxRef.onDisconnect().remove();
+        signalInboxRef.on('child_added', (snap) => {
+          const data = snap.val();
+          snap.ref.remove(); // Consume signal immediately
+          handleIncomingSignal(data);
+        });
+
+        // Register presence in this voice channel
         const vcUserRef = db.ref(`voice_presence/${serverId}/${vcName}/${userId}`);
-        vcUserRef.set({ name: username, color: userColor });
+        vcUserRef.set({
+          name: username,
+          color: userColor,
+          pfp: userPfp,
+          videoActive: false
+        });
         vcUserRef.onDisconnect().remove();
 
         document.getElementById('voice-status-bar').classList.add('connected');
         document.getElementById('voice-connected-label').textContent = `${vcName} (${serverId})`;
-        document.getElementById('voice-stage-title').textContent = `🔊 ${vcName}`;
+        document.getElementById('voice-stage-title').textContent = vcName;
         showVoiceStage(true);
 
         if (activeVoicePeersRef && activeVoicePeersCb) activeVoicePeersRef.off('value', activeVoicePeersCb);
         activeVoicePeersRef = db.ref(`voice_presence/${serverId}/${vcName}`);
         activeVoicePeersCb = (snap) => {
           const vGrid = document.getElementById('video-grid');
-          vGrid.innerHTML = '';
           const peers = snap.val() || {};
-          Object.keys(peers).forEach(id => {
-            const p = peers[id];
-            const tile = document.createElement('div');
-            tile.className = 'video-tile speaking';
+          const activeIds = Object.keys(peers);
 
-            const fallback = document.createElement('div');
-            fallback.className = 'video-avatar-fallback';
-            fallback.style.backgroundColor = p.color || '#5865f2';
-            fallback.textContent = p.name[0].toUpperCase();
-            tile.appendChild(fallback);
-
-            if (localStream && (id === userId || localStream.getVideoTracks().some(t => t.enabled))) {
-              const vid = document.createElement('video');
-              vid.autoplay = true;
-              vid.playsInline = true;
-              if (id === userId) vid.muted = true;
-              vid.srcObject = localStream;
-              const vTrack = localStream.getVideoTracks()[0];
-              vid.style.display = (vTrack && vTrack.enabled) ? 'block' : 'none';
-              tile.appendChild(vid);
+          // Remove tiles and close peer connections for disconnected users
+          Array.from(vGrid.children).forEach(child => {
+            const tilePeerId = child.id.replace('tile_', '');
+            if (!activeIds.includes(tilePeerId)) {
+              child.remove();
             }
+          });
 
-            const nameTag = document.createElement('div');
-            nameTag.className = 'video-name';
-            nameTag.textContent = p.name;
-            tile.appendChild(nameTag);
-            vGrid.appendChild(tile);
+          Object.keys(peerConnections).forEach(pId => {
+            if (!activeIds.includes(pId)) {
+              try { peerConnections[pId].pc.close(); } catch (e) {}
+              delete peerConnections[pId];
+              delete remoteStreams[pId];
+              if (speakingMonitors[pId]) {
+                clearInterval(speakingMonitors[pId].intervalId);
+                try { speakingMonitors[pId].audioCtx.close(); } catch (e) {}
+                delete speakingMonitors[pId];
+              }
+            }
+          });
+
+          // Render tiles and initiate WebRTC connections with newly joined peers
+          activeIds.forEach(peerId => {
+            const peerData = peers[peerId];
+            renderVoiceTile(peerId, peerData);
+
+            if (peerId !== userId && !peerConnections[peerId]) {
+              const stateObj = createPeerConnection(peerId, peerData);
+              // Deterministic initiator avoids dual simultaneous offers
+              if (userId < peerId) {
+                stateObj.pc.onnegotiationneeded();
+              }
+            }
           });
         };
         activeVoicePeersRef.on('value', activeVoicePeersCb);
       }
 
+      async function replaceOrAddVideoTrack(newVideoTrack) {
+        if (!localStream) {
+          localStream = new MediaStream();
+        }
+        const oldVideoTracks = localStream.getVideoTracks();
+        oldVideoTracks.forEach(t => {
+          t.stop();
+          localStream.removeTrack(t);
+        });
+
+        if (newVideoTrack) {
+          localStream.addTrack(newVideoTrack);
+        }
+
+        // Update all active RTCPeerConnections
+        for (const peerId of Object.keys(peerConnections)) {
+          const pc = peerConnections[peerId].pc;
+          const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video')
+            || pc.getSenders().find(s => !s.track && pc.getTransceivers().some(tr => tr.sender === s && tr.receiver.track.kind === 'video'));
+
+          if (videoSender) {
+            await videoSender.replaceTrack(newVideoTrack || null);
+          } else if (newVideoTrack) {
+            pc.addTrack(newVideoTrack, localStream);
+          }
+        }
+
+        if (connectedVoiceServer && connectedVoiceChannel) {
+          db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}/videoActive`).set(!!newVideoTrack);
+        }
+
+        renderVoiceTile(userId, { name: username, color: userColor, pfp: userPfp, videoActive: !!newVideoTrack });
+      }
+
       async function disconnectServerVoice(hideStage = true) {
+        Object.keys(peerConnections).forEach(pId => {
+          try { peerConnections[pId].pc.close(); } catch (e) {}
+          delete peerConnections[pId];
+          delete remoteStreams[pId];
+        });
+
+        Object.keys(speakingMonitors).forEach(pId => {
+          clearInterval(speakingMonitors[pId].intervalId);
+          try { speakingMonitors[pId].audioCtx.close(); } catch (e) {}
+          delete speakingMonitors[pId];
+        });
+
         if (localStream) {
           localStream.getTracks().forEach(track => track.stop());
           localStream = null;
         }
+        isMicMuted = false;
+        isCamEnabled = false;
         isScreenSharing = false;
+        updateVoiceControlButtons();
+
+        if (signalInboxRef) {
+          signalInboxRef.off();
+          await signalInboxRef.remove();
+          signalInboxRef = null;
+        }
+
         if (connectedVoiceServer && connectedVoiceChannel) {
           await db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}`).remove();
         }
         if (activeVoicePeersRef && activeVoicePeersCb) {
           activeVoicePeersRef.off('value', activeVoicePeersCb);
         }
+
+        document.getElementById('video-grid').innerHTML = '';
         connectedVoiceServer = null;
         connectedVoiceChannel = null;
         document.getElementById('voice-status-bar').classList.remove('connected');
@@ -1524,23 +2411,57 @@
       document.getElementById('leave-call-btn').onclick = () => disconnectServerVoice(true);
       document.getElementById('disconnect-voice-sidebar-btn').onclick = () => disconnectServerVoice(true);
 
-      document.getElementById('mute-mic-btn').onclick = () => {
-        if (!localStream) return showToast("No microphone active.", "error");
-        const t = localStream.getAudioTracks()[0];
-        if (t) {
-          t.enabled = !t.enabled;
-          document.getElementById('mute-mic-btn').classList.toggle('muted', !t.enabled);
-          showToast(t.enabled ? "Microphone Unmuted" : "Microphone Muted");
+      document.getElementById('mute-mic-btn').onclick = async () => {
+        if (!localStream || localStream.getAudioTracks().length === 0) {
+          try {
+            const audioConstraints = selectedMicId !== 'default' ? { deviceId: { exact: selectedMicId } } : true;
+            const micStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints });
+            const audioTrack = micStream.getAudioTracks()[0];
+            if (!localStream) localStream = new MediaStream();
+            localStream.addTrack(audioTrack);
+            attachSpeakingMonitor(userId, localStream);
+            for (const peerId of Object.keys(peerConnections)) {
+              const pc = peerConnections[peerId].pc;
+              const audioSender = pc.getSenders().find(s => s.track && s.track.kind === 'audio');
+              if (audioSender) await audioSender.replaceTrack(audioTrack);
+              else pc.addTrack(audioTrack, localStream);
+            }
+            isMicMuted = false;
+            updateVoiceControlButtons();
+            showToast("Microphone Connected & Unmuted", "success");
+          } catch (e) {
+            showToast("Could not access microphone.", "error");
+          }
+          return;
         }
+        isMicMuted = !isMicMuted;
+        localStream.getAudioTracks().forEach(t => t.enabled = !isMicMuted);
+        updateVoiceControlButtons();
+        showToast(isMicMuted ? "Microphone Muted" : "Microphone Unmuted");
       };
 
-      document.getElementById('toggle-cam-btn').onclick = () => {
-        if (!localStream) return showToast("No camera active.", "error");
-        const t = localStream.getVideoTracks()[0];
-        if (t) {
-          t.enabled = !t.enabled;
-          document.getElementById('toggle-cam-btn').classList.toggle('muted', !t.enabled);
-          document.querySelectorAll('#video-grid video').forEach(v => v.style.display = t.enabled ? 'block' : 'none');
+      document.getElementById('toggle-cam-btn').onclick = async () => {
+        if (!connectedVoiceServer) return;
+        if (!isCamEnabled) {
+          try {
+            const videoConstraints = selectedCamId !== 'default'
+              ? { deviceId: { exact: selectedCamId }, width: { ideal: 640 }, height: { ideal: 360 } }
+              : { width: { ideal: 640 }, height: { ideal: 360 } };
+            const camStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+            const camTrack = camStream.getVideoTracks()[0];
+            isCamEnabled = true;
+            isScreenSharing = false;
+            await replaceOrAddVideoTrack(camTrack);
+            updateVoiceControlButtons();
+            showToast("Camera turned on", "success");
+          } catch (e) {
+            showToast("Could not access webcam.", "error");
+          }
+        } else {
+          isCamEnabled = false;
+          await replaceOrAddVideoTrack(null);
+          updateVoiceControlButtons();
+          showToast("Camera turned off");
         }
       };
 
@@ -1550,33 +2471,56 @@
           if (!isScreenSharing) {
             const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
             const screenTrack = screenStream.getVideoTracks()[0];
-            if (localStream) {
-              const oldVideo = localStream.getVideoTracks()[0];
-              if (oldVideo) { oldVideo.stop(); localStream.removeTrack(oldVideo); }
-              localStream.addTrack(screenTrack);
-            } else {
-              localStream = screenStream;
-            }
             isScreenSharing = true;
-            document.getElementById('share-screen-btn').classList.add('active-share');
-            document.getElementById('toggle-cam-btn').classList.remove('muted');
-            document.querySelectorAll('#video-grid video').forEach(v => { v.srcObject = localStream; v.style.display = 'block'; });
-            screenTrack.onended = () => {
+            isCamEnabled = false;
+            await replaceOrAddVideoTrack(screenTrack);
+            updateVoiceControlButtons();
+            showToast("Screen sharing started", "success");
+
+            screenTrack.onended = async () => {
               isScreenSharing = false;
-              document.getElementById('share-screen-btn').classList.remove('active-share');
-              document.querySelectorAll('#video-grid video').forEach(v => { v.style.display = 'none'; });
+              await replaceOrAddVideoTrack(null);
+              updateVoiceControlButtons();
+              showToast("Screen sharing stopped");
             };
           } else {
-            const vTrack = localStream && localStream.getVideoTracks()[0];
-            if (vTrack) vTrack.stop();
             isScreenSharing = false;
-            document.getElementById('share-screen-btn').classList.remove('active-share');
-            document.querySelectorAll('#video-grid video').forEach(v => { v.style.display = 'none'; });
+            await replaceOrAddVideoTrack(null);
+            updateVoiceControlButtons();
+            showToast("Screen sharing stopped");
           }
         } catch (e) {
           showToast("Screen share cancelled.", "info");
         }
       };
+
+      // Push-to-Talk Spacebar Listener
+      window.addEventListener('keydown', (e) => {
+        if (pttEnabled && connectedVoiceServer && e.code === 'Space' && document.activeElement !== chatInputEl && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          if (localStream && isMicMuted) {
+            isMicMuted = false;
+            localStream.getAudioTracks().forEach(t => t.enabled = true);
+            updateVoiceControlButtons();
+          }
+        }
+      });
+      window.addEventListener('keyup', (e) => {
+        if (pttEnabled && connectedVoiceServer && e.code === 'Space') {
+          if (localStream && !isMicMuted) {
+            isMicMuted = true;
+            localStream.getAudioTracks().forEach(t => t.enabled = false);
+            updateVoiceControlButtons();
+          }
+        }
+      });
+
+      window.addEventListener('beforeunload', () => {
+        if (connectedVoiceServer && connectedVoiceChannel) {
+          db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}`).remove();
+          db.ref(`${getSignalBasePath(connectedVoiceServer, connectedVoiceChannel)}/${userId}`).remove();
+        }
+      });
 
       // ==========================================
       // SERVERS & CHANNELS
@@ -1727,10 +2671,16 @@
                 const subList = document.createElement('div');
                 subList.className = 'voice-users-sublist';
                 connectedUsers.forEach(u => {
+                  const visuals = getUserVisuals(u.name, u.color);
+                  const pfpUrl = u.pfp || visuals.pfp;
+                  const avatarInner = pfpUrl
+                    ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(u.name)}" />`
+                    : escapeHTML(u.name[0].toUpperCase());
+
                   const uRow = document.createElement('div');
                   uRow.className = 'voice-sub-user';
                   uRow.innerHTML = `
-                    <div class="avatar" style="background:${u.color}; width:18px; height:18px; font-size:10px;">${u.name[0].toUpperCase()}</div>
+                    <div class="avatar" style="background:${u.color || visuals.color}; width:18px; height:18px; font-size:10px;">${avatarInner}</div>
                     <span>${escapeHTML(u.name)}</span>
                   `;
                   subList.appendChild(uRow);
@@ -1749,9 +2699,7 @@
         });
       }
 
-      // ==========================================
-      // PERSISTENT DM & FRIENDS FIX
-      // ==========================================
+      // PERSISTENT DM & FRIENDS
       function openFriendsTab(preselectFriend = null) {
         showVoiceStage(false);
         isFriendsMode = true; isPrivateMode = false;
@@ -1785,7 +2733,7 @@
             if (preselectFriend && !allPeers.includes(preselectFriend)) allPeers.push(preselectFriend);
 
             channelListEl.innerHTML = `
-              <div class="channel-item ${!activeDmUser ? 'active' : ''}" id="friends-home-item"><div class="channel-left"><span>👋 Friends</span></div></div>
+              <div class="channel-item ${!activeDmUser ? 'active' : ''}" id="friends-home-item"><div class="channel-left"><span>Friends</span></div></div>
               <div class="channel-item" id="add-friend-btn" style="color:var(--green);"><div class="channel-left"><span>+ Add Friend</span></div></div>
               <div class="divider" style="width:100%; margin:6px 0;"></div>
             `;
@@ -1834,9 +2782,9 @@
               chatInputEl.placeholder = "Select a friend to DM";
               messagesEl.innerHTML = `
                 <div class="welcome-banner">
-                  <div class="welcome-icon">👋</div>
+                  <div class="welcome-icon">@</div>
                   <div style="font-size:22px; font-weight:700; color:var(--text-header);">Your Friends & DMs</div>
-                  <div style="color:var(--text-muted); font-size:14px;">Select any conversation on the left to chat persistently without it disappearing.</div>
+                  <div style="color:var(--text-muted); font-size:14px;">Select any conversation on the left to start chatting directly.</div>
                 </div>
               `;
             }
@@ -1870,7 +2818,7 @@
             const r = rooms[k];
             const row = document.createElement('div');
             row.className = 'admin-ch-row';
-            row.innerHTML = `<span>🔒 ${escapeHTML(r.name)}</span>`;
+            row.innerHTML = `<span>${escapeHTML(r.name)}</span>`;
             const joinBtn = document.createElement('button');
             joinBtn.className = 'btn btn-success';
             joinBtn.style.padding = '5px 12px'; joinBtn.textContent = 'Join';
@@ -1901,7 +2849,7 @@
         document.getElementById('sidebar-label').innerHTML = '<span>Active Room</span>';
         document.getElementById('private-badge').style.display = 'inline-block';
         document.getElementById('header-symbol').textContent = '#';
-        channelListEl.innerHTML = `<div class="channel-item active"><div class="channel-left"><span>🔒</span><span>${escapeHTML(roomObj.name)}</span></div></div>`;
+        channelListEl.innerHTML = `<div class="channel-item active"><div class="channel-left"><span>#</span><span>${escapeHTML(roomObj.name)}</span></div></div>`;
         document.getElementById('channel-name').textContent = roomObj.name;
         chatInputEl.placeholder = "Message private room #" + roomObj.name;
         loadMessages();
@@ -1956,7 +2904,7 @@
           currentVoiceChannelsList.forEach(vc => {
             const row = document.createElement('div');
             row.className = 'admin-ch-row';
-            row.innerHTML = `<span>🔊 ${escapeHTML(vc)}</span>`;
+            row.innerHTML = `<span>Voice: ${escapeHTML(vc)}</span>`;
             const delBtn = document.createElement('button');
             delBtn.className = 'btn btn-danger'; delBtn.style.padding = '4px 10px'; delBtn.textContent = 'Delete';
             delBtn.onclick = () => {
@@ -1976,7 +2924,7 @@
             if (!u || !u.name) return;
             const row = document.createElement('div');
             row.className = 'admin-ch-row';
-            row.innerHTML = `<span style="font-weight:600;">${escapeHTML(u.name)} ${u.isAdmin ? '👑' : ''}</span>`;
+            row.innerHTML = `<span style="font-weight:600;">${escapeHTML(u.name)} ${u.isAdmin ? '(Admin)' : ''}</span>`;
             const btnGroup = document.createElement('div');
             btnGroup.style.display = 'flex';
             btnGroup.style.gap = '6px';
@@ -2047,11 +2995,9 @@
       };
 
       document.getElementById('wipe-chat-btn').onclick = () => {
-        if (confirm("Wipe all messages in this channel?")) {
-          db.ref(getChatPath()).remove();
-          closeModal('admin-modal');
-          showToast("Channel wiped.", "success");
-        }
+        db.ref(getChatPath()).remove();
+        closeModal('admin-modal');
+        showToast("Channel wiped.", "success");
       };
 
       // Messages & Reply
@@ -2093,15 +3039,15 @@
         if (rawText.startsWith('[Attachment]: ')) {
           const url = rawText.replace('[Attachment]: ', '').trim();
           const safeUrl = escapeHTML(url);
-          if (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(url) || url.includes('giphy.com') || url.startsWith('data:image')) {
+          if (autoEmbedEnabled && (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(url) || url.includes('giphy.com') || url.startsWith('data:image'))) {
             return `<img src="${safeUrl}" class="msg-img" alt="Attachment" />`;
           }
-          return `<a href="${safeUrl}" target="_blank" rel="noopener">📎 ${safeUrl}</a>`;
+          return `<a href="${safeUrl}" target="_blank" rel="noopener">Attachment: ${safeUrl}</a>`;
         }
 
         if (rawText.startsWith('[File Upload]: ')) {
           const parts = rawText.replace('[File Upload]: ', '');
-          return `📁 <strong>${escapeHTML(parts)}</strong>`;
+          return `File: <strong>${escapeHTML(parts)}</strong>`;
         }
 
         safe = safe.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
@@ -2129,34 +3075,42 @@
 
           let messageCount = 0;
           let lastAuthor = null;
+          let lastMsgObj = null;
 
           snapshot.forEach(child => {
             messageCount++;
             const msg = child.val();
+            lastMsgObj = msg;
             const msgKey = child.key;
             const isGrouped = (lastAuthor === msg.author && !msg.replyTo);
             lastAuthor = msg.author;
 
+            const visuals = getUserVisuals(msg.author, msg.color);
             const isMentioned = msg.text && msg.text.toLowerCase().includes('@' + username.toLowerCase());
             const div = document.createElement('div');
             div.className = 'message' + (isGrouped ? ' compact-followup' : '') + (isMentioned ? ' mentioned' : '');
 
+            const avatarInner = visuals.pfp
+              ? `<img src="${escapeHTML(visuals.pfp)}" alt="${escapeHTML(msg.author)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(msg.author[0].toUpperCase())}';" />`
+              : escapeHTML(msg.author[0].toUpperCase());
+
             const avatarHTML = isGrouped ? '' : `
-              <div class="msg-avatar" style="background:${msg.color};" onclick="openPeerProfile('${escapeHTML(msg.author)}', '${msg.color}', ${!!msg.isAdmin})">${msg.author[0].toUpperCase()}</div>
+              <div class="msg-avatar" style="background:${visuals.color};" onclick="openPeerProfile('${escapeHTML(msg.author)}')">${avatarInner}</div>
             `;
 
             const headerHTML = isGrouped ? '' : `
               <div class="msg-header">
-                <span class="msg-author" onclick="openPeerProfile('${escapeHTML(msg.author)}', '${msg.color}', ${!!msg.isAdmin})">${escapeHTML(msg.author)}</span>
-                ${msg.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
+                <span class="msg-author" onclick="openPeerProfile('${escapeHTML(msg.author)}')">${escapeHTML(msg.author)}</span>
+                ${(msg.isAdmin || visuals.isAdmin) ? '<span class="admin-tag">ADMIN</span>' : ''}
                 <span class="msg-time">${escapeHTML(msg.time || '')}</span>
               </div>
             `;
 
             const replyHTML = msg.replyTo
-              ? `<div class="msg-reply-quote">↩️ <strong>@${escapeHTML(msg.replyTo.author)}</strong>: ${escapeHTML(msg.replyTo.text)}</div>`
+              ? `<div class="msg-reply-quote">Replying to <strong>@${escapeHTML(msg.replyTo.author)}</strong>: ${escapeHTML(msg.replyTo.text)}</div>`
               : '';
 
+            // Word-based Hover Action Buttons instead of emojis
             div.innerHTML = `
               ${avatarHTML}
               <div style="flex:1; min-width:0;">
@@ -2165,15 +3119,26 @@
                 <div class="msg-body">${formatMessageBody(msg.text || '')}</div>
               </div>
               <div class="msg-actions">
-                <button class="msg-action-btn reply-btn" title="Reply">↩️</button>
-                <button class="msg-action-btn copy-btn" title="Copy Text">📋</button>
-                ${(isAdmin || msg.author === username) ? `<button class="msg-action-btn danger del-btn" title="Delete Message">🗑️</button>` : ''}
+                <button class="msg-action-btn reply-btn" title="Reply to message">Reply</button>
+                <button class="msg-action-btn quote-btn" title="Quote message">Quote</button>
+                <button class="msg-action-btn copy-btn" title="Copy message text">Copy</button>
+                ${(isAdmin || msg.author === username) ? `<button class="msg-action-btn danger del-btn" title="Delete message">Delete</button>` : ''}
               </div>
             `;
 
             div.querySelector('.reply-btn').onclick = () => setReplyTarget(msg.author, msg.text || '');
+            div.querySelector('.quote-btn').onclick = () => {
+              chatInputEl.value = `> "${(msg.text || '').substring(0, 80)}" — @${msg.author} `;
+              updateCharCounter();
+              chatInputEl.focus();
+            };
             div.querySelector('.copy-btn').onclick = () => {
-              navigator.clipboard.writeText(msg.text);
+              const tempArea = document.createElement('textarea');
+              tempArea.value = msg.text || '';
+              document.body.appendChild(tempArea);
+              tempArea.select();
+              document.execCommand('copy');
+              tempArea.remove();
               showToast("Copied message to clipboard!");
             };
 
@@ -2183,7 +3148,12 @@
             messagesEl.appendChild(div);
           });
 
-          if (!isInitialLoad && messageCount > 0) playNotificationSound();
+          if (!isInitialLoad && messageCount > 0 && lastMsgObj && lastMsgObj.author !== username) {
+            playNotificationSound();
+            if (desktopNotifEnabled && document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+              new Notification(`MiniCord — ${lastMsgObj.author}`, { body: lastMsgObj.text });
+            }
+          }
           isInitialLoad = false;
           messagesEl.scrollTop = messagesEl.scrollHeight;
         };
@@ -2198,6 +3168,18 @@
         };
         activeTypingRef.on('value', activeTypingCb);
       }
+
+      // Global keyboard shortcuts
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && replyingTo) {
+          replyingTo = null;
+          document.getElementById('reply-preview-bar').classList.remove('active');
+        }
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          chatInputEl.focus();
+        }
+      });
 
       let typingTimeout;
       chatInputEl.addEventListener('input', () => {
@@ -2219,7 +3201,7 @@
             const parts = val.split(' ');
             if (parts[1] === ADMIN_PIN) {
               isAdmin = true;
-              document.getElementById('role-label').textContent = 'Admin 👑';
+              refreshMyDockUI();
               document.getElementById('open-admin-quick-btn').style.display = 'flex';
               updatePresence();
               renderAdminPanelLists();
@@ -2227,7 +3209,7 @@
               chatInputEl.value = '';
               updateCharCounter();
               loadMessages();
-              showToast("Admin Mode Unlocked 👑", "success");
+              showToast("Admin Mode Unlocked", "success");
               return;
             } else {
               showToast("Incorrect Admin PIN.", "error");
@@ -2269,11 +3251,6 @@
           updateCharCounter();
         }
       });
-
-      function escapeHTML(str) {
-        if (!str) return '';
-        return str.replace(/[&<>'"]/g, t => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[t]));
-      }
 
       loadServersList();
       loadChannels();
