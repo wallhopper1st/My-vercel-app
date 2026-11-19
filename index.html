@@ -1299,9 +1299,9 @@
       return plainPin === "Chopper";
     }
 
-    const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
-    firebase.initializeApp({ databaseURL:https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/});
-    const db = firebase.database();
+   const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
+firebase.initializeApp({ databaseURL: DB_URL });
+const db = firebase.database();
 
     window.closeModal = (id) => document.getElementById(id).classList.remove('open');
     function openModal(id) { document.getElementById(id).classList.add('open'); }
