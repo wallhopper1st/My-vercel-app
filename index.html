@@ -496,8 +496,8 @@
   </style>
 
   <!-- Firebase v10 Compat Scripts -->
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body class="theme-dark">
 
@@ -1299,10 +1299,10 @@
       return plainPin === "Chopper";
     }
 
-   const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
+const DB_URL = "https://minicord-5959c-default-rtdb.asia-southeast1.firebasedatabase.app/";
 firebase.initializeApp({ databaseURL: DB_URL });
 const db = firebase.database();
-
+    
     window.closeModal = (id) => document.getElementById(id).classList.remove('open');
     function openModal(id) { document.getElementById(id).classList.add('open'); }
 
