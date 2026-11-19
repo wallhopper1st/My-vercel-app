@@ -6,6 +6,7 @@
   <title>MiniCord — Chat, Voice, Video & Private Rooms</title>
   <style>
     :root {
+      color-scheme: dark;
       --bg-servers: #1e1f22;
       --bg-channels: #2b2d31;
       --bg-chat: #313338;
@@ -13,6 +14,9 @@
       --bg-hover: #35373c;
       --bg-active: #404249;
       --bg-floating: #111214;
+      --scroll-track: #1e1f22;
+      --scroll-thumb: #111214;
+      --scroll-thumb-hover: #4e5058;
       --text-main: #dbdee1;
       --text-muted: #949ba4;
       --text-header: #f2f3f5;
@@ -27,6 +31,7 @@
     }
 
     body.theme-light {
+      color-scheme: light;
       --bg-servers: #e3e5e8;
       --bg-channels: #f2f3f5;
       --bg-chat: #ffffff;
@@ -34,6 +39,9 @@
       --bg-hover: #e5e7eb;
       --bg-active: #d4d7dd;
       --bg-floating: #ffffff;
+      --scroll-track: #f2f3f5;
+      --scroll-thumb: #c4c9d4;
+      --scroll-thumb-hover: #9fa6b2;
       --text-main: #2e3338;
       --text-muted: #5c636a;
       --text-header: #060607;
@@ -41,6 +49,7 @@
     }
 
     body.theme-amoled {
+      color-scheme: dark;
       --bg-servers: #000000;
       --bg-channels: #08080a;
       --bg-chat: #000000;
@@ -48,6 +57,9 @@
       --bg-hover: #121215;
       --bg-active: #1e1e24;
       --bg-floating: #050506;
+      --scroll-track: #050506;
+      --scroll-thumb: #1c1d21;
+      --scroll-thumb-hover: #34363d;
       --text-main: #e4e6eb;
       --text-muted: #8e929b;
       --text-header: #ffffff;
@@ -55,6 +67,7 @@
     }
 
     body.theme-cyberpunk {
+      color-scheme: dark;
       --bg-servers: #0d0221;
       --bg-channels: #150533;
       --bg-chat: #1b0740;
@@ -62,6 +75,9 @@
       --bg-hover: #290b61;
       --bg-active: #3a0f87;
       --bg-floating: #090118;
+      --scroll-track: #12032c;
+      --scroll-thumb: #3a0f87;
+      --scroll-thumb-hover: #ff2a85;
       --text-main: #f3e8ff;
       --text-muted: #b794f4;
       --text-header: #ffffff;
@@ -75,14 +91,47 @@
     body.compact-mode .message { padding-top: 2px; padding-bottom: 2px; }
     body.compact-mode .messages { gap: 2px; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-    body { background: var(--bg-chat); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; user-select: none; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'gg sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      scrollbar-width: thin;
+      scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--scroll-track);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--scroll-thumb);
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scroll-thumb-hover);
+    }
+
+    body {
+      background: var(--bg-chat);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      user-select: none;
+    }
 
     .svg-icon { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
 
     /* Auth Screen */
     #auth-screen { position: fixed; inset: 0; background: #1e1f22; display: flex; align-items: center; justify-content: center; z-index: 1000; user-select: text; }
-    .auth-card { background: #313338; width: 420px; max-width: 92vw; padding: 32px; border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.6); color: #f2f3f5; }
+    .auth-card { background: #313338; width: 420px; max-width: 92vw; padding: 32px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.65); color: #f2f3f5; border: 1px solid rgba(255,255,255,0.06); }
     .auth-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 6px; }
     .auth-subtitle { font-size: 14px; color: #949ba4; text-align: center; margin-bottom: 20px; }
     .auth-label { display: block; font-size: 11px; font-weight: 700; color: #b5bac1; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
@@ -92,7 +141,7 @@
     #app-container { display: none; width: 100vw; height: 100vh; overflow: hidden; }
 
     /* 1. Server Rail */
-    .servers { width: 72px; background: var(--bg-servers); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; flex-shrink: 0; overflow-y: auto; }
+    .servers { width: 72px; background: var(--bg-servers); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--divider); }
     .server-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 72px; height: 48px; cursor: pointer; }
     .server-pill { position: absolute; left: 0; width: 4px; height: 0; background: var(--text-header); border-radius: 0 4px 4px 0; transition: height 0.15s ease; }
     .server-wrapper:hover .server-pill { height: 20px; }
@@ -108,7 +157,7 @@
     .divider { width: 32px; height: 2px; background: var(--divider); border-radius: 1px; margin: 2px 0; flex-shrink: 0; }
 
     /* 2. Channels Sidebar */
-    .channels { width: 240px; background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; position: relative; }
+    .channels { width: 244px; background: var(--bg-channels); display: flex; flex-direction: column; flex-shrink: 0; position: relative; border-right: 1px solid var(--divider); }
     .server-header { height: 48px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 15px; color: var(--text-header); border-bottom: 1px solid var(--divider); box-shadow: 0 1px 2px rgba(0,0,0,0.12); cursor: pointer; transition: background 0.12s; }
     .server-header:hover { background: var(--bg-hover); }
 
@@ -126,7 +175,7 @@
     .section-add-btn:hover { color: var(--text-header); background: var(--bg-hover); }
 
     .channel-list { display: flex; flex-direction: column; gap: 2px; }
-    .channel-item { padding: 7px 10px; border-radius: 5px; cursor: pointer; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 6px; transition: background 0.1s, color 0.1s; }
+    .channel-item { padding: 7px 10px; border-radius: 6px; cursor: pointer; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 6px; transition: background 0.1s, color 0.1s; }
     .channel-item:hover { background: var(--bg-hover); color: var(--text-main); }
     .channel-item.active { background: var(--bg-active); color: var(--text-header); font-weight: 600; }
     .channel-item.unread { color: var(--text-header); font-weight: 700; }
@@ -165,6 +214,12 @@
     .global-announcement { display: none; background: linear-gradient(90deg, var(--accent), #7289da); color: white; padding: 7px 16px; font-size: 13px; font-weight: 600; align-items: center; justify-content: space-between; gap: 12px; z-index: 25; }
     .global-announcement.active { display: flex; }
 
+    /* Incoming Ringing Call Banner (Join / Decline + Ringtone) */
+    .incoming-ring-banner { display: none; background: #18191c; border-bottom: 2px solid var(--green); color: var(--text-header); padding: 10px 16px; font-size: 13px; font-weight: 700; align-items: center; justify-content: space-between; gap: 12px; z-index: 26; }
+    .incoming-ring-banner.active { display: flex; }
+    .ring-pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 8px; animation: pulseRing 1.2s infinite; }
+    @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(35, 165, 90, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(35, 165, 90, 0); } 100% { box-shadow: 0 0 0 0 rgba(35, 165, 90, 0); } }
+
     .active-call-banner { display: none; background: rgba(35, 165, 90, 0.16); border-bottom: 1px solid rgba(35, 165, 90, 0.4); color: var(--text-header); padding: 8px 16px; font-size: 13px; font-weight: 600; align-items: center; justify-content: space-between; gap: 12px; }
     .active-call-banner.active { display: flex; }
 
@@ -199,16 +254,20 @@
 
     .video-tile { position: relative; background: #1e1f22; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; min-height: 185px; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; transition: border-color 0.15s; cursor: pointer; }
     .video-tile.speaking { border-color: var(--green); box-shadow: 0 0 0 2px rgba(35, 165, 90, 0.35); }
-    .video-tile video { width: 100%; height: 100%; object-fit: cover; background: #000; }
-    .video-tile video.mirrored { transform: scaleX(-1); }
+    .video-tile video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+    .video-tile video.cam-feed.mirrored { transform: scaleX(-1); object-fit: cover; }
+    .video-tile video.cam-feed { object-fit: cover; }
     .video-avatar-fallback { width: 78px; height: 78px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; color: white; overflow: hidden; }
     .video-avatar-fallback img { width: 100%; height: 100%; object-fit: cover; }
-    .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.72); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-    .video-status-pill { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.68); color: #e4e6eb; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-    .video-pin-hint { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.62); color: #dbdee1; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; opacity: 0; transition: opacity 0.15s; }
+    .video-name { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.75); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .video-status-pill { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.72); color: #e4e6eb; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .peer-mute-btn { background: rgba(255,255,255,0.14); color: white; border: none; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; cursor: pointer; }
+    .peer-mute-btn:hover { background: var(--red); }
+    .peer-mute-btn.muted-peer { background: var(--red); }
+    .video-pin-hint { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.65); color: #dbdee1; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; opacity: 0; transition: opacity 0.15s; }
     .video-tile:hover .video-pin-hint { opacity: 1; }
 
-    .video-controls { display: flex; justify-content: center; gap: 12px; padding: 10px; background: #1e1f22; border-radius: 12px; flex-wrap: wrap; }
+    .video-controls { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #1e1f22; border-radius: 12px; flex-wrap: wrap; border: 1px solid var(--divider); }
     .v-btn { padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; color: white; background: #2b2d31; transition: 0.15s; display: inline-flex; align-items: center; gap: 6px; }
     .v-btn:hover { background: #3f4147; }
     .v-btn.muted { background: var(--red); }
@@ -250,7 +309,7 @@
 
     .msg-reply-quote { font-size: 12px; color: var(--text-muted); border-left: 3px solid var(--accent); padding-left: 8px; margin-bottom: 4px; background: rgba(255,255,255,0.03); padding: 4px 8px; border-radius: 0 4px 4px 0; }
     .msg-img-wrap { position: relative; display: inline-block; margin-top: 6px; max-width: 380px; }
-    .msg-img { max-width: 100%; max-height: 290px; border-radius: 8px; display: block; cursor: zoom-in; }
+    .msg-img { max-width: 100%; max-height: 290px; border-radius: 8px; display: block; cursor: zoom-in; background: var(--bg-servers); }
     .fav-gif-star-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.72); color: #f0b232; border: none; border-radius: 5px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; opacity: 0; transition: opacity 0.15s; }
     .msg-img-wrap:hover .fav-gif-star-btn { opacity: 1; }
 
@@ -277,9 +336,9 @@
     .inline-edit-hint { font-size: 11px; color: var(--text-muted); }
 
     /* Jump to Present Floating Button */
-    .jump-present-btn { display: none; position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%); background: var(--bg-floating); color: var(--text-header); border: 1px solid var(--divider); border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.5); z-index: 35; }
+    .jump-present-btn { display: none; position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; border: none; border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.5); z-index: 35; }
     .jump-present-btn.visible { display: inline-flex; align-items: center; gap: 6px; }
-    .jump-present-btn:hover { background: var(--accent); color: white; }
+    .jump-present-btn:hover { background: var(--accent-hover); }
 
     /* Autocomplete Popover (@Mentions & /Slash Commands) */
     .autocomplete-popover { display: none; position: absolute; bottom: 72px; left: 20px; right: 20px; max-width: 520px; background: var(--bg-floating); border: 1px solid var(--divider); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.65); z-index: 70; overflow: hidden; }
@@ -301,7 +360,8 @@
 
     /* Chat Input */
     .input-wrapper { padding: 0 20px 20px 20px; flex-shrink: 0; display: flex; flex-direction: column; }
-    .input-box { background: var(--bg-chat-input); border-radius: 8px; display: flex; align-items: center; padding: 0 12px; gap: 8px; }
+    .input-box { background: var(--bg-chat-input); border-radius: 8px; display: flex; align-items: center; padding: 0 12px; gap: 8px; border: 1px solid transparent; transition: border-color 0.12s; }
+    .input-box:focus-within { border-color: rgba(88, 101, 242, 0.45); }
     .reply-preview-bar.active + .input-box { border-radius: 0 0 8px 8px; }
     .chat-input { flex: 1; padding: 11px 4px; border: none; background: transparent; color: var(--text-main); outline: none; user-select: text; }
     .chat-input::placeholder { color: var(--text-muted); }
@@ -335,7 +395,7 @@
     .gif-card-fav:hover { background: rgba(0,0,0,0.9); }
 
     /* Members Sidebar */
-    .members { width: 240px; background: var(--bg-channels); padding: 16px 8px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; overflow-y: auto; }
+    .members { width: 240px; background: var(--bg-channels); padding: 16px 8px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; overflow-y: auto; border-left: 1px solid var(--divider); }
     .members.hidden { display: none; }
     .member-group-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding: 12px 8px 4px 8px; letter-spacing: 0.02em; }
     .member-item { display: flex; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.1s; }
@@ -353,7 +413,7 @@
     /* Modals */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(2px); user-select: text; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--bg-chat); width: 480px; max-width: 94vw; max-height: 90vh; overflow-y: auto; border-radius: 10px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); color: var(--text-main); }
+    .modal { background: var(--bg-chat); width: 480px; max-width: 94vw; max-height: 90vh; overflow-y: auto; border-radius: 10px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); color: var(--text-main); border: 1px solid var(--divider); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-title { font-size: 20px; font-weight: 700; color: var(--text-header); }
     .modal-input { width: 100%; padding: 9px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.3); background: var(--bg-servers); color: var(--text-main); margin-bottom: 12px; outline: none; user-select: text; }
@@ -361,7 +421,7 @@
 
     /* Tabbed Modals */
     .tabbed-modal-box { width: 840px; max-width: 95vw; height: 610px; max-height: 92vh; padding: 0; display: flex; overflow: hidden; }
-    .modal-sidebar { width: 220px; background: var(--bg-channels); padding: 22px 12px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; overflow-y: auto; }
+    .modal-sidebar { width: 220px; background: var(--bg-channels); padding: 22px 12px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--divider); }
     .modal-nav-item { padding: 9px 12px; border-radius: 6px; cursor: pointer; color: var(--text-muted); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
     .modal-nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
     .modal-nav-item.active { background: var(--bg-active); color: var(--text-header); }
@@ -436,8 +496,8 @@
   </style>
 
   <!-- Firebase v10 Compat Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body class="theme-dark">
 
@@ -571,7 +631,16 @@
         <button class="icon-btn" id="dismiss-announcement-btn" style="color:white; padding:2px 6px;">✕</button>
       </div>
 
-      <!-- Live Incoming/Active Private Call Banner -->
+      <!-- Incoming Ringing Call Banner (with Join / Decline & Ringtone) -->
+      <div class="incoming-ring-banner" id="incoming-ring-banner">
+        <div><span class="ring-pulse"></span><span id="incoming-ring-text">Incoming call...</span></div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-success" id="ring-join-btn" style="padding:5px 14px; font-size:12px;">Join Call</button>
+          <button class="btn btn-danger" id="ring-decline-btn" style="padding:5px 14px; font-size:12px;">Decline</button>
+        </div>
+      </div>
+
+      <!-- Live Active Private Call Banner -->
       <div class="active-call-banner" id="active-call-banner">
         <span id="active-call-banner-text">📞 Live Call in progress!</span>
         <button class="btn btn-primary" id="active-call-banner-join-btn" style="padding:5px 14px; font-size:12px;">Join Call</button>
@@ -630,8 +699,8 @@
       <!-- Messages Feed -->
       <div class="messages" id="messages"></div>
 
-      <!-- Jump to Present Pill -->
-      <button class="jump-present-btn" id="jump-present-btn">↓ Jump to Present</button>
+      <!-- Jump to Present / New Messages Pill -->
+      <button class="jump-present-btn" id="jump-present-btn">↓ New messages</button>
 
       <!-- Autocomplete Popover -->
       <div class="autocomplete-popover" id="autocomplete-popover">
@@ -1224,10 +1293,8 @@
       </div>
     </div>
   </div>
+
   <script>
-    // =========================================================================
-    // ADMIN VERIFICATION
-    // =========================================================================
     async function verifyAdminPin(plainPin) {
       return plainPin === "Chopper";
     }
@@ -1253,6 +1320,51 @@
       container.appendChild(t);
       setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.2s'; setTimeout(() => t.remove(), 200); }, 2800);
     }
+
+    // Discord-style incoming call ringtone controller
+    const callRinger = (() => {
+      let ctx = null;
+      let timerId = null;
+
+      function playDiscordChime() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!ctx) ctx = new AudioCtx();
+          if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+
+          const now = ctx.currentTime;
+          const notes = [659.25, 880]; // E5 -> A5 ringtone chime
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+            gain.gain.setValueAtTime(0.0001, now + idx * 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.11, now + idx * 0.15 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.15 + 0.36);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.15);
+            osc.stop(now + idx * 0.15 + 0.38);
+          });
+        } catch (e) {}
+      }
+
+      return {
+        start() {
+          this.stop();
+          playDiscordChime();
+          timerId = setInterval(playDiscordChime, 1900);
+        },
+        stop() {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        }
+      };
+    })();
 
     function compressImageFile(file, maxWidth, maxHeight, quality = 0.8) {
       return new Promise((resolve, reject) => {
@@ -1286,7 +1398,7 @@
       if (!el) return;
       el.style.backgroundColor = color || '#5865f2';
       if (pfpUrl && pfpUrl.trim()) {
-        el.innerHTML = `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML((name || 'U')[0].toUpperCase())}';" />`;
+        el.innerHTML = `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(name)}" loading="lazy" onerror="this.remove(); this.parentElement.textContent='${escapeHTML((name || 'U')[0].toUpperCase())}';" />`;
       } else {
         el.textContent = (name || 'U')[0].toUpperCase();
       }
@@ -1414,6 +1526,7 @@
     authPassEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleAuthSubmit(); });
 
     document.getElementById('logout-btn').onclick = () => {
+      callRinger.stop();
       localStorage.removeItem('minicord_user');
       location.reload();
     };
@@ -2162,7 +2275,7 @@
             const div = document.createElement('div');
             div.className = 'member-item' + (isOfflineGroup ? ' offline' : '');
             const avatarInner = u.pfp
-              ? `<img src="${escapeHTML(u.pfp)}" alt="${escapeHTML(shownName)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(shownName[0].toUpperCase())}';" />`
+              ? `<img src="${escapeHTML(u.pfp)}" alt="${escapeHTML(shownName)}" loading="lazy" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(shownName[0].toUpperCase())}';" />`
               : escapeHTML(shownName[0].toUpperCase());
 
             div.innerHTML = `
@@ -2455,7 +2568,7 @@
         reader.readAsDataURL(file);
       };
 
-      // REBUILT WEBRTC VOICE & VIDEO CALLING
+      // REBUILT WEBRTC VOICE, VIDEO & SCREEN SHARING + PER-USER MUTE
       let connectedVoiceServer = null;
       let connectedVoiceChannel = null;
       let localStream = null;
@@ -2469,10 +2582,12 @@
       let signalInboxRef = null;
       let activeCallWatcherRef = null;
       let activeCallWatcherCb = null;
+      let declinedCallKey = null;
 
       const peerConnections = {};
       const remoteStreams = {};
       const speakingMonitors = {};
+      const locallyMutedPeers = {};
 
       const RTC_CONFIG = {
         iceServers: [
@@ -2490,13 +2605,30 @@
         return `webrtc_signals/${cleanS}/${cleanV}`;
       }
 
-      function applyDeafenState() {
+      function applyAudioStates() {
         document.querySelectorAll('#video-grid video').forEach(vid => {
           if (vid.id !== `video_${userId}`) {
-            vid.muted = isDeafened;
+            const pId = vid.id.replace('video_', '');
+            vid.muted = !!(isDeafened || locallyMutedPeers[pId]);
           }
         });
       }
+
+      window.togglePeerLocalMute = (peerId, e) => {
+        if (e) e.stopPropagation();
+        locallyMutedPeers[peerId] = !locallyMutedPeers[peerId];
+        applyAudioStates();
+        if (activeVoicePeersRef) {
+          activeVoicePeersRef.once('value', (snap) => {
+            const peers = snap.val() || {};
+            if (peers[peerId]) {
+              const pData = peers[peerId];
+              renderVoiceTile(peerId, { ...pData, name: getEffectiveName(pData.name, pData.displayName) });
+            }
+          });
+        }
+        showToast(locallyMutedPeers[peerId] ? "Muted user for you." : "Unmuted user for you.");
+      };
 
       function updateVoiceControlButtons() {
         const micBtn = document.getElementById('mute-mic-btn');
@@ -2539,7 +2671,7 @@
             const tile = document.getElementById(`tile_${peerId}`);
             if (!tile) return;
             const audioTrack = stream.getAudioTracks()[0];
-            if (!audioTrack || !audioTrack.enabled || (peerId === userId && (isMicMuted || isDeafened))) {
+            if (!audioTrack || !audioTrack.enabled || (peerId === userId && (isMicMuted || isDeafened)) || (peerId !== userId && locallyMutedPeers[peerId])) {
               tile.classList.remove('speaking');
               return;
             }
@@ -2578,15 +2710,27 @@
         const hasLiveVideo = stream && stream.getVideoTracks().some(t => t.enabled && t.readyState === 'live');
         const visuals = getUserVisuals(peerData.name, peerData.color);
         const pfpUrl = peerData.pfp || visuals.pfp;
+        const isPeerMuted = !!locallyMutedPeers[peerId];
 
         const avatarInner = pfpUrl
-          ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(peerData.name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(peerData.name[0].toUpperCase())}';" />`
+          ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(peerData.name)}" loading="lazy" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(peerData.name[0].toUpperCase())}';" />`
           : escapeHTML(peerData.name[0].toUpperCase());
+
+        const videoClass = isSelf
+          ? (isScreenSharing ? 'screen-feed' : `cam-feed ${mirrorLocalCam ? 'mirrored' : ''}`)
+          : 'remote-feed';
+
+        const mutePeerBtnHtml = !isSelf
+          ? `<button class="peer-mute-btn ${isPeerMuted ? 'muted-peer' : ''}" onclick="togglePeerLocalMute('${escapeHTML(peerId)}', event)">${isPeerMuted ? 'Unmute User' : 'Mute User'}</button>`
+          : '';
 
         tile.innerHTML = `
           <div class="video-avatar-fallback" style="background-color:${peerData.color || visuals.color};">${avatarInner}</div>
-          <video id="video_${peerId}" autoplay playsinline ${isSelf || isDeafened ? 'muted' : ''} class="${isSelf && mirrorLocalCam && !isScreenSharing ? 'mirrored' : ''}" style="display:${hasLiveVideo ? 'block' : 'none'};"></video>
-          <div class="video-status-pill">${hasLiveVideo || peerData.videoActive ? 'Video Live' : 'Voice Connected'}</div>
+          <video id="video_${peerId}" autoplay playsinline ${isSelf || isDeafened || isPeerMuted ? 'muted' : ''} class="${videoClass}" style="display:${hasLiveVideo ? 'block' : 'none'};"></video>
+          <div class="video-status-pill">
+            <span>${isSelf && isScreenSharing ? 'Sharing Screen' : (hasLiveVideo || peerData.videoActive ? 'Video Live' : (isPeerMuted ? 'Muted' : 'Voice Live'))}</span>
+            ${mutePeerBtnHtml}
+          </div>
           <div class="video-pin-hint">${pinnedTilePeerId === peerId ? 'Unpin' : 'Click to Focus'}</div>
           <div class="video-name">${escapeHTML(peerData.name)}${isSelf ? ' (You)' : ''}</div>
         `;
@@ -2750,6 +2894,9 @@
       }
 
       async function joinServerVoiceChannel(serverId, vcName, labelOverride = null) {
+        callRinger.stop();
+        document.getElementById('incoming-ring-banner').classList.remove('active');
+
         if (connectedVoiceServer === serverId && connectedVoiceChannel === vcName) {
           showVoiceStage(true);
           return;
@@ -2847,11 +2994,15 @@
               if (userId < peerId) sendSignalingOffer(peerId, stateObj);
             }
           });
+          applyAudioStates();
         };
         activeVoicePeersRef.on('value', activeVoicePeersCb);
       }
 
       function startOrJoinPrivateCall(notifyChat = true) {
+        callRinger.stop();
+        document.getElementById('incoming-ring-banner').classList.remove('active');
+
         if (isFriendsMode && activeDmUser && activeDmUser !== '__saved_notes__') {
           const dmKey = [username.toLowerCase(), activeDmUser.toLowerCase()].sort().join('_');
           const peerShown = getEffectiveName(activeDmUser);
@@ -2863,7 +3014,7 @@
               const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
               db.ref(path).push({
                 author: username, displayName, color: userColor, isAdmin, time: timeStr,
-                text: `📞 Started a private voice/video call! Click **📞 Call** or the green banner above to join.`
+                text: `📞 Started a private voice/video call! Click **📞 Call** or the banner above to join.`
               });
             }
           }
@@ -2876,12 +3027,26 @@
               const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
               db.ref(path).push({
                 author: username, displayName, color: userColor, isAdmin, time: timeStr,
-                text: `📞 Started a private room call! Click **📞 Call** or the green banner above to join.`
+                text: `📞 Started a private room call! Click **📞 Call** or the banner above to join.`
               });
             }
           }
         }
       }
+
+      document.getElementById('ring-join-btn').onclick = () => startOrJoinPrivateCall(false);
+      document.getElementById('ring-decline-btn').onclick = () => {
+        callRinger.stop();
+        document.getElementById('incoming-ring-banner').classList.remove('active');
+        if (connectedVoiceServer && connectedVoiceChannel) {
+          declinedCallKey = `${connectedVoiceServer}_${connectedVoiceChannel}`;
+        } else if (isFriendsMode && activeDmUser && activeDmUser !== '__saved_notes__') {
+          declinedCallKey = `dm_calls_${[username.toLowerCase(), activeDmUser.toLowerCase()].sort().join('_')}`;
+        } else if (isPrivateMode && activePrivateRoom) {
+          declinedCallKey = `private_room_calls_${activePrivateRoom.key}`;
+        }
+        showToast("Call declined.");
+      };
 
       function watchActivePrivateCall() {
         if (activeCallWatcherRef && activeCallWatcherCb) {
@@ -2889,8 +3054,11 @@
           activeCallWatcherRef = null;
         }
         const banner = document.getElementById('active-call-banner');
+        const ringBanner = document.getElementById('incoming-ring-banner');
         const headerCallBtn = document.getElementById('header-start-call-btn');
         banner.classList.remove('active');
+        ringBanner.classList.remove('active');
+        callRinger.stop();
 
         let sId = null;
         let cId = null;
@@ -2908,7 +3076,9 @@
         activeCallWatcherCb = (snap) => {
           const peers = snap.val() || {};
           const peerList = Object.values(peers);
+          const remotePeers = peerList.filter(p => p.name && p.name.toLowerCase() !== username.toLowerCase());
           const inCall = (connectedVoiceServer === sId && connectedVoiceChannel === cId);
+          const callKey = `${sId}_${cId}`;
 
           if (inCall) {
             headerCallBtn.textContent = '📞 Open Call';
@@ -2918,12 +3088,23 @@
             headerCallBtn.textContent = '📞 Start Call';
           }
 
-          if (peerList.length > 0 && !inCall) {
-            const names = peerList.map(p => getEffectiveName(p.name, p.displayName)).join(', ');
-            document.getElementById('active-call-banner-text').textContent = `📞 Live Call active (${names})`;
-            banner.classList.add('active');
-            document.getElementById('active-call-banner-join-btn').onclick = () => startOrJoinPrivateCall(false);
+          if (remotePeers.length > 0 && !inCall) {
+            const names = remotePeers.map(p => getEffectiveName(p.name, p.displayName)).join(', ');
+            if (declinedCallKey !== callKey) {
+              document.getElementById('incoming-ring-text').textContent = `Incoming call from ${names}`;
+              ringBanner.classList.add('active');
+              banner.classList.remove('active');
+              callRinger.start();
+            } else {
+              callRinger.stop();
+              ringBanner.classList.remove('active');
+              document.getElementById('active-call-banner-text').textContent = `📞 Live Call active (${names})`;
+              banner.classList.add('active');
+              document.getElementById('active-call-banner-join-btn').onclick = () => startOrJoinPrivateCall(false);
+            }
           } else {
+            callRinger.stop();
+            ringBanner.classList.remove('active');
             banner.classList.remove('active');
           }
         };
@@ -2969,6 +3150,9 @@
       }
 
       async function disconnectServerVoice(hideStage = true) {
+        callRinger.stop();
+        document.getElementById('incoming-ring-banner').classList.remove('active');
+
         Object.keys(peerConnections).forEach(pId => {
           try { peerConnections[pId].pc.close(); } catch (e) {}
           delete peerConnections[pId];
@@ -3036,7 +3220,7 @@
         if (localStream) {
           localStream.getAudioTracks().forEach(t => t.enabled = !(isMicMuted || isDeafened));
         }
-        applyDeafenState();
+        applyAudioStates();
         updateVoiceControlButtons();
         showToast(isDeafened ? "Deafened (Incoming & outgoing audio muted)" : "Undeafened");
       }
@@ -3048,7 +3232,7 @@
           isDeafened = false;
           isMicMuted = false;
           if (localStream) localStream.getAudioTracks().forEach(t => t.enabled = true);
-          applyDeafenState();
+          applyAudioStates();
           updateVoiceControlButtons();
           showToast("Undeafened & Microphone Unmuted");
           return;
@@ -3124,13 +3308,18 @@
         if (!connectedVoiceServer) return;
         try {
           if (!isScreenSharing) {
-            const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+              showToast("Screen sharing requires HTTPS or localhost.", "error");
+              return;
+            }
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 30, max: 60 } }, audio: false });
             const screenTrack = screenStream.getVideoTracks()[0];
             isScreenSharing = true; isCamEnabled = false;
             await replaceOrAddVideoTrack(screenTrack);
             updateVoiceControlButtons();
             showToast("Screen sharing started", "success");
             screenTrack.onended = async () => {
+              if (!isScreenSharing) return;
               isScreenSharing = false;
               await replaceOrAddVideoTrack(null);
               updateVoiceControlButtons();
@@ -3143,7 +3332,7 @@
             showToast("Screen sharing stopped");
           }
         } catch (e) {
-          showToast("Screen share cancelled.", "info");
+          showToast("Screen share cancelled or unavailable.", "info");
         }
       };
 
@@ -3168,6 +3357,7 @@
       });
 
       window.addEventListener('beforeunload', () => {
+        callRinger.stop();
         if (connectedVoiceServer && connectedVoiceChannel) {
           db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}`).remove();
           db.ref(`${getSignalBasePath(connectedVoiceServer, connectedVoiceChannel)}/${userId}`).remove();
@@ -3226,6 +3416,8 @@
             wrap.onclick = () => {
               document.getElementById('header-start-call-btn').style.display = 'none';
               document.getElementById('active-call-banner').classList.remove('active');
+              document.getElementById('incoming-ring-banner').classList.remove('active');
+              callRinger.stop();
               showVoiceStage(false);
               isPrivateMode = false; isFriendsMode = false;
               document.getElementById('private-badge').style.display = 'none';
@@ -3383,7 +3575,7 @@
                   const shownName = getEffectiveName(u.name, u.displayName);
                   const pfpUrl = u.pfp || visuals.pfp;
                   const avatarInner = pfpUrl
-                    ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(shownName)}" />`
+                    ? `<img src="${escapeHTML(pfpUrl)}" alt="${escapeHTML(shownName)}" loading="lazy" />`
                     : escapeHTML(shownName[0].toUpperCase());
 
                   const uRow = document.createElement('div');
@@ -3400,12 +3592,6 @@
           });
         };
         activeVoiceListRef.on('value', activeVoiceListCb);
-
-        db.ref('voice_presence/' + activeServer).on('value', () => {
-          if (!isPrivateMode && !isFriendsMode && activeVoiceListRef) {
-            activeVoiceListRef.once('value', activeVoiceListCb);
-          }
-        });
       }
 
       const unreadDms = {};
@@ -3454,6 +3640,8 @@
               activeDmUser = '__saved_notes__';
               document.getElementById('header-start-call-btn').style.display = 'none';
               document.getElementById('active-call-banner').classList.remove('active');
+              document.getElementById('incoming-ring-banner').classList.remove('active');
+              callRinger.stop();
               document.getElementById('channel-name').textContent = "Saved Notes";
               chatInputEl.placeholder = "Jot down links, ideas, or reminders for yourself...";
               openFriendsTab('__saved_notes__');
@@ -3507,6 +3695,8 @@
               activeDmUser = '__saved_notes__';
               document.getElementById('header-start-call-btn').style.display = 'none';
               document.getElementById('active-call-banner').classList.remove('active');
+              document.getElementById('incoming-ring-banner').classList.remove('active');
+              callRinger.stop();
               document.getElementById('channel-name').textContent = "Saved Notes";
               chatInputEl.placeholder = "Jot down links, ideas, or reminders for yourself...";
               loadMessages();
@@ -3522,6 +3712,8 @@
             } else if (!activeDmUser) {
               document.getElementById('header-start-call-btn').style.display = 'none';
               document.getElementById('active-call-banner').classList.remove('active');
+              document.getElementById('incoming-ring-banner').classList.remove('active');
+              callRinger.stop();
               document.getElementById('channel-name').textContent = "Friends";
               chatInputEl.placeholder = "Select a friend to DM";
               messagesEl.innerHTML = `
@@ -3693,7 +3885,7 @@
           const isAllowed = !!currentWhitelistMap[acc.userId];
           const shownName = acc.displayName || acc.username;
           const avatarInner = acc.pfp
-            ? `<img src="${escapeHTML(acc.pfp)}" alt="" />`
+            ? `<img src="${escapeHTML(acc.pfp)}" alt="" loading="lazy" />`
             : escapeHTML(shownName[0].toUpperCase());
 
           const row = document.createElement('div');
@@ -3891,736 +4083,673 @@
         const uListEl = document.getElementById('admin-users-list');
         if (uListEl) {
           uListEl.innerHTML = '';
-          Object.values(allAccountsMap).forEach(acc => {
+          const accounts = Object.values(allAccountsMap);
+          accounts.forEach(acc => {
             if (!acc || !acc.username) return;
-            const onU = Object.values(onlineUsersMap).find(u => u && u.userId === acc.userId);
+            const safeKey = acc.username.toLowerCase().replace(/[.#$\[\]\/]/g, '_');
+            const isSelf = acc.userId === userId;
+            const isUserOnline = !!onlineUsersMap[acc.userId];
+            const isUserAdmin = !!(onlineUsersMap[acc.userId] && onlineUsersMap[acc.userId].isAdmin);
+
             const row = document.createElement('div');
             row.className = 'admin-ch-row';
             row.innerHTML = `
-              <div>
-                <span style="font-weight:700; color:var(--text-header);">${escapeHTML(acc.displayName || acc.username)}</span>
-                <span style="font-size:11px; color:var(--text-muted);"> (@${escapeHTML(acc.username)})</span>
-                ${onU && onU.isAdmin ? '<span class="admin-tag" style="margin-left:4px;">ADMIN</span>' : ''}
-                ${acc.banned ? '<span class="admin-tag" style="background:var(--red); margin-left:4px;">BANNED</span>' : ''}
+              <div style="min-width:0;">
+                <div style="font-weight:700; font-size:13px; color:var(--text-header);">
+                  ${escapeHTML(acc.displayName || acc.username)} <span style="font-weight:400; color:var(--text-muted);">@${escapeHTML(acc.username)}</span>
+                  ${acc.banned ? '<span style="color:var(--red); font-size:11px; font-weight:800;">[BANNED]</span>' : ''}
+                  ${isUserAdmin ? '<span class="admin-tag" style="margin-left:4px;">ADMIN</span>' : ''}
+                </div>
+                <div style="font-size:11px; color:var(--text-muted);">${isUserOnline ? '🟢 Online' : '⚫ Offline'}</div>
               </div>
             `;
-            const btnGroup = document.createElement('div');
-            btnGroup.style.display = 'flex';
-            btnGroup.style.gap = '6px';
 
-            if (acc.userId && acc.userId !== userId) {
-              if (onU && !onU.isAdmin) {
+            if (!isSelf) {
+              const btnGroup = document.createElement('div');
+              btnGroup.style.display = 'flex';
+              btnGroup.style.gap = '5px';
+
+              if (!isUserAdmin) {
                 const promBtn = document.createElement('button');
-                promBtn.className = 'btn btn-primary';
+                promBtn.className = 'btn btn-secondary';
                 promBtn.style.padding = '4px 8px'; promBtn.style.fontSize = '11px';
                 promBtn.textContent = 'Make Admin';
                 promBtn.onclick = () => {
                   db.ref('mod_actions/' + acc.userId).set({ type: 'promote' });
-                  showToast(`Promoted ${acc.username} to Admin!`, "success");
+                  showToast(`Granted Admin to @${acc.username}`, "success");
                 };
                 btnGroup.appendChild(promBtn);
               }
-              if (onU) {
+
+              if (isUserOnline) {
                 const kickBtn = document.createElement('button');
                 kickBtn.className = 'btn btn-secondary';
                 kickBtn.style.padding = '4px 8px'; kickBtn.style.fontSize = '11px';
                 kickBtn.textContent = 'Kick';
                 kickBtn.onclick = () => {
                   db.ref('mod_actions/' + acc.userId).set({ type: 'kick' });
-                  db.ref('online/' + acc.userId).remove();
-                  showToast(`Kicked ${acc.username}`, "info");
+                  showToast(`Kicked @${acc.username}`, "success");
                 };
                 btnGroup.appendChild(kickBtn);
               }
-              const safeKey = acc.username.toLowerCase().replace(/[.#$\[\]\/]/g, '_');
+
               const banBtn = document.createElement('button');
               banBtn.className = acc.banned ? 'btn btn-success' : 'btn btn-danger';
               banBtn.style.padding = '4px 8px'; banBtn.style.fontSize = '11px';
               banBtn.textContent = acc.banned ? 'Unban' : 'Ban';
               banBtn.onclick = () => {
-                if (acc.banned) {
-                  db.ref(`accounts/${safeKey}/banned`).remove();
-                  showToast(`Unbanned @${acc.username}`, "success");
-                } else {
-                  db.ref(`accounts/${safeKey}/banned`).set(true);
-                  db.ref('mod_actions/' + acc.userId).set({ type: 'ban' });
-                  db.ref('online/' + acc.userId).remove();
-                  showToast(`Banned @${acc.username}`, "error");
-                }
+                const nextBan = !acc.banned;
+                db.ref('accounts/' + safeKey + '/banned').set(nextBan);
+                if (nextBan && isUserOnline) db.ref('mod_actions/' + acc.userId).set({ type: 'ban' });
+                showToast(nextBan ? `Banned @${acc.username}` : `Unbanned @${acc.username}`, "success");
               };
               btnGroup.appendChild(banBtn);
-            } else {
-              btnGroup.innerHTML = '<span style="font-size:11px; color:var(--text-muted);">You</span>';
+
+              row.appendChild(btnGroup);
             }
-            row.appendChild(btnGroup);
+
             uListEl.appendChild(row);
           });
         }
       }
 
       document.getElementById('create-server-submit').onclick = () => {
-        const input = document.getElementById('new-server-name');
-        const isPrivateCheck = document.getElementById('new-server-private').checked;
-        const sTitle = input.value.trim();
-        const sId = sTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (!sId) return showToast("Enter a valid server name.", "error");
-
-        const payload = {
-          title: sTitle,
-          isPrivate: isPrivateCheck,
+        if (!isAdmin) return;
+        const sName = document.getElementById('new-server-name').value.trim();
+        const isPriv = document.getElementById('new-server-private').checked;
+        if (!sName) return;
+        const sId = sName.toLowerCase().replace(/[^a-z0-9-]/g, '-') + '_' + Math.random().toString(36).substring(2, 5);
+        db.ref('servers/' + sId).set({
+          title: sName,
+          isPrivate: isPriv,
           owner: userId,
+          whitelist: isPriv ? { [userId]: true } : null,
           channels: { general: true },
           voice_channels: { 'General Voice': true }
-        };
-        if (isPrivateCheck) {
-          payload.whitelist = { [userId]: true };
-        }
-
-        db.ref('servers/' + sId).set(payload);
-        input.value = '';
+        });
+        document.getElementById('new-server-name').value = '';
         document.getElementById('new-server-private').checked = false;
+        showToast(`Server "${sName}" created!`, "success");
         renderAdminPanelLists();
-        loadServersList();
-        showToast("Server created!", "success");
-        if (isPrivateCheck) {
-          openWhitelistModal(sId, sTitle);
-        }
       };
 
       document.getElementById('create-channel-submit').onclick = () => {
-        const input = document.getElementById('new-channel-input');
-        const clean = input.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
-        if (!clean) return;
+        if (!isAdmin) return;
+        const raw = document.getElementById('new-channel-input').value.trim();
+        if (!raw) return;
+        const clean = raw.toLowerCase().replace(/[^a-z0-9-]/g, '-');
         db.ref('servers/' + activeServer + '/channels/' + clean).set(true);
-        input.value = '';
-        showToast("Text channel #" + clean + " created!", "success");
+        document.getElementById('new-channel-input').value = '';
       };
 
       document.getElementById('create-voice-channel-submit').onclick = () => {
-        const input = document.getElementById('new-voice-channel-input');
-        const clean = input.value.trim().replace(/[.#$\[\]\/]/g, '');
-        if (!clean) return;
+        if (!isAdmin) return;
+        const raw = document.getElementById('new-voice-channel-input').value.trim();
+        if (!raw) return;
+        const clean = raw.replace(/[.#$\[\]\/]/g, '');
         db.ref('servers/' + activeServer + '/voice_channels/' + clean).set(true);
-        input.value = '';
-        renderAdminPanelLists();
-        showToast("Voice channel " + clean + " created!", "success");
+        document.getElementById('new-voice-channel-input').value = '';
       };
 
       document.getElementById('wipe-chat-btn').onclick = () => {
-        db.ref(getChatPath()).remove();
-        closeModal('admin-modal');
-        showToast("Channel wiped.", "success");
-      };
-
-      function setReplyTarget(author, text) {
-        const shownAuthor = getEffectiveName(author);
-        replyingTo = { author, displayName: shownAuthor, text: text.substring(0, 70) };
-        document.getElementById('reply-preview-text').textContent = `Replying to ${shownAuthor} (@${author}): "${replyingTo.text}${text.length > 70 ? '...' : ''}"`;
-        document.getElementById('reply-preview-bar').classList.add('active');
-        chatInputEl.focus();
-      }
-
-      document.getElementById('cancel-reply-btn').onclick = () => {
-        replyingTo = null;
-        document.getElementById('reply-preview-bar').classList.remove('active');
+        if (!isAdmin) return;
+        const path = getChatPath();
+        if (path && confirm("Delete all messages in this channel?")) {
+          db.ref(path).remove();
+          showToast("Channel messages wiped.", "success");
+        }
       };
 
       function getChatPath() {
-        if (isFriendsMode) {
-          if (!activeDmUser) return null;
-          if (activeDmUser === '__saved_notes__') return `saved_notes/${userId}`;
-          return 'dm_messages/' + [username.toLowerCase(), activeDmUser.toLowerCase()].sort().join('_');
+        if (isPrivateMode && activePrivateRoom) return 'private_messages/' + activePrivateRoom.key;
+        if (isFriendsMode && activeDmUser === '__saved_notes__') return 'saved_notes/' + userId;
+        if (isFriendsMode && activeDmUser) {
+          const dmKey = [username.toLowerCase(), activeDmUser.toLowerCase()].sort().join('_');
+          return 'dm_messages/' + dmKey;
         }
-        return isPrivateMode ? 'private_messages/' + activePrivateRoom.key : 'messages/' + activeServer + '/' + activeChannel;
+        if (!isPrivateMode && !isFriendsMode && activeServer && activeChannel) return 'messages/' + activeServer + '/' + activeChannel;
+        return null;
       }
 
-      function getPinsPath() {
-        if (isFriendsMode) {
-          if (!activeDmUser) return null;
-          if (activeDmUser === '__saved_notes__') return `saved_notes_pins/${userId}`;
-          return 'dm_pins/' + [username.toLowerCase(), activeDmUser.toLowerCase()].sort().join('_');
+      // RICH TEXT FORMATTER (@Mentions, **Bold**, *Italic*, `Code`, ```Block```, ||Spoiler||, Links)
+      function formatRichText(text) {
+        if (!text) return '';
+        if (text.startsWith('```') && text.endsWith('```') && text.length > 6) {
+          return `<div class="code-block">${escapeHTML(text.slice(3, -3).trim())}</div>`;
         }
-        return isPrivateMode ? 'private_pins/' + activePrivateRoom.key : 'pins/' + activeServer + '/' + activeChannel;
-      }
-
-      function getTypingPath() {
-        if (isFriendsMode) {
-          if (!activeDmUser || activeDmUser === '__saved_notes__') return null;
-          return 'dm_typing/' + [username.toLowerCase(), activeDmUser.toLowerCase()].sort().join('_');
-        }
-        return isPrivateMode ? 'private_typing/' + activePrivateRoom.key : 'typing/' + activeServer + '/' + activeChannel;
-      }
-
-      function doesMessagePingMe(rawText) {
-        if (!rawText) return false;
-        const lower = rawText.toLowerCase();
-        if (lower.includes('@everyone') || lower.includes('@here')) return true;
-        const uHandle = '@' + username.toLowerCase();
-        const dHandle = '@' + displayName.toLowerCase().replace(/\s+/g, '');
-        const dExact = '@' + displayName.toLowerCase();
-        return lower.includes(uHandle) || (displayName && (lower.includes(dHandle) || lower.includes(dExact)));
-      }
-
-      function formatMessageBody(rawText) {
-        let safe = escapeHTML(rawText);
-
-        safe = safe.replace(/```([\s\S]+?)```/g, '<div class="code-block">$1</div>');
-        safe = safe.replace(/\|\|(.+?)\|\|/g, '<span class="spoiler-tag" onclick="this.classList.toggle(\'revealed\')" title="Click to reveal spoiler">$1</span>');
-
-        safe = safe.replace(/@([a-zA-Z0-9_.-]+)/g, (match, token) => {
-          const tLow = token.toLowerCase();
-          const isMe = (
-            tLow === 'everyone' ||
-            tLow === 'here' ||
-            tLow === username.toLowerCase() ||
-            tLow === displayName.toLowerCase().replace(/\s+/g, '')
-          );
-          const clickAttr = (tLow !== 'everyone' && tLow !== 'here') ? ` onclick="openPeerProfile('${escapeHTML(token)}')"` : '';
-          return `<span class="mention-pill ${isMe ? 'self-ping' : ''}"${clickAttr}>${match}</span>`;
+        let html = escapeHTML(text);
+        html = html.replace(/`([^`\n]+)`/g, '<code style="background:var(--bg-servers); padding:2px 5px; border-radius:4px; font-family:monospace; font-size:0.9em;">$1</code>');
+        html = html.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+        html = html.replace(/\|\|([^|]+)\|\|/g, '<span class="spoiler-tag" onclick="this.classList.toggle(\'revealed\')" title="Click to reveal spoiler">$1</span>');
+        html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+        html = html.replace(/(^|\s)@([a-zA-Z0-9_.-]+)/g, (match, prefix, targetUser) => {
+          const isSelfMention = targetUser.toLowerCase() === username.toLowerCase() || targetUser.toLowerCase() === 'everyone';
+          return `${prefix}<span class="mention-pill ${isSelfMention ? 'self-ping' : ''}" onclick="openPeerProfile('${escapeHTML(targetUser)}')">@${escapeHTML(targetUser)}</span>`;
         });
-
-        safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        safe = safe.replace(/\*(.+?)\*/g, '<em>$1</em>');
-        safe = safe.replace(/`(.+?)`/g, '<code style="background:var(--bg-servers); padding:2px 5px; border-radius:4px; font-family:monospace;">$1</code>');
-        safe = safe.replace(/(https?:\/\/[^\s<]+)/g, (url) => {
-          if (autoEmbedEnabled && /\.(gif|png|jpg|jpeg|webp)(\?.*)?$/i.test(url)) {
-            return `<div class="msg-img-wrap">
-              <img src="${url}" class="msg-img" alt="Embedded Image" onclick="openLightbox('${url}')" />
-              <button class="fav-gif-star-btn" onclick="event.stopPropagation(); toggleFavoriteGif('${url}', 'Chat GIF')" title="Save to ★ Favorites">★ Save</button>
-            </div>`;
-          }
-          return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-        });
-        return safe;
+        return html;
       }
 
-      const pinsPopover = document.getElementById('pins-popover');
-      const pinsListEl = document.getElementById('pins-list');
-
-      document.getElementById('open-pins-btn').onclick = (e) => {
-        e.stopPropagation();
-        pinsPopover.classList.toggle('open');
-        if (pinsPopover.classList.contains('open')) renderPinnedMessages();
-      };
-      document.getElementById('close-pins-btn').onclick = () => pinsPopover.classList.remove('open');
-      document.addEventListener('click', (e) => {
-        if (!pinsPopover.contains(e.target) && !document.getElementById('open-pins-btn').contains(e.target)) {
-          pinsPopover.classList.remove('open');
-        }
-      });
-
-      function renderPinnedMessages() {
-        const pinsPath = getPinsPath();
-        if (!pinsPath) return;
-        pinsListEl.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:12px;">Loading pins...</div>';
-        db.ref(pinsPath).once('value', (snap) => {
-          const pins = snap.val() || {};
-          const keys = Object.keys(pins);
-          pinsListEl.innerHTML = '';
-          if (keys.length === 0) {
-            pinsListEl.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:16px;">No pinned messages in this channel yet.</div>';
-            return;
-          }
-          keys.reverse().forEach(k => {
-            const p = pins[k];
-            const card = document.createElement('div');
-            card.className = 'pin-card';
-            const shownPinAuthor = getEffectiveName(p.author, p.displayName);
-            card.innerHTML = `
-              <div class="pin-card-top">
-                <strong style="color:var(--text-header);">${escapeHTML(shownPinAuthor)}</strong>
-                <span style="font-size:11px; color:var(--text-muted);">${escapeHTML(p.time || '')}</span>
-              </div>
-              <div style="color:var(--text-main); word-break:break-word;">${escapeHTML(p.text || '')}</div>
-              ${(isAdmin || p.author === username) ? `<div style="text-align:right; margin-top:6px;"><button class="msg-action-btn danger unpin-btn">Unpin</button></div>` : ''}
-            `;
-            const unpinBtn = card.querySelector('.unpin-btn');
-            if (unpinBtn) {
-              unpinBtn.onclick = () => {
-                db.ref(`${pinsPath}/${k}`).remove();
-                renderPinnedMessages();
-                showToast("Message unpinned.");
-              };
-            }
-            pinsListEl.appendChild(card);
-          });
-        });
+      function insertMentionIntoInput(targetUsername) {
+        const currentVal = chatInputEl.value;
+        const mentionStr = `@${targetUsername} `;
+        chatInputEl.value = currentVal ? (currentVal.endsWith(' ') ? currentVal + mentionStr : currentVal + ' ' + mentionStr) : mentionStr;
+        updateCharCounter();
+        chatInputEl.focus();
       }
 
-      let currentChannelFilter = '';
-      document.getElementById('channel-search-input').addEventListener('input', (e) => {
-        currentChannelFilter = e.target.value.trim().toLowerCase();
-        loadMessages();
-      });
-
-      const jumpPresentBtn = document.getElementById('jump-present-btn');
-      messagesEl.addEventListener('scroll', () => {
-        const distFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
-        jumpPresentBtn.classList.toggle('visible', distFromBottom > 180);
-      });
-      jumpPresentBtn.onclick = () => {
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-        jumpPresentBtn.classList.remove('visible');
-      };
-
-      let editingMsgKey = null;
-
-      function loadMessages() {
-        const path = getChatPath();
-        if (!path) return;
-        if (activeMsgRef && activeMsgCb) activeMsgRef.off('child_added', activeMsgCb);
-        editingMsgKey = null;
-        messagesEl.innerHTML = '';
-
-        const chLabel = isFriendsMode
-          ? (activeDmUser === '__saved_notes__' ? '📌 Saved Notes' : `@${getEffectiveName(activeDmUser)}`)
-          : (isPrivateMode ? `#${activePrivateRoom.name}` : `#${activeChannel}`);
-
-        const banner = document.createElement('div');
-        banner.className = 'welcome-banner';
-        banner.innerHTML = `
-          <div class="welcome-icon">${isFriendsMode ? '@' : '#'}</div>
-          <div style="font-size:22px; font-weight:700; color:var(--text-header);">Welcome to ${escapeHTML(chLabel)}!</div>
-          <div style="color:var(--text-muted); font-size:14px;">This is the start of the conversation. Type <strong>/</strong> for commands or <strong>@</strong> to mention someone.</div>
-        `;
-        messagesEl.appendChild(banner);
-
-        let initialLoadDone = false;
-        let lastRenderedAuthor = null;
-
-        activeMsgRef = db.ref(path);
-        activeMsgCb = (snapshot) => {
-          const msgKey = snapshot.key;
-          const m = snapshot.val();
-          if (!m) return;
-
-          if (currentChannelFilter) {
-            const hay = `${m.text || ''} ${m.author || ''} ${m.displayName || ''}`.toLowerCase();
-            if (!hay.includes(currentChannelFilter)) return;
-          }
-
-          const isSelf = (m.author || '').toLowerCase() === username.toLowerCase();
-          const hasPing = !isSelf && doesMessagePingMe(m.text || '');
-
-          if (initialLoadDone && !isSelf) {
-            playNotificationSound(hasPing);
-
-            if (desktopNotifEnabled && document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-              try {
-                new Notification(`${getEffectiveName(m.author, m.displayName)} in ${chLabel}`, {
-                  body: m.text || 'Sent an attachment'
-                });
-              } catch (e) {}
-            }
-
-            if (isFriendsMode) {
-              const peerKey = (m.author || '').toLowerCase();
-              if (!activeDmUser || activeDmUser.toLowerCase() !== peerKey) {
-                unreadDms[peerKey] = true;
-                openFriendsTab(activeDmUser);
-              }
-            } else if (!isPrivateMode) {
-              const chKey = `${activeServer}_${activeChannel}`;
-              if (chKey !== `${activeServer}_${activeChannel}`) {
-                unreadChannels[chKey] = true;
-                if (hasPing) {
-                  unreadPings[chKey] = (unreadPings[chKey] || 0) + 1;
-                  serverUnreadPings[activeServer] = (serverUnreadPings[activeServer] || 0) + 1;
-                }
-                loadChannels();
-                loadServersList();
-              }
-            }
-          }
-
-          const visuals = getUserVisuals(m.author, m.color, m.displayName);
-          const shownAuthor = getEffectiveName(m.author, m.displayName);
-          const isFollowup = (!m.replyTo && !m.edited && !currentChannelFilter && lastRenderedAuthor === (m.author || '').toLowerCase());
-          lastRenderedAuthor = (m.author || '').toLowerCase();
-
-          const div = document.createElement('div');
-          div.className = 'message' + (isFollowup ? ' compact-followup' : '') + (hasPing ? ' mentioned' : '');
-          div.dataset.msgKey = msgKey;
-          div.dataset.author = m.author || '';
-
-          const avatarInner = visuals.pfp
-            ? `<img src="${escapeHTML(visuals.pfp)}" alt="${escapeHTML(shownAuthor)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(shownAuthor[0].toUpperCase())}';" />`
-            : escapeHTML(shownAuthor[0].toUpperCase());
-
-          let bodyHtml = '';
-          if (m.text && m.text.startsWith('[Attachment]: ')) {
-            const url = m.text.replace('[Attachment]: ', '').trim();
-            bodyHtml = `<div class="msg-img-wrap">
-              <img src="${escapeHTML(url)}" class="msg-img" alt="Attachment" onclick="openLightbox('${escapeHTML(url).replace(/'/g, "\'")}')" />
-              <button class="fav-gif-star-btn" onclick="event.stopPropagation(); toggleFavoriteGif('${escapeHTML(url).replace(/'/g, "\'")}', 'Chat GIF')" title="Save to ★ Favorites">★ Save</button>
-            </div>`;
-          } else if (m.text && m.text.startsWith('[File Upload]: ')) {
-            const parts = m.text.replace('[File Upload]: ', '').split('|');
-            const fName = parts[0] || 'file';
-            const fSizeKb = ((parseInt(parts[1]) || 0) / 1024).toFixed(1);
-            const fUrl = parts[2] || '#';
-            bodyHtml = `<div class="file-attachment-card"><div style="font-size:24px;">📄</div><div style="flex:1; min-width:0;"><div style="font-weight:700; color:var(--text-header); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(fName)}</div><div style="font-size:11px; color:var(--text-muted);">${fSizeKb} KB</div></div><a href="${fUrl}" download="${escapeHTML(fName)}" class="btn btn-primary" style="padding:5px 10px; font-size:11px;">Download</a></div>`;
-          } else {
-            bodyHtml = formatMessageBody(m.text || '');
-          }
-
-          const replyShownAuthor = m.replyTo ? getEffectiveName(m.replyTo.author, m.replyTo.displayName) : '';
-          const replyHtml = m.replyTo
-            ? `<div class="msg-reply-quote">Replying to <strong>${escapeHTML(replyShownAuthor)}</strong>: "${escapeHTML(m.replyTo.text)}"</div>`
-            : '';
-
-          let reactionsHtml = '';
-          if (m.reactions) {
-            const pills = Object.keys(m.reactions).map(emo => {
-              const usersObj = m.reactions[emo] || {};
-              const count = Object.keys(usersObj).length;
-              if (count === 0) return '';
-              const iReacted = !!usersObj[userId];
-              return `<button class="reaction-pill ${iReacted ? 'reacted' : ''}" data-emo="${escapeHTML(emo)}">${emo} <span>${count}</span></button>`;
-            }).filter(Boolean).join('');
-            if (pills) reactionsHtml = `<div class="msg-reactions-row">${pills}</div>`;
-          }
-
-          const handleSubHtml = (shownAuthor !== m.author && m.author)
-            ? `<span class="msg-handle-sub">@${escapeHTML(m.author)}</span>`
-            : '';
-
-          const headerHtml = isFollowup
-            ? ''
-            : `<div class="msg-header">
-                <span class="msg-author" data-author="${escapeHTML(m.author || '')}">${escapeHTML(shownAuthor)}</span>
-                ${handleSubHtml}
-                ${visuals.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
-                <span class="msg-time">${escapeHTML(m.time || '')}</span>
-                ${m.edited ? '<span class="msg-edited-tag">(edited)</span>' : ''}
-              </div>`;
-
-          div.innerHTML = `
-            <div class="msg-avatar" style="background:${visuals.color};" data-author="${escapeHTML(m.author || '')}">${avatarInner}</div>
-            <div style="flex:1; min-width:0;">
-              ${headerHtml}
-              ${replyHtml}
-              <div class="msg-body">${bodyHtml}</div>
-              ${reactionsHtml}
-            </div>
-            <div class="msg-actions">
-              <button class="msg-quick-react" data-emo="👍" title="React 👍">👍</button>
-              <button class="msg-quick-react" data-emo="❤️" title="React ❤️">❤️</button>
-              <button class="msg-quick-react" data-emo="🔥" title="React 🔥">🔥</button>
-              <div class="msg-action-divider"></div>
-              <button class="msg-action-btn reply-msg-btn">Reply</button>
-              <button class="msg-action-btn pin-msg-btn">Pin</button>
-              ${isSelf && !(m.text || '').startsWith('[Attachment]: ') && !(m.text || '').startsWith('[File Upload]: ') ? '<button class="msg-action-btn edit-msg-btn">Edit</button>' : ''}
-              ${(isAdmin || isSelf) ? '<button class="msg-action-btn danger del-msg-btn">Delete</button>' : ''}
-            </div>
-          `;
-
-          div.querySelectorAll('[data-author]').forEach(el => {
-            el.onclick = () => openPeerProfile(el.dataset.author);
-          });
-
-          div.querySelectorAll('.msg-quick-react').forEach(qBtn => {
-            qBtn.onclick = (e) => {
-              e.stopPropagation();
-              const emo = qBtn.dataset.emo;
-              const rRef = db.ref(`${path}/${msgKey}/reactions/${emo}/${userId}`);
-              rRef.once('value', (s) => {
-                if (s.val()) rRef.remove();
-                else rRef.set(true);
-              });
-            };
-          });
-
-          div.querySelectorAll('.reaction-pill').forEach(pill => {
-            pill.onclick = (e) => {
-              e.stopPropagation();
-              const emo = pill.dataset.emo;
-              const rRef = db.ref(`${path}/${msgKey}/reactions/${emo}/${userId}`);
-              rRef.once('value', (s) => {
-                if (s.val()) rRef.remove();
-                else rRef.set(true);
-              });
-            };
-          });
-
-          div.querySelector('.reply-msg-btn').onclick = () => setReplyTarget(m.author, m.text || '');
-
-          div.querySelector('.pin-msg-btn').onclick = () => {
-            const pinsPath = getPinsPath();
-            if (!pinsPath) return;
-            db.ref(`${pinsPath}/${msgKey}`).set({
-              author: m.author || username,
-              displayName: m.displayName || shownAuthor,
-              text: m.text || '',
-              time: m.time || ''
-            });
-            showToast("Message pinned to channel!", "success");
-          };
-
-          const editBtn = div.querySelector('.edit-msg-btn');
-          if (editBtn) {
-            editBtn.onclick = () => startInlineEdit(div, path, msgKey, m.text || '');
-          }
-
-          const delBtn = div.querySelector('.del-msg-btn');
-          if (delBtn) {
-            delBtn.onclick = () => {
-              db.ref(`${path}/${msgKey}`).remove();
-              db.ref(`${getPinsPath()}/${msgKey}`).remove();
-              showToast("Message deleted.");
-            };
-          }
-
-          messagesEl.appendChild(div);
-          messagesEl.scrollTop = messagesEl.scrollHeight;
-        };
-
-        activeMsgRef.on('child_added', activeMsgCb);
-        activeMsgRef.once('value', () => { initialLoadDone = true; });
-      }
-
-      function startInlineEdit(msgDiv, path, msgKey, originalText) {
-        if (editingMsgKey === msgKey) return;
-        editingMsgKey = msgKey;
-        const bodyEl = msgDiv.querySelector('.msg-body');
-        const oldHtml = bodyEl.innerHTML;
-
-        bodyEl.innerHTML = `
-          <div class="inline-edit-box">
-            <input type="text" class="inline-edit-input" value="${escapeHTML(originalText)}" />
-            <div class="inline-edit-hint">Enter to save • Escape to cancel</div>
-          </div>
-        `;
-        const editInput = bodyEl.querySelector('.inline-edit-input');
-        editInput.focus();
-        editInput.setSelectionRange(editInput.value.length, editInput.value.length);
-
-        const cancelEdit = () => {
-          editingMsgKey = null;
-          bodyEl.innerHTML = oldHtml;
-        };
-
-        editInput.onkeydown = (e) => {
-          if (e.key === 'Escape') {
-            e.preventDefault();
-            cancelEdit();
-          } else if (e.key === 'Enter') {
-            e.preventDefault();
-            const updated = editInput.value.trim();
-            if (!updated || updated === originalText) {
-              cancelEdit();
-              return;
-            }
-            if (updated.length > globalTextLimit) {
-              showToast(`Message exceeds ${globalTextLimit} char limit!`, "error");
-              return;
-            }
-            editingMsgKey = null;
-            db.ref(`${path}/${msgKey}`).update({ text: updated, edited: true });
-            showToast("Message edited", "success");
-          }
-        };
-      }
-
-      // AUTOCOMPLETE (@MENTIONS & /SLASH COMMANDS)
+      // @MENTION & /SLASH COMMAND AUTOCOMPLETE
       const autocompletePopover = document.getElementById('autocomplete-popover');
-      const autocompleteHeader = document.getElementById('autocomplete-header');
       const autocompleteList = document.getElementById('autocomplete-list');
+      const autocompleteHeader = document.getElementById('autocomplete-header');
       let autocompleteItems = [];
-      let autocompleteSelectedIdx = 0;
-      let autocompleteMode = null;
+      let autocompleteIndex = 0;
 
-      const SLASH_COMMANDS = [
-        { cmd: '/shrug', desc: 'Append ¯\_(ツ)_/¯ to your message', insert: '¯\_(ツ)_/¯' },
-        { cmd: '/tableflip', desc: 'Append (╯°□°）╯︵ ┻━┻', insert: '(╯°□°）╯︵ ┻━┻' },
-        { cmd: '/unflip', desc: 'Append ┬─┬ノ( º _ ºノ)', insert: '┬─┬ノ( º _ ºノ)' },
-        { cmd: '/me', desc: 'Send an action message (*username does something*)', insert: '/me ' },
-        { cmd: '/clear', desc: 'Clear your local chat view', insert: '/clear' }
+      const slashCommands = [
+        { cmd: '/shrug', desc: 'Append ¯\\_(ツ)_/¯', apply: (v) => v.replace(/\/shrug\b/i, '¯\\_(ツ)_/¯') },
+        { cmd: '/tableflip', desc: 'Append (╯°□°）╯︵ ┻━┻', apply: (v) => v.replace(/\/tableflip\b/i, '(╯°□°）╯︵ ┻━┻') },
+        { cmd: '/unflip', desc: 'Append ┬─┬ノ( º _ ºノ)', apply: (v) => v.replace(/\/unflip\b/i, '┬─┬ノ( º _ ºノ)') },
+        { cmd: '/nick', desc: 'Set friend nickname: /nick @user NewName', apply: null },
+        { cmd: '/clear', desc: 'Clear current chat input box', apply: () => '' }
       ];
-
-      function getMentionCandidates(query) {
-        const q = (query || '').toLowerCase();
-        const pool = [
-          { handle: 'everyone', label: '@everyone', sub: 'Notify everyone in channel' }
-        ];
-        const seen = new Set(['everyone']);
-
-        Object.values(allAccountsMap).forEach(acc => {
-          if (!acc || !acc.username) return;
-          const low = acc.username.toLowerCase();
-          if (seen.has(low)) return;
-          seen.add(low);
-          pool.push({
-            handle: acc.username,
-            label: getEffectiveName(acc.username, acc.displayName),
-            sub: `@${acc.username}`
-          });
-        });
-
-        return pool.filter(p =>
-          p.handle.toLowerCase().includes(q) || p.label.toLowerCase().includes(q)
-        ).slice(0, 7);
-      }
 
       function updateAutocomplete() {
         const val = chatInputEl.value;
-        const cursorPos = chatInputEl.selectionStart || val.length;
-        const beforeCursor = val.slice(0, cursorPos);
-
-        if (beforeCursor.startsWith('/') && !beforeCursor.includes(' ')) {
-          const q = beforeCursor.toLowerCase();
-          const matches = SLASH_COMMANDS.filter(c => c.cmd.startsWith(q));
+        const slashMatch = val.match(/^\/([a-zA-Z]*)$/);
+        if (slashMatch) {
+          const q = slashMatch[1].toLowerCase();
+          const matches = slashCommands.filter(c => c.cmd.slice(1).startsWith(q));
           if (matches.length > 0) {
-            autocompleteMode = 'slash';
-            autocompleteItems = matches;
-            autocompleteSelectedIdx = 0;
-            renderAutocompletePopover('Slash Commands');
+            autocompleteHeader.textContent = 'Slash Commands';
+            autocompleteItems = matches.map(m => ({
+              label: m.cmd,
+              sub: m.desc,
+              onSelect: () => {
+                if (m.cmd === '/nick') {
+                  chatInputEl.value = '/nick @';
+                } else if (m.apply) {
+                  chatInputEl.value = m.apply(chatInputEl.value);
+                }
+                updateCharCounter();
+                closeAutocomplete();
+                chatInputEl.focus();
+              }
+            }));
+            renderAutocompleteList();
             return;
           }
         }
 
-        const atMatch = beforeCursor.match(/(?:^|\s)@([a-zA-Z0-9_.-]*)$/);
-        if (atMatch) {
-          const q = atMatch[1];
-          const matches = getMentionCandidates(q);
+        const mentionMatch = val.match(/(?:^|\s)@([a-zA-Z0-9_.-]*)$/);
+        if (mentionMatch) {
+          const q = mentionMatch[1].toLowerCase();
+          const pool = new Map();
+          Object.values(allAccountsMap).forEach(a => { if (a && a.username) pool.set(a.username.toLowerCase(), a.username); });
+          Object.values(onlineUsersMap).forEach(u => { if (u && u.name) pool.set(u.name.toLowerCase(), u.name); });
+          const matches = Array.from(pool.values())
+            .filter(u => u.toLowerCase().startsWith(q))
+            .slice(0, 8);
+
           if (matches.length > 0) {
-            autocompleteMode = 'mention';
-            autocompleteItems = matches;
-            autocompleteSelectedIdx = 0;
-            renderAutocompletePopover('Mention Member');
+            autocompleteHeader.textContent = 'Members Matching @' + mentionMatch[1];
+            autocompleteItems = matches.map(u => ({
+              label: `@${u}`,
+              sub: getEffectiveName(u),
+              onSelect: () => {
+                chatInputEl.value = val.replace(/@([a-zA-Z0-9_.-]*)$/, `@${u} `);
+                updateCharCounter();
+                closeAutocomplete();
+                chatInputEl.focus();
+              }
+            }));
+            renderAutocompleteList();
             return;
           }
         }
-
         closeAutocomplete();
       }
 
-      function renderAutocompletePopover(title) {
-        autocompleteHeader.textContent = title;
+      function renderAutocompleteList() {
+        autocompleteIndex = 0;
         autocompleteList.innerHTML = '';
         autocompleteItems.forEach((item, idx) => {
           const row = document.createElement('div');
-          row.className = 'autocomplete-item' + (idx === autocompleteSelectedIdx ? ' selected' : '');
-          const mainText = autocompleteMode === 'slash' ? item.cmd : `${item.label}`;
-          const subText = autocompleteMode === 'slash' ? item.desc : item.sub;
+          row.className = 'autocomplete-item' + (idx === 0 ? ' selected' : '');
           row.innerHTML = `
             <div class="autocomplete-item-left">
-              <span class="autocomplete-item-title">${escapeHTML(mainText)}</span>
+              <span class="autocomplete-item-title">${escapeHTML(item.label)}</span>
             </div>
-            <span class="autocomplete-item-sub">${escapeHTML(subText)}</span>
+            <span class="autocomplete-item-sub">${escapeHTML(item.sub)}</span>
           `;
-          row.onclick = () => applyAutocompleteItem(idx);
+          row.onclick = item.onSelect;
           autocompleteList.appendChild(row);
         });
         autocompletePopover.classList.add('open');
       }
 
       function closeAutocomplete() {
-        autocompleteMode = null;
-        autocompleteItems = [];
         autocompletePopover.classList.remove('open');
+        autocompleteItems = [];
       }
 
-      function applyAutocompleteItem(idx) {
-        const item = autocompleteItems[idx];
-        if (!item) return;
-        const val = chatInputEl.value;
-        const cursorPos = chatInputEl.selectionStart || val.length;
-        const beforeCursor = val.slice(0, cursorPos);
-        const afterCursor = val.slice(cursorPos);
+      // SMART NON-INTRUSIVE SCROLL & PINNED MESSAGES
+      let channelSearchQuery = '';
+      let cachedSnapshotMessages = [];
+      let editingMessageId = null;
+      let userHasScrolledUp = false;
+      let hasNewMessagesWhileScrolledUp = false;
 
-        if (autocompleteMode === 'slash') {
-          if (item.cmd === '/clear') {
-            messagesEl.innerHTML = '';
-            closeAutocomplete();
-            chatInputEl.value = '';
-            updateCharCounter();
-            return;
+      const jumpPresentBtn = document.getElementById('jump-present-btn');
+
+      function isNearBottom() {
+        return (messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight) < 85;
+      }
+
+      messagesEl.addEventListener('scroll', () => {
+        if (isNearBottom()) {
+          userHasScrolledUp = false;
+          hasNewMessagesWhileScrolledUp = false;
+          jumpPresentBtn.classList.remove('visible');
+        } else {
+          userHasScrolledUp = true;
+          if (hasNewMessagesWhileScrolledUp) {
+            jumpPresentBtn.classList.add('visible');
           }
-          chatInputEl.value = item.insert + afterCursor;
-        } else if (autocompleteMode === 'mention') {
-          const replacedBefore = beforeCursor.replace(/@([a-zA-Z0-9_.-]*)$/, `@${item.handle} `);
-          chatInputEl.value = replacedBefore + afterCursor;
         }
-
-        updateCharCounter();
-        closeAutocomplete();
-        chatInputEl.focus();
-      }
-
-      function insertMentionIntoInput(targetUsername) {
-        const prefix = chatInputEl.value && !chatInputEl.value.endsWith(' ') ? ' ' : '';
-        chatInputEl.value += `${prefix}@${targetUsername} `;
-        updateCharCounter();
-        chatInputEl.focus();
-      }
-
-      let cooldownInterval = null;
-      function startCooldownCountdown(remainingSec) {
-        const cdEl = document.getElementById('cooldown-text');
-        if (cooldownInterval) clearInterval(cooldownInterval);
-        const updateLabel = () => {
-          const left = Math.ceil((lastMessageSentTime + globalSpamLimit * 1000 - Date.now()) / 1000);
-          if (left > 0) {
-            cdEl.textContent = `Slowmode: wait ${left}s`;
-          } else {
-            cdEl.textContent = '';
-            clearInterval(cooldownInterval);
-          }
-        };
-        updateLabel();
-        cooldownInterval = setInterval(updateLabel, 250);
-      }
-
-      chatInputEl.addEventListener('input', () => {
-        updateCharCounter();
-        updateAutocomplete();
-
-        const tPath = getTypingPath();
-        if (!tPath) return;
-        const userTypingRef = db.ref(`${tPath}/${userId}`);
-        userTypingRef.set(displayName || username);
-        userTypingRef.onDisconnect().remove();
-        clearTimeout(window.typingTimeout);
-        window.typingTimeout = setTimeout(() => userTypingRef.remove(), 2000);
       });
 
-      function updateTypingDisplay() {
-        const tPath = getTypingPath();
-        if (activeTypingRef && activeTypingCb) activeTypingRef.off('value', activeTypingCb);
-        document.getElementById('typing-text').textContent = '';
-        if (!tPath) return;
+      jumpPresentBtn.onclick = () => {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        userHasScrolledUp = false;
+        hasNewMessagesWhileScrolledUp = false;
+        jumpPresentBtn.classList.remove('visible');
+      };
 
-        activeTypingRef = db.ref(tPath);
+      document.getElementById('channel-search-input').addEventListener('input', (e) => {
+        channelSearchQuery = e.target.value.trim().toLowerCase();
+        renderMessagesFromCache(false);
+      });
+
+      const pinsPopover = document.getElementById('pins-popover');
+      document.getElementById('open-pins-btn').onclick = (e) => {
+        e.stopPropagation();
+        pinsPopover.classList.toggle('open');
+        renderPinnedMessages();
+      };
+      document.getElementById('close-pins-btn').onclick = () => pinsPopover.classList.remove('open');
+
+      function renderPinnedMessages() {
+        const pinsListEl = document.getElementById('pins-list');
+        const pinned = cachedSnapshotMessages.filter(m => m.pinned);
+        pinsListEl.innerHTML = '';
+        if (pinned.length === 0) {
+          pinsListEl.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:20px;">No pinned messages in this channel yet.</div>';
+          return;
+        }
+        pinned.forEach(m => {
+          const shownAuthor = getEffectiveName(m.author, m.displayName);
+          const card = document.createElement('div');
+          card.className = 'pin-card';
+          card.innerHTML = `
+            <div class="pin-card-top">
+              <strong style="color:var(--text-header);">${escapeHTML(shownAuthor)}</strong>
+              <span style="color:var(--text-muted);">${escapeHTML(m.time || '')}</span>
+            </div>
+            <div style="color:var(--text-main); word-break:break-word;">${formatRichText(m.text || '')}</div>
+          `;
+          pinsListEl.appendChild(card);
+        });
+      }
+
+      function renderMessagesFromCache(shouldForceScroll = false) {
+        const wasNearBottom = shouldForceScroll || !userHasScrolledUp || isNearBottom();
+        messagesEl.innerHTML = '';
+
+        const filtered = cachedSnapshotMessages.filter(m => {
+          if (!channelSearchQuery) return true;
+          const shownAuthor = getEffectiveName(m.author, m.displayName).toLowerCase();
+          return (m.text || '').toLowerCase().includes(channelSearchQuery) ||
+                 (m.author || '').toLowerCase().includes(channelSearchQuery) ||
+                 shownAuthor.includes(channelSearchQuery);
+        });
+
+        let prevAuthor = null;
+        let prevTime = null;
+
+        filtered.forEach(m => {
+          const msgKey = m._key;
+          const isSelf = (m.author || '').toLowerCase() === username.toLowerCase();
+          const visuals = getUserVisuals(m.author, m.color, m.displayName);
+          const shownAuthor = getEffectiveName(m.author, m.displayName);
+          const hasNick = !!friendNicknames[(m.author || '').toLowerCase()];
+          const isMentioned = !isSelf && (
+            (m.text || '').toLowerCase().includes(`@${username.toLowerCase()}`) ||
+            (m.text || '').toLowerCase().includes('@everyone')
+          );
+
+          const isFollowup = !channelSearchQuery && !m.replyTo && !m.pinned && !isMentioned &&
+                             prevAuthor && prevAuthor.toLowerCase() === (m.author || '').toLowerCase() &&
+                             prevTime === m.time && !editingMessageId;
+
+          prevAuthor = m.author;
+          prevTime = m.time;
+
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'message' + (isFollowup ? ' compact-followup' : '') + (isMentioned ? ' mentioned' : '');
+
+          const avatarInner = visuals.pfp
+            ? `<img src="${escapeHTML(visuals.pfp)}" alt="${escapeHTML(shownAuthor)}" loading="lazy" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(shownAuthor[0].toUpperCase())}';" />`
+            : escapeHTML(shownAuthor[0].toUpperCase());
+
+          let bodyHtml = '';
+          if (editingMessageId === msgKey) {
+            bodyHtml = `
+              <div class="inline-edit-box">
+                <input type="text" class="inline-edit-input" id="inline-edit-input-${msgKey}" value="${escapeHTML(m.text || '')}" />
+                <div class="inline-edit-hint">Press <strong>Enter</strong> to save • <strong>Escape</strong> to cancel</div>
+              </div>
+            `;
+          } else if ((m.text || '').startsWith('[Attachment]: ')) {
+            const mediaUrl = m.text.replace('[Attachment]: ', '').trim();
+            if (autoEmbedEnabled) {
+              const isFav = favoriteGifs.some(f => f.url === mediaUrl);
+              bodyHtml = `
+                <div class="msg-img-wrap">
+                  <img src="${escapeHTML(mediaUrl)}" class="msg-img" alt="Attachment" loading="lazy" onclick="openLightbox(this.src)" onerror="this.outerHTML='<a href=\\'${escapeHTML(mediaUrl)}\\' target=\\'_blank\\'>${escapeHTML(mediaUrl)}</a>';" />
+                  <button class="fav-gif-star-btn" onclick="toggleFavoriteGif('${escapeHTML(mediaUrl)}', 'Chat GIF')">${isFav ? '★ Saved' : '☆ Save'}</button>
+                </div>
+              `;
+            } else {
+              bodyHtml = `<a href="${escapeHTML(mediaUrl)}" target="_blank" rel="noopener noreferrer">${escapeHTML(mediaUrl)}</a>`;
+            }
+          } else if ((m.text || '').startsWith('[File Upload]: ')) {
+            const parts = m.text.replace('[File Upload]: ', '').split('|');
+            const fName = parts[0] || 'File';
+            const fSize = parts[1] ? Math.round(parseInt(parts[1]) / 1024) + ' KB' : '';
+            const fData = parts[2] || '#';
+            bodyHtml = `
+              <div class="file-attachment-card">
+                <div style="font-size:24px;">📄</div>
+                <div style="min-width:0; flex:1;">
+                  <div style="font-weight:700; color:var(--text-header); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(fName)}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">${escapeHTML(fSize)}</div>
+                </div>
+                <a href="${escapeHTML(fData)}" download="${escapeHTML(fName)}" class="btn btn-primary" style="padding:5px 10px; font-size:11px; text-decoration:none;">Download</a>
+              </div>
+            `;
+          } else {
+            bodyHtml = `<div class="msg-body">${formatRichText(m.text || '')}</div>`;
+          }
+
+          let replyHtml = '';
+          if (m.replyTo) {
+            const repAuthor = getEffectiveName(m.replyTo.author);
+            replyHtml = `<div class="msg-reply-quote">Replying to <strong>@${escapeHTML(repAuthor)}</strong>: ${escapeHTML(m.replyTo.text)}</div>`;
+          }
+
+          let reactionsHtml = '';
+          if (m.reactions) {
+            const pills = [];
+            Object.keys(m.reactions).forEach(emojiKey => {
+              const usersObj = m.reactions[emojiKey] || {};
+              const count = Object.keys(usersObj).length;
+              if (count > 0) {
+                const iReacted = !!usersObj[userId];
+                pills.push(`<button class="reaction-pill ${iReacted ? 'reacted' : ''}" onclick="toggleReaction('${msgKey}', '${escapeHTML(emojiKey)}')">${escapeHTML(emojiKey)} <span>${count}</span></button>`);
+              }
+            });
+            if (pills.length > 0) reactionsHtml = `<div class="msg-reactions-row">${pills.join('')}</div>`;
+          }
+
+          const quickEmojis = ['👍', '❤️', '😂', '🔥'];
+          const quickButtonsHtml = quickEmojis.map(em => `<button class="msg-quick-react" onclick="toggleReaction('${msgKey}', '${em}')" title="React ${em}">${em}</button>`).join('');
+
+          const canEdit = isSelf && !(m.text || '').startsWith('[Attachment]: ') && !(m.text || '').startsWith('[File Upload]: ');
+          const canDelete = isSelf || isAdmin;
+
+          msgDiv.innerHTML = `
+            <div class="msg-avatar" style="background-color:${visuals.color};" onclick="openPeerProfile('${escapeHTML(m.author || '')}')">${avatarInner}</div>
+            <div style="flex:1; min-width:0;">
+              ${!isFollowup ? `
+                <div class="msg-header">
+                  <span class="msg-author" onclick="openPeerProfile('${escapeHTML(m.author || '')}')">${escapeHTML(shownAuthor)}</span>
+                  ${hasNick ? `<span class="nick-badge" title="Actual username: @${escapeHTML(m.author)}">NICK</span>` : ''}
+                  ${shownAuthor !== m.author ? `<span class="msg-handle-sub">@${escapeHTML(m.author)}</span>` : ''}
+                  ${m.isAdmin || visuals.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
+                  ${m.pinned ? '<span style="font-size:11px; color:var(--yellow); font-weight:700;">📌 PINNED</span>' : ''}
+                  <span class="msg-time">${escapeHTML(m.time || '')}</span>
+                  ${m.edited ? '<span class="msg-edited-tag">(edited)</span>' : ''}
+                </div>
+              ` : ''}
+              ${replyHtml}
+              ${bodyHtml}
+              ${reactionsHtml}
+            </div>
+            <div class="msg-actions">
+              ${quickButtonsHtml}
+              <div class="msg-action-divider"></div>
+              <button class="msg-action-btn" onclick="startReply('${escapeHTML(m.author || '')}', '${escapeHTML((m.text || '').substring(0, 60))}')">Reply</button>
+              <button class="msg-action-btn" onclick="togglePinMessage('${msgKey}', ${!!m.pinned})">${m.pinned ? 'Unpin' : 'Pin'}</button>
+              ${canEdit ? `<button class="msg-action-btn" onclick="startInlineEdit('${msgKey}')">Edit</button>` : ''}
+              ${canDelete ? `<button class="msg-action-btn danger" onclick="deleteMessage('${msgKey}')">Delete</button>` : ''}
+            </div>
+          `;
+          messagesEl.appendChild(msgDiv);
+
+          if (editingMessageId === msgKey) {
+            const editInput = document.getElementById(`inline-edit-input-${msgKey}`);
+            if (editInput) {
+              editInput.focus();
+              editInput.setSelectionRange(editInput.value.length, editInput.value.length);
+              editInput.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  const nextText = editInput.value.trim();
+                  const path = getChatPath();
+                  if (nextText && path && nextText.length <= globalTextLimit) {
+                    db.ref(`${path}/${msgKey}`).update({ text: nextText, edited: true });
+                  }
+                  editingMessageId = null;
+                  renderMessagesFromCache(false);
+                } else if (ev.key === 'Escape') {
+                  editingMessageId = null;
+                  renderMessagesFromCache(false);
+                }
+              });
+            }
+          }
+        });
+
+        if (wasNearBottom) {
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+          hasNewMessagesWhileScrolledUp = false;
+          jumpPresentBtn.classList.remove('visible');
+        } else if (filtered.length > 0) {
+          hasNewMessagesWhileScrolledUp = true;
+          jumpPresentBtn.classList.add('visible');
+        }
+
+        if (pinsPopover.classList.contains('open')) renderPinnedMessages();
+      }
+
+      window.startInlineEdit = (msgKey) => {
+        editingMessageId = msgKey;
+        renderMessagesFromCache(false);
+      };
+
+      window.togglePinMessage = (msgKey, currentlyPinned) => {
+        const path = getChatPath();
+        if (!path) return;
+        db.ref(`${path}/${msgKey}/pinned`).set(!currentlyPinned);
+        showToast(!currentlyPinned ? "Message pinned!" : "Message unpinned.");
+      };
+
+      window.startReply = (author, snippet) => {
+        replyingTo = { author, text: snippet };
+        document.getElementById('reply-preview-text').textContent = `Replying to @${getEffectiveName(author)}`;
+        document.getElementById('reply-preview-bar').classList.add('active');
+        chatInputEl.focus();
+      };
+
+      document.getElementById('cancel-reply-btn').onclick = () => {
+        replyingTo = null;
+        document.getElementById('reply-preview-bar').classList.remove('active');
+      };
+
+      window.toggleReaction = (msgKey, emojiKey) => {
+        const path = getChatPath();
+        if (!path) return;
+        const rRef = db.ref(`${path}/${msgKey}/reactions/${emojiKey}/${userId}`);
+        rRef.once('value', (snap) => {
+          if (snap.exists()) rRef.remove();
+          else rRef.set(true);
+        });
+      };
+
+      window.deleteMessage = (msgKey) => {
+        const path = getChatPath();
+        if (!path) return;
+        db.ref(`${path}/${msgKey}`).remove();
+      };
+
+      let lastRenderedCount = 0;
+
+      function loadMessages() {
+        const path = getChatPath();
+        if (!path) return;
+        if (activeMsgRef && activeMsgCb) activeMsgRef.off('value', activeMsgCb);
+        if (activeTypingRef && activeTypingCb) activeTypingRef.off('value', activeTypingCb);
+
+        editingMessageId = null;
+        lastRenderedCount = 0;
+        activeMsgRef = db.ref(path).limitToLast(120);
+        activeMsgCb = (snapshot) => {
+          const items = [];
+          snapshot.forEach(child => {
+            items.push({ _key: child.key, ...child.val() });
+          });
+
+          const isInitialLoad = lastRenderedCount === 0;
+          const hadNewMsg = items.length > lastRenderedCount && !isInitialLoad;
+          const latestMsg = items.length > 0 ? items[items.length - 1] : null;
+          lastRenderedCount = items.length;
+          cachedSnapshotMessages = items;
+
+          renderMessagesFromCache(isInitialLoad);
+
+          if (hadNewMsg && latestMsg && (latestMsg.author || '').toLowerCase() !== username.toLowerCase()) {
+            const pingedMe = (latestMsg.text || '').toLowerCase().includes(`@${username.toLowerCase()}`) ||
+                             (latestMsg.text || '').toLowerCase().includes('@everyone');
+            playNotificationSound(pingedMe);
+            if (desktopNotifEnabled && document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+              new Notification(`${getEffectiveName(latestMsg.author, latestMsg.displayName)} on MiniCord`, {
+                body: latestMsg.text || 'Sent an attachment'
+              });
+            }
+          }
+        };
+        activeMsgRef.on('value', activeMsgCb);
+
+        const typingPath = 'typing/' + path.replace(/[.#$\[\]\/]/g, '_');
+        activeTypingRef = db.ref(typingPath);
         activeTypingCb = (snap) => {
-          const val = snap.val() || {};
-          const others = Object.keys(val).filter(id => id !== userId).map(id => val[id]);
-          const el = document.getElementById('typing-text');
-          if (others.length === 0) el.textContent = '';
-          else if (others.length === 1) el.textContent = `${others[0]} is typing...`;
-          else if (others.length <= 3) el.textContent = `${others.join(', ')} are typing...`;
-          else el.textContent = `Several people are typing...`;
+          const typers = snap.val() || {};
+          const otherTypers = Object.keys(typers)
+            .filter(u => u.toLowerCase() !== username.toLowerCase() && typers[u])
+            .map(u => getEffectiveName(u));
+          const tEl = document.getElementById('typing-text');
+          if (otherTypers.length === 0) tEl.textContent = '';
+          else if (otherTypers.length === 1) tEl.textContent = `${otherTypers[0]} is typing...`;
+          else tEl.textContent = `${otherTypers.slice(0, 2).join(', ')} are typing...`;
         };
         activeTypingRef.on('value', activeTypingCb);
       }
 
+      // GLOBAL UNREAD / PING WATCHER
+      db.ref('servers').on('value', (sSnap) => {
+        const servers = sSnap.val() || {};
+        Object.keys(servers).forEach(sId => {
+          const sObj = servers[sId];
+          const isPrivate = !!sObj.isPrivate;
+          const whitelist = sObj.whitelist || {};
+          if (isPrivate && !isAdmin && !whitelist[userId] && sObj.owner !== userId) return;
+
+          const chs = Object.keys((sObj && sObj.channels) || { general: true });
+          chs.forEach(ch => {
+            db.ref(`messages/${sId}/${ch}`).limitToLast(1).on('child_added', (mSnap) => {
+              const m = mSnap.val();
+              if (!m || (m.author || '').toLowerCase() === username.toLowerCase()) return;
+              const isViewingThisCh = (!isPrivateMode && !isFriendsMode && sId === activeServer && ch === activeChannel);
+              if (!isViewingThisCh) {
+                const chKey = `${sId}_${ch}`;
+                unreadChannels[chKey] = true;
+                const pingedMe = (m.text || '').toLowerCase().includes(`@${username.toLowerCase()}`) ||
+                                 (m.text || '').toLowerCase().includes('@everyone');
+                if (pingedMe) {
+                  unreadPings[chKey] = (unreadPings[chKey] || 0) + 1;
+                  if (sId !== activeServer || isFriendsMode || isPrivateMode) {
+                    serverUnreadPings[sId] = (serverUnreadPings[sId] || 0) + 1;
+                    loadServersList();
+                  }
+                  playNotificationSound(true);
+                }
+                if (!isPrivateMode && !isFriendsMode && sId === activeServer) loadChannels();
+              }
+            });
+          });
+        });
+      });
+
+      db.ref('dm_messages').on('child_added', (dmChannelSnap) => {
+        const key = dmChannelSnap.key || '';
+        if (!key.includes(username.toLowerCase())) return;
+        const parts = key.split('_');
+        const peer = parts[0].toLowerCase() === username.toLowerCase() ? parts[1] : parts[0];
+        dmChannelSnap.ref.limitToLast(1).on('child_added', (mSnap) => {
+          const m = mSnap.val();
+          if (!m || (m.author || '').toLowerCase() === username.toLowerCase()) return;
+          const isViewingThisDm = (isFriendsMode && activeDmUser && activeDmUser.toLowerCase() === peer.toLowerCase());
+          if (!isViewingThisDm) {
+            unreadDms[peer.toLowerCase()] = true;
+            playNotificationSound(true);
+            if (isFriendsMode) openFriendsTab(activeDmUser);
+          }
+        });
+      });
+
+      let typingTimeout = null;
+      chatInputEl.addEventListener('input', () => {
+        updateCharCounter();
+        updateAutocomplete();
+
+        const path = getChatPath();
+        if (!path) return;
+        const typingPath = 'typing/' + path.replace(/[.#$\[\]\/]/g, '_');
+        db.ref(typingPath + '/' + username).set(true);
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          db.ref(typingPath + '/' + username).remove();
+        }, 1800);
+      });
+
       chatInputEl.addEventListener('keydown', (e) => {
-        if (autocompletePopover.classList.contains('open')) {
+        if (autocompletePopover.classList.contains('open') && autocompleteItems.length > 0) {
           if (e.key === 'ArrowDown') {
             e.preventDefault();
-            autocompleteSelectedIdx = (autocompleteSelectedIdx + 1) % autocompleteItems.length;
-            renderAutocompletePopover(autocompleteHeader.textContent);
+            autocompleteIndex = (autocompleteIndex + 1) % autocompleteItems.length;
+            Array.from(autocompleteList.children).forEach((el, i) => el.classList.toggle('selected', i === autocompleteIndex));
             return;
           }
           if (e.key === 'ArrowUp') {
             e.preventDefault();
-            autocompleteSelectedIdx = (autocompleteSelectedIdx - 1 + autocompleteItems.length) % autocompleteItems.length;
-            renderAutocompletePopover(autocompleteHeader.textContent);
+            autocompleteIndex = (autocompleteIndex - 1 + autocompleteItems.length) % autocompleteItems.length;
+            Array.from(autocompleteList.children).forEach((el, i) => el.classList.toggle('selected', i === autocompleteIndex));
             return;
           }
-          if (e.key === 'Enter' || e.key === 'Tab') {
+          if (e.key === 'Tab' || (e.key === 'Enter' && autocompleteItems[autocompleteIndex])) {
             e.preventDefault();
-            applyAutocompleteItem(autocompleteSelectedIdx);
+            autocompleteItems[autocompleteIndex].onSelect();
             return;
           }
           if (e.key === 'Escape') {
@@ -4630,60 +4759,74 @@
           }
         }
 
-        if (e.key === 'Escape' && replyingTo) {
-          document.getElementById('cancel-reply-btn').click();
+        if (e.key === 'ArrowUp' && chatInputEl.value === '' && !replyingTo) {
+          const myLastMsg = [...cachedSnapshotMessages].reverse().find(m =>
+            (m.author || '').toLowerCase() === username.toLowerCase() &&
+            !(m.text || '').startsWith('[Attachment]: ') &&
+            !(m.text || '').startsWith('[File Upload]: ')
+          );
+          if (myLastMsg) {
+            e.preventDefault();
+            startInlineEdit(myLastMsg._key);
+          }
           return;
         }
 
-        if (e.key === 'ArrowUp' && chatInputEl.value === '') {
-          const allMsgs = Array.from(messagesEl.querySelectorAll('.message'));
-          const myLastMsg = allMsgs.reverse().find(mEl => (mEl.dataset.author || '').toLowerCase() === username.toLowerCase());
-          if (myLastMsg) {
-            const editBtn = myLastMsg.querySelector('.edit-msg-btn');
-            if (editBtn) {
-              e.preventDefault();
-              editBtn.click();
-              return;
-            }
-          }
+        if (e.key === 'Escape' && replyingTo) {
+          replyingTo = null;
+          document.getElementById('reply-preview-bar').classList.remove('active');
+          return;
         }
 
-        if (e.key === 'Enter') {
-          let rawText = chatInputEl.value.trim();
-          if (!rawText) return;
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          closeAutocomplete();
+          let text = chatInputEl.value.trim();
+          if (!text) return;
 
-          if (rawText === '/clear') {
-            messagesEl.innerHTML = '';
+          const nickCmdMatch = text.match(/^\/nick\s+@?([a-zA-Z0-9_.-]+)\s+(.+)$/i);
+          if (nickCmdMatch) {
+            const targetU = nickCmdMatch[1];
+            const newNick = nickCmdMatch[2].trim();
+            const safeTargetKey = targetU.toLowerCase().replace(/[.#$\[\]\/]/g, '_');
+            db.ref(`friend_nicknames/${userId}/${safeTargetKey}`).set(newNick);
+            chatInputEl.value = '';
+            updateCharCounter();
+            showToast(`Set nickname for @${targetU} to "${newNick}"`, "success");
+            return;
+          }
+
+          if (/^\/shrug\b/i.test(text)) text = text.replace(/\/shrug\b/i, '¯\\_(ツ)_/¯');
+          if (/^\/tableflip\b/i.test(text)) text = text.replace(/\/tableflip\b/i, '(╯°□°）╯︵ ┻━┻');
+          if (/^\/unflip\b/i.test(text)) text = text.replace(/\/unflip\b/i, '┬─┬ノ( º _ ºノ)');
+          if (/^\/clear$/i.test(text)) {
             chatInputEl.value = '';
             updateCharCounter();
             return;
           }
-          if (rawText.startsWith('/shrug ')) rawText = rawText.replace('/shrug ', '') + ' ¯\_(ツ)_/¯';
-          else if (rawText === '/shrug') rawText = '¯\_(ツ)_/¯';
-          else if (rawText.startsWith('/tableflip ')) rawText = rawText.replace('/tableflip ', '') + ' (╯°□°）╯︵ ┻━┻';
-          else if (rawText === '/tableflip') rawText = '(╯°□°）╯︵ ┻━┻';
-          else if (rawText.startsWith('/unflip ')) rawText = rawText.replace('/unflip ', '') + ' ┬─┬ノ( º _ ºノ)';
-          else if (rawText === '/unflip') rawText = '┬─┬ノ( º _ ºノ)';
-          else if (rawText.startsWith('/me ')) rawText = `*${displayName} ${rawText.slice(4)}*`;
 
-          if (rawText.length > globalTextLimit) {
-            showToast(`Message exceeds max length (${globalTextLimit} chars)!`, "error");
-            return;
+          if (text.length > globalTextLimit) {
+            return showToast(`Message exceeds the ${globalTextLimit} character limit!`, 'error');
           }
 
           const now = Date.now();
-          if (!isAdmin && globalSpamLimit > 0 && (now - lastMessageSentTime) < (globalSpamLimit * 1000)) {
-            const waitSec = ((globalSpamLimit * 1000 - (now - lastMessageSentTime)) / 1000).toFixed(1);
-            showToast(`Slowmode active! Wait ${waitSec}s`, "error");
-            startCooldownCountdown(parseFloat(waitSec));
-            return;
+          if (globalSpamLimit > 0 && !isAdmin) {
+            const diffSec = (now - lastMessageSentTime) / 1000;
+            if (diffSec < globalSpamLimit) {
+              const waitLeft = Math.ceil(globalSpamLimit - diffSec);
+              document.getElementById('cooldown-text').textContent = `Slowmode: wait ${waitLeft}s`;
+              setTimeout(() => { document.getElementById('cooldown-text').textContent = ''; }, 1000);
+              return;
+            }
           }
 
           const path = getChatPath();
-          if (!path) return showToast("Select a friend to DM or a channel first!", "error");
+          if (!path) return showToast("Select a text channel or friend first!", "error");
 
           lastMessageSentTime = now;
-          if (!isAdmin && globalSpamLimit > 0) startCooldownCountdown(globalSpamLimit);
+          document.getElementById('cooldown-text').textContent = '';
+          const typingPath = 'typing/' + path.replace(/[.#$\[\]\/]/g, '_');
+          db.ref(typingPath + '/' + username).remove();
 
           const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
           const payload = {
@@ -4692,39 +4835,37 @@
             color: userColor,
             isAdmin: isAdmin,
             time: timeStr,
-            text: rawText
+            text: text
           };
-          if (replyingTo) payload.replyTo = replyingTo;
+          if (replyingTo) {
+            payload.replyTo = replyingTo;
+            replyingTo = null;
+            document.getElementById('reply-preview-bar').classList.remove('active');
+          }
 
           db.ref(path).push(payload);
           chatInputEl.value = '';
           updateCharCounter();
-          closeAutocomplete();
-          if (replyingTo) document.getElementById('cancel-reply-btn').click();
-          const tPath = getTypingPath();
-          if (tPath) db.ref(`${tPath}/${userId}`).remove();
+          userHasScrolledUp = false;
+          hasNewMessagesWhileScrolledUp = false;
+          jumpPresentBtn.classList.remove('visible');
+          setTimeout(() => { messagesEl.scrollTop = messagesEl.scrollHeight; }, 40);
         }
       });
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.activeElement !== chatInputEl && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && !document.querySelector('.modal-overlay.open')) {
-          if (document.getElementById('chat-input-wrapper').style.display !== 'none') {
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          const anyModalOpen = document.querySelector('.modal-overlay.open');
+          if (!anyModalOpen && !document.getElementById('voice-stage').classList.contains('active')) {
             e.preventDefault();
             chatInputEl.focus();
-            updateAutocomplete();
           }
         }
       });
 
-      const originalLoadMessages = loadMessages;
-      loadMessages = function() {
-        originalLoadMessages();
-        updateTypingDisplay();
-      };
-
+      updatePresence();
       loadServersList();
       loadChannels();
-      updatePresence();
     }
   </script>
 </body>
