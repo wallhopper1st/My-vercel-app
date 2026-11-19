@@ -524,7 +524,8 @@
           <span id="private-badge" class="private-badge" style="display:none;">PRIVATE ROOM</span>
           <span id="slowmode-badge" class="slowmode-badge" title="Slowmode is enabled">Slowmode: <span id="slowmode-sec-label">0</span>s</span>
         </div>
-        <div class="header-right">
+       <div class="header-right">
+          <button class="btn btn-success" id="header-start-call-btn" style="display:none; padding:4px 10px; font-size:12px;" title="Start Voice/Video Call">📞 Call</button>
           <input type="text" class="header-search-input" id="channel-search-input" placeholder="Search channel..." title="Filter messages in this channel" />
           <button class="icon-btn" id="open-pins-btn" title="Pinned Messages">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg>
@@ -2326,8 +2327,8 @@
         reader.readAsDataURL(file);
       };
 
-      // =========================================================================
-      // WEBRTC VOICE & VIDEO CALLING
+// =========================================================================
+      // FIXED WEBRTC VOICE & VIDEO CALLING (SERVERS, DMs & PRIVATE ROOMS)
       // =========================================================================
       let connectedVoiceServer = null;
       let connectedVoiceChannel = null;
@@ -2347,14 +2348,14 @@
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun2.l.google.com:19302' },
-          { urls: 'stun:stun3.l.google.com:19302' },
-          { urls: 'stun:stun4.l.google.com:19302' }
+          { urls: 'stun:stun2.l.google.com:19302' }
         ]
       };
 
       function getSignalBasePath(sId, vcName) {
-        return `webrtc_signals/${sId}/${vcName}`;
+        const cleanS = String(sId).replace(/[.#$\[\]\/]/g, '_');
+        const cleanV = String(vcName).replace(/[.#$\[\]\/]/g, '_');
+        return `webrtc_signals/${cleanS}/${cleanV}`;
       }
 
       function updateVoiceControlButtons() {
@@ -2399,8 +2400,7 @@
             analyser.getByteFrequencyData(dataArray);
             let sum = 0;
             for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-            const avg = sum / dataArray.length;
-            tile.classList.toggle('speaking', avg > 14);
+            tile.classList.toggle('speaking', (sum / dataArray.length) > 14);
           }, 150);
 
           speakingMonitors[peerId] = { intervalId, audioCtx };
@@ -2437,7 +2437,7 @@
         const vidEl = tile.querySelector('video');
         if (stream && vidEl) {
           vidEl.srcObject = stream;
-          if (selectedSpeakerId && selectedSpeakerId !== 'default' && typeof vidEl.setSinkId === 'function') {
+          if (!isSelf && selectedSpeakerId && selectedSpeakerId !== 'default' && typeof vidEl.setSinkId === 'function') {
             vidEl.setSinkId(selectedSpeakerId).catch(() => {});
           }
           vidEl.play().catch(() => {});
@@ -2457,13 +2457,13 @@
         };
         peerConnections[remoteId] = stateObj;
 
-        if (localStream) {
-          localStream.getTracks().forEach(track => {
-            pc.addTrack(track, localStream);
-          });
+        // Attach local tracks cleanly without duplicate transceivers
+        if (localStream && localStream.getTracks().length > 0) {
+          localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+        } else {
+          pc.addTransceiver('audio', { direction: 'recvonly' });
+          pc.addTransceiver('video', { direction: 'recvonly' });
         }
-        pc.addTransceiver('audio', { direction: 'sendrecv' });
-        pc.addTransceiver('video', { direction: 'sendrecv' });
 
         pc.onicecandidate = (event) => {
           if (event.candidate && connectedVoiceServer && connectedVoiceChannel) {
@@ -2484,7 +2484,7 @@
           }
           if (event.streams && event.streams[0]) {
             remoteStreams[remoteId] = event.streams[0];
-          } else {
+          } else if (event.track) {
             rStream.addTrack(event.track);
           }
 
@@ -2499,10 +2499,12 @@
           if (!connectedVoiceServer || !connectedVoiceChannel) return;
           try {
             stateObj.makingOffer = true;
-            await pc.setLocalDescription();
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
             const inbox = `${getSignalBasePath(connectedVoiceServer, connectedVoiceChannel)}/${remoteId}`;
             await db.ref(inbox).push({
               from: userId,
+              senderName: displayName || username,
               type: 'description',
               description: { type: pc.localDescription.type, sdp: pc.localDescription.sdp }
             });
@@ -2542,11 +2544,12 @@
             }
 
             if (desc.type === 'offer') {
-              await pc.setLocalDescription();
+              const answer = await pc.createAnswer();
+              await pc.setLocalDescription(answer);
               const inbox = `${getSignalBasePath(connectedVoiceServer, connectedVoiceChannel)}/${remoteId}`;
               await db.ref(inbox).push({
                 from: userId,
-                senderName: username,
+                senderName: displayName || username,
                 type: 'description',
                 description: { type: pc.localDescription.type, sdp: pc.localDescription.sdp }
               });
@@ -2563,7 +2566,7 @@
         }
       }
 
-      async function joinServerVoiceChannel(serverId, vcName) {
+      async function joinServerVoiceChannel(serverId, vcName, labelOverride = null) {
         if (connectedVoiceServer === serverId && connectedVoiceChannel === vcName) {
           showVoiceStage(true);
           return;
@@ -2612,9 +2615,10 @@
         });
         vcUserRef.onDisconnect().remove();
 
+        const displayTitle = labelOverride || `${vcName}`;
         document.getElementById('voice-status-bar').classList.add('connected');
-        document.getElementById('voice-connected-label').textContent = `${vcName} (${serverId})`;
-        document.getElementById('voice-stage-title').textContent = vcName;
+        document.getElementById('voice-connected-label').textContent = displayTitle;
+        document.getElementById('voice-stage-title').textContent = displayTitle;
         showVoiceStage(true);
 
         if (activeVoicePeersRef && activeVoicePeersCb) activeVoicePeersRef.off('value', activeVoicePeersCb);
@@ -2656,26 +2660,51 @@
         activeVoicePeersRef.on('value', activeVoicePeersCb);
       }
 
+      // Header Call Button (Works in DMs & Private Rooms!)
+      document.getElementById('header-start-call-btn').onclick = () => {
+        if (isFriendsMode && activeDmUser) {
+          const dmKey = [username, activeDmUser].sort().join('_');
+          const peerShown = getEffectiveName(activeDmUser);
+          joinServerVoiceChannel('dm_calls', dmKey, `DM Call with @${peerShown}`);
+          const path = getChatPath();
+          if (path) {
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
+            db.ref(path).push({
+              author: username, displayName, color: userColor, isAdmin, time: timeStr,
+              text: `📞 Started a voice/video call! Click **📞 Call** at the top right to join.`
+            });
+          }
+        } else if (isPrivateMode && activePrivateRoom) {
+          joinServerVoiceChannel('private_room_calls', activePrivateRoom.key, `Room Call: #${activePrivateRoom.name}`);
+          const path = getChatPath();
+          if (path) {
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !use24Hour });
+            db.ref(path).push({
+              author: username, displayName, color: userColor, isAdmin, time: timeStr,
+              text: `📞 Started a private room call! Click **📞 Call** at the top right to join.`
+            });
+          }
+        }
+      };
+
       async function replaceOrAddVideoTrack(newVideoTrack) {
         if (!localStream) localStream = new MediaStream();
-        const oldVideoTracks = localStream.getVideoTracks();
-        oldVideoTracks.forEach(t => { t.stop(); localStream.removeTrack(t); });
-
+        localStream.getVideoTracks().forEach(t => { t.stop(); localStream.removeTrack(t); });
         if (newVideoTrack) localStream.addTrack(newVideoTrack);
 
         for (const peerId of Object.keys(peerConnections)) {
           const pc = peerConnections[peerId].pc;
-          const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video')
-            || pc.getSenders().find(s => !s.track && pc.getTransceivers().some(tr => tr.sender === s && tr.receiver.track.kind === 'video'));
-
-          if (videoSender) await videoSender.replaceTrack(newVideoTrack || null);
-          else if (newVideoTrack) pc.addTrack(newVideoTrack, localStream);
+          const videoSender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (videoSender) {
+            await videoSender.replaceTrack(newVideoTrack || null);
+          } else if (newVideoTrack) {
+            pc.addTrack(newVideoTrack, localStream);
+          }
         }
 
         if (connectedVoiceServer && connectedVoiceChannel) {
           db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}/videoActive`).set(!!newVideoTrack);
         }
-
         renderVoiceTile(userId, { name: displayName, color: userColor, pfp: userPfp, videoActive: !!newVideoTrack });
       }
 
@@ -2685,7 +2714,6 @@
           delete peerConnections[pId];
           delete remoteStreams[pId];
         });
-
         Object.keys(speakingMonitors).forEach(pId => {
           clearInterval(speakingMonitors[pId].intervalId);
           try { speakingMonitors[pId].audioCtx.close(); } catch (e) {}
@@ -2696,9 +2724,7 @@
           localStream.getTracks().forEach(track => track.stop());
           localStream = null;
         }
-        isMicMuted = false;
-        isCamEnabled = false;
-        isScreenSharing = false;
+        isMicMuted = false; isCamEnabled = false; isScreenSharing = false;
         updateVoiceControlButtons();
 
         if (signalInboxRef) {
@@ -2706,7 +2732,6 @@
           await signalInboxRef.remove();
           signalInboxRef = null;
         }
-
         if (connectedVoiceServer && connectedVoiceChannel) {
           await db.ref(`voice_presence/${connectedVoiceServer}/${connectedVoiceChannel}/${userId}`).remove();
         }
@@ -2715,8 +2740,7 @@
         }
 
         document.getElementById('video-grid').innerHTML = '';
-        connectedVoiceServer = null;
-        connectedVoiceChannel = null;
+        connectedVoiceServer = null; connectedVoiceChannel = null;
         document.getElementById('voice-status-bar').classList.remove('connected');
         if (hideStage) showVoiceStage(false);
       }
@@ -2778,8 +2802,7 @@
               : { width: { ideal: 640 }, height: { ideal: 360 } };
             const camStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
             const camTrack = camStream.getVideoTracks()[0];
-            isCamEnabled = true;
-            isScreenSharing = false;
+            isCamEnabled = true; isScreenSharing = false;
             await replaceOrAddVideoTrack(camTrack);
             updateVoiceControlButtons();
             showToast("Camera turned on", "success");
@@ -2800,12 +2823,10 @@
           if (!isScreenSharing) {
             const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
             const screenTrack = screenStream.getVideoTracks()[0];
-            isScreenSharing = true;
-            isCamEnabled = false;
+            isScreenSharing = true; isCamEnabled = false;
             await replaceOrAddVideoTrack(screenTrack);
             updateVoiceControlButtons();
             showToast("Screen sharing started", "success");
-
             screenTrack.onended = async () => {
               isScreenSharing = false;
               await replaceOrAddVideoTrack(null);
@@ -2899,7 +2920,7 @@
                 ${isPrivate ? `<div class="server-lock-dot" title="Private Whitelist">🔒</div>` : ''}
               </div>
             `;
-            wrap.onclick = () => {
+            wrap.onclick = (document.getElementById('header-start-call-btn').style.display = 'none';) => {
               showVoiceStage(false);
               isPrivateMode = false; isFriendsMode = false;
               document.getElementById('private-badge').style.display = 'none';
@@ -3091,6 +3112,7 @@
         document.getElementById('server-name').textContent = "Direct Messages";
         document.getElementById('sidebar-label').innerHTML = '<span>Direct Messages</span>';
         document.getElementById('private-badge').style.display = 'none';
+        document.getElementById('header-start-call-btn').style.display = preselectFriend ? 'inline-flex' : 'none';
         document.getElementById('header-symbol').textContent = '@';
 
         if (activeChannelRef && activeChannelCb) activeChannelRef.off('value', activeChannelCb);
@@ -3149,7 +3171,7 @@
                 </div>
                 ${hasNick ? '<span class="nick-badge" style="font-size:9px;">NICK</span>' : ''}
               `;
-              item.onclick = () => {
+              item.onclick = (document.getElementById('header-start-call-btn').style.display = 'inline-flex';) => {
                 showVoiceStage(false);
                 activeDmUser = fName;
                 document.getElementById('channel-name').textContent = shownFriendName;
@@ -3307,6 +3329,7 @@
         document.getElementById('sidebar-label').innerHTML = '<span>Active Private Room</span>';
         document.getElementById('private-badge').style.display = 'inline-block';
         document.getElementById('header-symbol').textContent = '#';
+        document.getElementById('header-start-call-btn').style.display = 'inline-flex';
         channelListEl.innerHTML = `<div class="channel-item active"><div class="channel-left"><span>#</span><span>${escapeHTML(roomObj.name)}</span></div></div>`;
         document.getElementById('channel-name').textContent = roomObj.name;
         chatInputEl.placeholder = "Message private room #" + roomObj.name;
