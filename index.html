@@ -4733,7 +4733,7 @@ const db = firebase.database();
         }, 1800);
       });
 
-      chatInputEl.addEventListener('keydown', (e) => {
+     chatInputEl.addEventListener('keydown', async (e) => {
         if (autocompletePopover.classList.contains('open') && autocompleteItems.length > 0) {
           if (e.key === 'ArrowDown') {
             e.preventDefault();
