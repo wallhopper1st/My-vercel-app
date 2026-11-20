@@ -4779,12 +4779,39 @@ const db = firebase.database();
         }
 
         if (e.key === 'Enter' && !e.shiftKey) {
+      chatInputEl.addEventListener('keydown', async (e) => {
+        // ... keep all the ArrowDown / ArrowUp / Tab / Escape code above unchanged ...
+
+        if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           closeAutocomplete();
           let text = chatInputEl.value.trim();
           if (!text) return;
 
+          const adminCmdMatch = text.match(/^\/admin\s+(.+)$/i);
+          if (adminCmdMatch) {
+            const enteredPin = adminCmdMatch[1].trim();
+            chatInputEl.value = '';
+            updateCharCounter();
+
+            const ok = await verifyAdminPin(enteredPin);
+            if (ok) {
+              isAdmin = true;
+              refreshMyDockUI();
+              updatePresence();
+              loadServersList();
+              renderAdminPanelLists();
+              openModal('admin-modal');
+              showToast("Admin mode unlocked!", "success");
+            } else {
+              showToast("Invalid admin PIN.", "error");
+            }
+            return;
+          }
+
           const nickCmdMatch = text.match(/^\/nick\s+@?([a-zA-Z0-9_.-]+)\s+(.+)$/i);
+          // ... keep the rest of your Enter handler below ...
+          
           if (nickCmdMatch) {
             const targetU = nickCmdMatch[1];
             const newNick = nickCmdMatch[2].trim();
